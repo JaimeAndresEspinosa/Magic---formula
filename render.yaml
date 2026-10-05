@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: magic-formula
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10
+      # En la nube Yahoo limita más: se parte de la caché del repositorio
+      # y los fundamentales se renuevan cada 7 días en lugar de cada 24 h.
+      - key: FUND_MAX_AGE_H
+        value: "168"

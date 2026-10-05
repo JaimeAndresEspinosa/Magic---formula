@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Magic Formula Screener</title>
+<meta name="description" content="Ranking en tiempo real de la Magic Formula de Joel Greenblatt sobre S&P 500, Nasdaq-100, IBEX 35 y Euro Stoxx 50.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23101828'/><path d='M7 23V9l9 9 9-9v14' stroke='%2334d399' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="#ranking">
+      <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><rect width="32" height="32" rx="7" fill="var(--brand-bg)"/><path d="M7 23V9l9 9 9-9v14" stroke="var(--up)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span><strong>Magic Formula</strong><small>Screener · Greenblatt</small></span>
+    </a>
+    <nav class="mainnav" aria-label="Secciones">
+      <a href="#ranking" data-view="ranking" class="active">Ranking</a>
+      <a href="#cartera" data-view="cartera">Cartera</a>
+      <a href="#metodologia" data-view="metodologia">Metodología</a>
+    </nav>
+    <div class="status">
+      <span class="mkt" id="mkt-us"><i></i>NYSE</span>
+      <span class="mkt" id="mkt-eu"><i></i>Europa</span>
+      <span class="live" id="live"><i></i><span id="live-text">Conectando…</span></span>
+      <button class="icon-btn" id="theme-btn" title="Cambiar tema" aria-label="Cambiar tema">
+        <svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" fill="currentColor"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="universe-bar" aria-label="Universo">
+    <div class="seg" id="universe-tabs" role="tablist"></div>
+    <div class="progress" id="progress" hidden>
+      <div class="progress-bar"><span id="progress-fill"></span></div>
+      <span id="progress-text"></span>
+    </div>
+  </section>
+
+  <!-- ============================== RANKING -->
+  <section id="view-ranking" class="view">
+    <div class="kpis" id="kpis"></div>
+
+    <div class="controls">
+      <label class="ctl">Cap. mínima
+        <select id="f-mcap">
+          <option value="0">Sin mínimo</option>
+          <option value="1e9">1.000 M$</option>
+          <option value="5e9" selected>5.000 M$</option>
+          <option value="1e10">10.000 M$</option>
+          <option value="5e10">50.000 M$</option>
+        </select>
+      </label>
+      <label class="ctl">Mostrar
+        <select id="f-top">
+          <option value="10">Top 10</option>
+          <option value="20">Top 20</option>
+          <option value="30" selected>Top 30</option>
+          <option value="50">Top 50</option>
+          <option value="0">Todas</option>
+        </select>
+      </label>
+      <label class="ctl">Sector
+        <select id="f-sector"><option value="">Todos</option></select>
+      </label>
+      <label class="ctl grow">Buscar
+        <input id="f-search" type="search" placeholder="Ticker o empresa…" autocomplete="off">
+      </label>
+      <label class="check"><input type="checkbox" id="f-excluded"> Ver excluidas</label>
+      <button class="btn" id="export-btn">
+        <svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        CSV
+      </button>
+    </div>
+
+    <div class="table-card">
+      <div class="table-scroll">
+        <table class="grid" id="grid">
+          <thead>
+            <tr>
+              <th data-k="mf" class="num sorted asc">#</th>
+              <th data-k="symbol">Empresa</th>
+              <th data-k="sector_es" class="hide-sm">Sector</th>
+              <th data-k="price" class="num">Precio</th>
+              <th data-k="change_pct" class="num">Día</th>
+              <th data-k="mcap_usd" class="num hide-sm">Cap. bursátil</th>
+              <th data-k="ey" class="num" title="Earnings Yield = EBIT / Enterprise Value">Earnings Yield</th>
+              <th data-k="roc" class="num" title="Return on Capital = EBIT / (Capital circulante neto + Inmovilizado neto)">ROC</th>
+              <th data-k="r_ey" class="num hide-sm">Rank EY</th>
+              <th data-k="r_roc" class="num hide-sm">Rank ROC</th>
+              <th data-k="score" class="num">Puntos</th>
+            </tr>
+          </thead>
+          <tbody id="grid-body"></tbody>
+        </table>
+      </div>
+      <div class="table-foot" id="table-foot"></div>
+    </div>
+  </section>
+
+  <!-- ============================== CARTERA -->
+  <section id="view-cartera" class="view" hidden>
+    <div class="panel-head">
+      <div>
+        <h1>Cartera Magic Formula</h1>
+        <p class="lead">Cartera equiponderada con las primeras posiciones del ranking actual del universo seleccionado. Greenblatt propone comprar entre 20 y 30 acciones, en tramos de 5–7 cada 2–3 meses, y mantener cada posición un año.</p>
+      </div>
+    </div>
+    <div class="controls">
+      <label class="ctl">Importe a invertir
+        <input id="p-amount" type="number" min="100" step="100" value="10000">
+      </label>
+      <label class="ctl">Posiciones
+        <select id="p-n">
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="30" selected>30</option>
+        </select>
+      </label>
+      <label class="check"><input type="checkbox" id="p-fractional"> Fracciones de acción</label>
+      <button class="btn" id="p-export">
+        <svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        CSV
+      </button>
+    </div>
+    <div class="kpis" id="p-kpis"></div>
+    <div class="portfolio-grid">
+      <div class="table-card">
+        <div class="table-scroll">
+          <table class="grid" id="p-grid">
+            <thead><tr>
+              <th class="num">#</th><th>Empresa</th><th class="num">Precio</th>
+              <th class="num">Peso</th><th class="num">Acciones</th><th class="num">Importe</th>
+              <th class="num hide-sm">EY</th><th class="num hide-sm">ROC</th>
+            </tr></thead>
+            <tbody id="p-body"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Exposición por sector</h3>
+        <div id="p-sectors" class="bars"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== METODOLOGÍA -->
+  <section id="view-metodologia" class="view prose" hidden>
+    <h1>Metodología</h1>
+    <p class="lead">La Magic Formula, publicada por Joel Greenblatt en <em>The Little Book That Beats the Market</em> (2005), ordena las empresas por dos criterios a la vez: lo <strong>baratas</strong> que son y lo <strong>buenas</strong> que son como negocio. Busca comprar empresas de calidad a precio razonable.</p>
+
+    <div class="formula-cards">
+      <div class="card formula">
+        <span class="tag">Precio</span>
+        <h3>Earnings Yield</h3>
+        <div class="eq"><span>EY</span> = <span class="frac"><span>EBIT</span><span>Enterprise Value</span></span></div>
+        <p>EV = capitalización + deuda total + minoritarios + preferentes − caja e inversiones a corto plazo. A diferencia del PER, no depende de la estructura de capital ni de los impuestos.</p>
+      </div>
+      <div class="card formula">
+        <span class="tag">Calidad</span>
+        <h3>Return on Capital</h3>
+        <div class="eq"><span>ROC</span> = <span class="frac"><span>EBIT</span><span>Capital circulante neto + Inmovilizado material neto</span></span></div>
+        <p>Capital circulante neto = (activo corriente − caja) − (pasivo corriente − deuda a corto), con mínimo cero. Mide cuánto beneficio operativo genera cada euro de capital tangible que el negocio necesita.</p>
+      </div>
+    </div>
+
+    <h2>Proceso de cálculo</h2>
+    <ol class="steps">
+      <li><strong>Universo.</strong> Componentes del índice seleccionado. Se excluyen financieras, utilities e inmobiliarias (SOCIMI / REIT), cuyo balance hace que EV y ROC no sean comparables. Cuando Greenblatt escribió el libro, las inmobiliarias se clasificaban como financieras.</li>
+      <li><strong>Filtros.</strong> Capitalización mínima (en dólares, para comparar mercados), EBIT positivo, EV positivo y capital invertido positivo.</li>
+      <li><strong>Doble ranking.</strong> Se ordenan las empresas por EY (1 = el más alto) y, por separado, por ROC (1 = el más alto).</li>
+      <li><strong>Puntuación.</strong> Se suman ambos puestos. La puntuación más baja encabeza la Magic Formula. Los empates se deshacen por mayor EY.</li>
+      <li><strong>Tiempo real.</strong> El EBIT y el balance cambian con cada publicación de resultados, pero el EV cambia con el precio. Por eso el EY y el ranking se recalculan en cada actualización de cotizaciones.</li>
+    </ol>
+
+    <h2>Datos</h2>
+    <ul>
+      <li><strong>EBIT:</strong> suma de los últimos cuatro trimestres (TTM) cuando están disponibles. Si no, el último ejercicio anual, habitual en empresas europeas que publican semestralmente.</li>
+      <li><strong>Balance:</strong> último balance publicado (trimestral, o anual si no lo hay).</li>
+      <li><strong>Precios:</strong> Yahoo Finance, refrescados aproximadamente cada minuto con mercado abierto. Las cotizaciones de EE. UU. son prácticamente en tiempo real; las europeas pueden tener hasta 15 min de retraso según la bolsa.</li>
+      <li><strong>Divisas:</strong> si una empresa cotiza en una divisa y reporta en otra, la capitalización se convierte al tipo de cambio actual antes de calcular el EV.</li>
+    </ul>
+
+    <h2>Limitaciones</h2>
+    <p>Se usa toda la caja (Greenblatt resta solo el exceso de caja) y no se ajustan arrendamientos ni partidas extraordinarias. Los datos de proveedores gratuitos pueden contener errores puntuales: comprueba siempre las cuentas oficiales antes de tomar una decisión.</p>
+
+    <div class="disclaimer card">
+      <strong>Aviso.</strong> Herramienta educativa y de análisis. No constituye asesoramiento financiero ni una recomendación de compra o venta de valores. Rentabilidades pasadas no garantizan rentabilidades futuras.
+    </div>
+  </section>
+</main>
+
+<footer class="wrap footer">
+  <span>Datos: Yahoo Finance · Universos: Wikipedia / composición propia</span>
+  <span>Herramienta educativa — no es asesoramiento financiero</span>
+</footer>
+
+<!-- ============================== DETALLE -->
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" aria-hidden="true" aria-labelledby="d-name">
+  <div class="drawer-head">
+    <div>
+      <div class="d-ticker" id="d-ticker"></div>
+      <h2 id="d-name"></h2>
+      <div class="d-meta" id="d-meta"></div>
+    </div>
+    <button class="icon-btn" id="d-close" aria-label="Cerrar">
+      <svg viewBox="0 0 24 24" width="20" height="20"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="drawer-body">
+    <div class="d-price">
+      <span id="d-price"></span>
+      <span id="d-change"></span>
+    </div>
+    <div class="seg small" id="d-ranges">
+      <button data-r="1d">1D</button><button data-r="5d">5D</button><button data-r="1m">1M</button>
+      <button data-r="6m">6M</button><button data-r="1y" class="active">1A</button><button data-r="5y">5A</button>
+    </div>
+    <div class="chart" id="d-chart"></div>
+
+    <div class="d-ranks" id="d-ranks"></div>
+
+    <h3>Earnings Yield</h3>
+    <table class="breakdown" id="d-ey"></table>
+    <h3>Return on Capital</h3>
+    <table class="breakdown" id="d-roc"></table>
+    <p class="note" id="d-source"></p>
+
+    <h3>Sobre la empresa</h3>
+    <p class="d-summary" id="d-summary"></p>
+    <a class="btn ghost" id="d-yahoo" target="_blank" rel="noopener">Ver en Yahoo Finance ↗</a>
+  </div>
+</aside>
+
+<div class="tooltip" id="tooltip" hidden></div>
+<script src="/static/app.js"></script>
+</body>
+</html>
