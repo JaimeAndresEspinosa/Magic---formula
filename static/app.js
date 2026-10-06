@@ -161,6 +161,8 @@ function renderTable() {
     th.classList.toggle("desc", th.dataset.k === state.sort.k && state.sort.dir === "desc");
   });
 
+  $("#excluded-count").textContent = state.excluded.length ? `(${state.excluded.length})` : "";
+
   const d = state.data;
   const pending = d ? d.total - d.rows.length : 0;
   $("#table-foot").innerHTML = d
