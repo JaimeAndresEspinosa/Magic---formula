@@ -4,6 +4,8 @@ Web que aplica en tiempo real la **Magic Formula de Joel Greenblatt** sobre el
 S&P 500, el Nasdaq-100, el IBEX 35 y el Euro Stoxx 50, con precios y estados
 financieros reales de Yahoo Finance.
 
+**Web publicada: https://magic-formula-wc0j.onrender.com**
+
 ## Qué hace
 
 - **Ranking**: ordena las empresas por *Earnings Yield* (EBIT / EV) y por
