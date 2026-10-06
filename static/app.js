@@ -492,15 +492,17 @@ function refresh() {
       $("#d-change").textContent = c == null ? "" : `${fmtPct(c, true, 2)} hoy`;
     }
   }
+  simRefresh();
 }
 
 // ------------------------------------------------------------------ navegación y eventos
 function showView() {
   const v = (location.hash || "#ranking").slice(1);
-  const view = ["ranking", "cartera", "metodologia"].includes(v) ? v : "ranking";
+  const view = ["ranking", "cartera", "simulacion", "metodologia"].includes(v) ? v : "ranking";
   document.querySelectorAll(".view").forEach((el) => (el.hidden = el.id !== `view-${view}`));
   document.querySelectorAll(".mainnav a").forEach((a) => a.classList.toggle("active", a.dataset.view === view));
   $(".universe-bar").hidden = view === "metodologia";
+  if (view === "simulacion") renderSim();
 }
 
 function setTheme(t) {
@@ -566,9 +568,11 @@ function init() {
   };
   window.addEventListener("resize", () => { if (state.drawerSym && state.history.length) drawChart(); });
   window.addEventListener("hashchange", showView);
+  initSim();
   showView();
   poll();
   setInterval(poll, POLL_MS);
 }
 
-init();
+// sim.js se carga después de este archivo: arrancar cuando estén los dos
+document.addEventListener("DOMContentLoaded", init);

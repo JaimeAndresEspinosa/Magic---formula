@@ -205,6 +205,32 @@ table.grid { width: 100%; border-collapse: collapse; font-size: 13px; }
 .bars .track span { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
 .bars .row b { font: 500 12px var(--mono); color: var(--text-2); }
 
+/* ---------- simulation */
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.primary:hover { filter: brightness(1.08); background: var(--accent); }
+.btn.ghost-danger { color: var(--down); }
+.sim-create { margin-bottom: 16px; }
+.sim-create .controls { margin: 12px 0 0; }
+.sim-create-head h3 { margin-bottom: 4px; }
+.sim-create-head .note { margin: 0; }
+#s-empty { margin-top: 0; }
+.sim-list-wrap { margin-bottom: 14px; overflow-x: auto; }
+.sim-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin: 6px 0 14px; }
+.sim-head h2 { font-size: 20px; }
+.sim-head .note { margin: 4px 0 0; }
+.sim-actions { display: flex; gap: 8px; }
+.chart.tall { height: 300px; margin: 8px 0; }
+.chart .zero-line { stroke: var(--text-2); stroke-width: 1; opacity: .5; }
+.chart .line.port { stroke: var(--accent); }
+.chart .line.bench { stroke: var(--muted); stroke-dasharray: 5 4; }
+.chart .port-dot { fill: var(--accent); }
+.chart .bench-dot { fill: var(--muted); }
+.sim-legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; color: var(--text-2); }
+.sim-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.sim-legend b { font-family: var(--mono); color: var(--text); font-weight: 600; }
+.sim-legend .sw { width: 18px; height: 0; border-top: 2px solid var(--accent); }
+.sim-legend .sw.bench { border-top: 2px dashed var(--muted); }
+
 /* ---------- methodology */
 .prose { max-width: 860px; padding-bottom: 20px; }
 .prose h1 { font-size: 26px; margin-bottom: 6px; }

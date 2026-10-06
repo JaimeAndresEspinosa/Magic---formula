@@ -23,6 +23,9 @@ financieros reales de Yahoo Finance.
   cálculo de EV, EY, capital invertido y ROC, con la fuente del EBIT (TTM o anual).
 - **Cartera**: reparte un importe a partes iguales entre las primeras 10, 20 o 30
   del ranking, calcula cuántas acciones comprar y la exposición por sector.
+- **Simulación**: guarda las primeras empresas del ranking con el precio del
+  momento y sigue su evolución frente al índice, sin dinero real. Se guarda en
+  el navegador y se puede abrir en otro dispositivo con «Copiar enlace».
 - **Metodología**: explicación de la fórmula, de los datos y de sus limitaciones.
 
 ## Cómo arrancarla

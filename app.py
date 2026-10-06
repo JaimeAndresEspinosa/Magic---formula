@@ -41,6 +41,8 @@ PRICE_EVERY_OPEN = 30
 PRICE_EVERY_CLOSED = 300
 WORKERS = 3
 MIN_GAP = 1.5  # s entre peticiones de fundamentales (límite de Yahoo)
+# Índice de referencia de cada universo (para la cartera simulada)
+BENCHMARKS = {"sp500": "^GSPC", "ndx": "^NDX", "ibex": "^IBEX", "sx5e": "^STOXX50E"}
 SCHEMA = 2  # subir para forzar la redescarga de fundamentales
 EXCLUDED_SECTORS = {"Financial Services", "Utilities", "Real Estate"}
 
@@ -314,7 +316,7 @@ def _coverage(df) -> int:
 def refresh_prices():
     syms = S.all_symbols()
     fx = _fx_symbols()
-    allsyms = syms + fx
+    allsyms = syms + list(BENCHMARKS.values()) + fx
     t0 = time.time()
     for i in range(0, len(allsyms), 200):
         chunk = allsyms[i:i + 200]
@@ -459,7 +461,9 @@ def ranking(universe: str):
     syms = S.universes.get(universe, [])
     with S.lock:
         rows = [r for r in (compute(s) for s in syms) if r]
-    return {"universe": universe, **META[universe], "total": len(syms), "rows": rows,
+    bsym = BENCHMARKS[universe]
+    bench = {"symbol": bsym, **{k: S.prices.get(bsym, {}).get(k) for k in ("price", "prev", "ts")}}
+    return {"universe": universe, **META[universe], "total": len(syms), "rows": rows, "benchmark": bench,
             "last_price_update": S.last_price_update, "market_open": market_open()}
 
 
@@ -493,6 +497,33 @@ def history(sym: str, range: str = "1y"):  # noqa: A002
            for ts, c in h["Close"].dropna().items()] if not h.empty else []
     S.history_cache[key] = (time.time(), pts)
     return pts
+
+
+@app.get("/api/sim-history")
+def sim_history(symbols: str, start: str):
+    """Cierres diarios desde `start` para una cartera simulada (precio, sin dividendos)."""
+    syms = sorted({s.strip() for s in symbols.split(",") if s.strip()})
+    if not syms or len(syms) > 40:
+        raise HTTPException(400, "Entre 1 y 40 símbolos")
+    try:
+        datetime.strptime(start, "%Y-%m-%d")
+    except ValueError:
+        raise HTTPException(400, "Fecha no válida") from None
+    key = ("sim", ",".join(syms), start)
+    cached = S.history_cache.get(key)
+    if cached and time.time() - cached[0] < 1800:
+        return cached[1]
+    df = yf.download(syms, start=start, interval="1d", group_by="ticker",
+                     progress=False, auto_adjust=False, threads=True)
+    out = {"dates": [], "closes": {}}
+    if df is not None and not df.empty:
+        closes = df.xs("Close", axis=1, level=1) if isinstance(df.columns, pd.MultiIndex) else df[["Close"]].set_axis(syms, axis=1)
+        closes = closes.ffill()
+        out["dates"] = [d.strftime("%Y-%m-%d") for d in closes.index]
+        out["closes"] = {s: [None if pd.isna(v) else round(float(v), 4) for v in closes[s]]
+                         for s in closes.columns}
+    S.history_cache[key] = (time.time(), out)
+    return out
 
 
 @app.get("/")

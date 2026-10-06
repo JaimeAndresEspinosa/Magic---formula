@@ -21,6 +21,7 @@
     <nav class="mainnav" aria-label="Secciones">
       <a href="#ranking" data-view="ranking" class="active">Ranking</a>
       <a href="#cartera" data-view="cartera">Cartera</a>
+      <a href="#simulacion" data-view="simulacion">Simulación</a>
       <a href="#metodologia" data-view="metodologia">Metodología</a>
     </nav>
     <div class="status">
@@ -156,6 +157,68 @@
     </div>
   </section>
 
+  <!-- ============================== SIMULACIÓN -->
+  <section id="view-simulacion" class="view" hidden>
+    <div class="panel-head">
+      <h1>Cartera simulada</h1>
+      <p class="lead">Prueba la Magic Formula sin dinero real. Al crear una simulación se guardan las primeras empresas del ranking actual con su precio de este momento, y a partir de ahí puedes seguir su evolución frente al índice.</p>
+    </div>
+
+    <div class="card sim-create">
+      <div class="sim-create-head">
+        <h3>Nueva simulación con el ranking actual</h3>
+        <p class="note">Universo: <b id="s-universe">—</b> · <span id="s-roc-note"></span> · se aplican los filtros de la pestaña Ranking (capitalización mínima). Cambia de universo arriba.</p>
+      </div>
+      <div class="controls">
+        <label class="ctl grow">Nombre (opcional)
+          <input id="s-name" type="search" placeholder="Ej.: Prueba octubre" autocomplete="off" maxlength="60">
+        </label>
+        <label class="ctl">Empresas
+          <select id="s-n"><option value="10">10</option><option value="20" selected>20</option><option value="30">30</option></select>
+        </label>
+        <label class="ctl">Importe ficticio (<span id="s-cur"></span>)
+          <input id="s-amount" type="number" min="100" step="100" value="10000">
+        </label>
+        <button class="btn primary" id="s-create">Crear simulación</button>
+      </div>
+    </div>
+
+    <div id="s-empty" class="empty card">Todavía no tienes ninguna simulación. Crea la primera arriba: se guardará en este navegador.</div>
+
+    <div id="s-detail" hidden>
+      <div id="s-list-wrap" class="sim-list-wrap">
+        <div class="seg sim-list" id="s-list"></div>
+      </div>
+      <div class="sim-head">
+        <div>
+          <h2 id="s-title"></h2>
+          <p class="note" id="s-meta"></p>
+        </div>
+        <div class="sim-actions">
+          <button class="btn" id="s-copy" title="Para abrirla en el móvil u otro ordenador">
+            <svg viewBox="0 0 24 24" width="16" height="16"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1m2 5a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+            Copiar enlace
+          </button>
+          <button class="btn ghost-danger" id="s-delete">Eliminar</button>
+        </div>
+      </div>
+      <div class="kpis" id="s-kpis"></div>
+      <div class="card">
+        <div class="sim-legend" id="s-legend"></div>
+        <div class="chart tall" id="s-chart"></div>
+        <p class="note">Rentabilidad por precio, sin dividendos ni comisiones, igual para la cartera y para el índice. La simulación se guarda en este navegador; usa «Copiar enlace» para tenerla en otros dispositivos.</p>
+      </div>
+      <div class="table-card" style="margin-top:16px">
+        <div class="table-scroll">
+          <table class="grid">
+            <thead><tr><th>Empresa</th><th class="num">Precio inicial</th><th class="num">Precio actual</th><th class="num">Rentabilidad</th><th class="num hide-sm">Valor</th></tr></thead>
+            <tbody id="s-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ============================== METODOLOGÍA -->
   <section id="view-metodologia" class="view prose" hidden>
     <h1>Metodología</h1>
@@ -251,5 +314,6 @@
 
 <div class="tooltip" id="tooltip" hidden></div>
 <script src="/static/app.js"></script>
+<script src="/static/sim.js"></script>
 </body>
 </html>
