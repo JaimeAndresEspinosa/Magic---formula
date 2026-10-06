@@ -241,7 +241,6 @@ def fundamentals_loop():
             now = time.time()
             todo = [s for s in syms
                     if S.fund.get(s, {}).get("v") != SCHEMA
-                    or not S.fund.get(s, {}).get("sector")
                     or now - S.fund.get(s, {}).get("fetched_at", 0) > FUND_MAX_AGE]
             S.fund_progress = {"done": len(syms) - len(todo), "total": len(syms), "running": bool(todo)}
             if todo:
