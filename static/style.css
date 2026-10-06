@@ -262,6 +262,7 @@ table.breakdown { width: 100%; border-collapse: collapse; font-size: 13px; }
 .breakdown td { padding: 6px 0; border-bottom: 1px dashed var(--border); }
 .breakdown td:last-child { text-align: right; font-family: var(--mono); }
 .breakdown tr.total td { border-bottom: 0; border-top: 1px solid var(--text-2); font-weight: 600; padding-top: 8px; }
+.breakdown .sub-head { padding-top: 16px; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); text-align: left !important; font-family: var(--sans) !important; }
 .breakdown .op { color: var(--muted); width: 18px; font-family: var(--mono); }
 .note { font-size: 12px; color: var(--muted); margin-top: 10px; }
 .d-summary { color: var(--text-2); font-size: 13.5px; line-height: 1.6; }

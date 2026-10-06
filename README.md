@@ -12,6 +12,9 @@ financieros reales de Yahoo Finance.
   *Return on Capital* (EBIT / (capital circulante neto + inmovilizado neto)),
   suma los dos puestos y muestra las mejores. Se puede filtrar por
   capitalización mínima, sector y texto, y exportar a CSV.
+- **Dos formas de calcular el ROC**: la original de Greenblatt (solo capital
+  tangible) o una variante que suma el fondo de comercio e intangibles, para no
+  premiar a las empresas que crecen comprando otras caras y con deuda.
 - **Precios en vivo**: el servidor refresca cotizaciones aproximadamente cada minuto con mercado
   abierto (cada 5 min con mercado cerrado). Como el EV depende del precio, el
   Earnings Yield y el ranking se recalculan en cada refresco. La web consulta al

@@ -112,6 +112,19 @@ def _bs_value(bs: pd.DataFrame, names: list[str]) -> float | None:
     return None
 
 
+def goodwill_intangibles(bs: pd.DataFrame) -> float | None:
+    """Fondo de comercio + otros intangibles. 0 si el balance no los tiene;
+    None si no hay balance."""
+    if bs is None or bs.empty:
+        return None
+    total = _bs_value(bs, ["Goodwill And Other Intangible Assets"])
+    if total is None:
+        gw = _bs_value(bs, ["Goodwill"])
+        oth = _bs_value(bs, ["Other Intangible Assets"])
+        total = (gw or 0.0) + (oth or 0.0)
+    return total
+
+
 def _ttm_ebit(q: pd.DataFrame, a: pd.DataFrame) -> tuple[float | None, str, str | None]:
     for name in ("EBIT", "Operating Income"):
         if q is not None and not q.empty and name in q.index:
@@ -185,6 +198,7 @@ def fetch_fundamentals(sym: str) -> dict:
         "cash": _bs_value(bs, ["Cash Cash Equivalents And Short Term Investments", "Cash And Cash Equivalents"]) or 0.0,
         "current_debt": _bs_value(bs, ["Current Debt And Capital Lease Obligation", "Current Debt"]) or 0.0,
         "net_ppe": _bs_value(bs, ["Net PPE"]) or 0.0,
+        "goodwill": goodwill_intangibles(bs),
         "total_debt": debt or 0.0,
         "debt_missing": debt is None,
         "debt_source": debt_src if debt is not None else "no disponible",
@@ -370,6 +384,10 @@ def compute(sym: str) -> dict | None:
 
     ey = ebit / ev if ebit is not None and ev and ev > 0 else None
     roc = ebit / capital if ebit is not None and capital > 0 else None
+    # Variante: el capital incluye el fondo de comercio e intangibles pagados en adquisiciones
+    gw = f.get("goodwill")
+    capital_gw = capital + gw if gw is not None else None
+    roc_gw = ebit / capital_gw if ebit is not None and capital_gw and capital_gw > 0 else None
 
     reason = None
     if f.get("sector") in EXCLUDED_SECTORS:
@@ -399,6 +417,7 @@ def compute(sym: str) -> dict | None:
         "cash": f["cash"], "total_debt": f["total_debt"], "minority": f["minority"],
         "preferred": f["preferred"], "debt_source": f.get("debt_source"), "current_assets": ca, "current_liabilities": cl,
         "current_debt": f["current_debt"], "shares": shares,
+        "goodwill": gw, "capital_gw": capital_gw, "roc_gw": roc_gw,
         "ey": ey, "roc": roc, "eligible": reason is None, "reason": reason,
     }
 

@@ -55,16 +55,22 @@ const median = (a) => {
 };
 
 // ------------------------------------------------------------------ ranking
+const withGoodwill = () => $("#f-roc").value === "gw";
+
 function rank(rows) {
   const minCap = +$("#f-mcap").value;
+  const gw = withGoodwill();
   const elig = [], excl = [];
-  for (const r of rows) {
+  for (const src of rows) {
+    // rocx = ROC usado en el ranking según el método elegido
+    const r = { ...src, rocx: gw ? src.roc_gw : src.roc };
     if (!r.eligible) excl.push(r);
+    else if (gw && r.rocx == null) excl.push({ ...r, reason: "Fondo de comercio no disponible" });
     else if ((r.mcap_usd ?? 0) < minCap) excl.push({ ...r, reason: "Capitalización inferior al mínimo" });
-    else elig.push({ ...r });
+    else elig.push(r);
   }
   [...elig].sort((a, b) => b.ey - a.ey).forEach((r, i) => (r.r_ey = i + 1));
-  [...elig].sort((a, b) => b.roc - a.roc).forEach((r, i) => (r.r_roc = i + 1));
+  [...elig].sort((a, b) => b.rocx - a.rocx).forEach((r, i) => (r.r_roc = i + 1));
   elig.forEach((r) => (r.score = r.r_ey + r.r_roc));
   elig.sort((a, b) => a.score - b.score || b.ey - a.ey).forEach((r, i) => (r.mf = i + 1));
   state.ranked = elig;
@@ -110,7 +116,7 @@ function renderKpis() {
   $("#kpis").innerHTML = [
     ["Empresas en el ranking", `${state.ranked.length}`, `de ${d.total} en el ${esc(d.name)}`],
     [`EY mediano · Top ${n}`, fmtPct(median(head.map((r) => r.ey))), `Índice completo: ${fmtPct(median(state.ranked.map((r) => r.ey)))}`],
-    [`ROC mediano · Top ${n}`, fmtPct(median(head.map((r) => r.roc)), false, 0), `Índice completo: ${fmtPct(median(state.ranked.map((r) => r.roc)), false, 0)}`],
+    [`ROC${withGoodwill() ? " c/ FdC" : ""} mediano · Top ${n}`, fmtPct(median(head.map((r) => r.rocx)), false, 0), `Índice completo: ${fmtPct(median(state.ranked.map((r) => r.rocx)), false, 0)}`],
     ["Última cotización", fmtTime(d.last_price_update), anyOpen(d.market_open) ? "Mercado abierto · se actualiza cada ~1 min" : "Mercado cerrado · último cierre"],
   ].map(([l, v, s]) => `<div class="kpi"><div class="label">${l}</div><div class="value">${v}</div><div class="sub">${s}</div></div>`).join("");
 }
@@ -127,7 +133,7 @@ function renderTable() {
   const rows = visibleRows();
   const body = $("#grid-body");
   const maxEy = Math.max(0.0001, ...state.ranked.slice(0, 50).map((r) => r.ey));
-  const maxRoc = Math.max(0.0001, ...state.ranked.slice(0, 50).map((r) => Math.min(r.roc, 3)));
+  const maxRoc = Math.max(0.0001, ...state.ranked.slice(0, 50).map((r) => Math.min(r.rocx, 3)));
 
   if (!rows.length) {
     const loading = !state.data || state.data.rows.length === 0;
@@ -146,7 +152,7 @@ function renderTable() {
         <td class="num ${chg > 0 ? "pos" : chg < 0 ? "neg" : ""}">${fmtPct(chg, true, 2)}</td>
         <td class="num hide-sm">${fmtBig(r.mcap, r.currency)}</td>
         <td class="num">${r.mf ? metricCell(r.ey, maxEy, 1) : fmtPct(r.ey)}</td>
-        <td class="num">${r.mf ? metricCell(r.roc, maxRoc, 0) : fmtPct(r.roc, false, 0)}</td>
+        <td class="num">${r.mf ? metricCell(r.rocx, maxRoc, 0) : fmtPct(r.rocx, false, 0)}</td>
         <td class="num hide-sm">${r.r_ey ?? "—"}</td>
         <td class="num hide-sm">${r.r_roc ?? "—"}</td>
         <td class="num"><b>${r.score ?? "—"}</b></td>
@@ -161,6 +167,7 @@ function renderTable() {
     th.classList.toggle("desc", th.dataset.k === state.sort.k && state.sort.dir === "desc");
   });
 
+  $("#roc-head").textContent = withGoodwill() ? "ROC c/ FdC" : "ROC";
   $("#excluded-count").textContent = state.excluded.length ? `(${state.excluded.length})` : "";
 
   const d = state.data;
@@ -212,7 +219,7 @@ function renderPortfolio() {
       ? `Quedan ${fmtBig(amount - invested, cur)} sin invertir: sube el importe o activa fracciones`
       : `Liquidez restante: ${fmtBig(amount - invested, cur)}`],
     ["EY medio cartera", fmtPct(median(rows.map((r) => r.ey))), "Mediana de las posiciones"],
-    ["ROC medio cartera", fmtPct(median(rows.map((r) => r.roc)), false, 0), "Mediana de las posiciones"],
+    ["ROC medio cartera", fmtPct(median(rows.map((r) => r.rocx)), false, 0), withGoodwill() ? "Incluyendo fondo de comercio" : "Mediana de las posiciones"],
   ].map(([l, v, s]) => `<div class="kpi"><div class="label">${l}</div><div class="value">${v}</div><div class="sub">${s}</div></div>`).join("");
 
   $("#p-body").innerHTML = rows.length ? rows.map((r) => `
@@ -224,7 +231,7 @@ function renderPortfolio() {
       <td class="num">${frac ? nf(0, 3).format(r.shares) : NF0.format(r.shares)}</td>
       <td class="num">${fmtPrice(r.invested, r.currency)}</td>
       <td class="num hide-sm">${fmtPct(r.ey)}</td>
-      <td class="num hide-sm">${fmtPct(r.roc, false, 0)}</td>
+      <td class="num hide-sm">${fmtPct(r.rocx, false, 0)}</td>
     </tr>`).join("") : `<tr><td colspan="8" class="empty">Aún no hay datos suficientes para este universo.</td></tr>`;
 
   const bySector = {};
@@ -253,13 +260,13 @@ const today = () => new Date().toISOString().slice(0, 10);
 function exportRanking() {
   const rows = visibleRows();
   downloadCsv(`magic-formula_${state.universe}_${today()}.csv`,
-    ["Rank MF", "Ticker", "Empresa", "Sector", "Divisa", "Precio", "Var. dia", "Cap. bursatil", "EV", "EBIT", "Earnings Yield", "ROC", "Rank EY", "Rank ROC", "Puntos", "Motivo exclusion"],
-    rows.map((r) => [r.mf, r.symbol, r.name, r.sector_es, r.currency, r.price, r.change_pct, r.mcap, r.ev, r.ebit, r.ey, r.roc, r.r_ey, r.r_roc, r.score, r.mf ? "" : r.reason]));
+    ["Rank MF", "Ticker", "Empresa", "Sector", "Divisa", "Precio", "Var. dia", "Cap. bursatil", "EV", "EBIT", "Earnings Yield", "ROC Greenblatt", "ROC incl. fondo de comercio", "Rank EY", "Rank ROC", "Puntos", "Motivo exclusion"],
+    rows.map((r) => [r.mf, r.symbol, r.name, r.sector_es, r.currency, r.price, r.change_pct, r.mcap, r.ev, r.ebit, r.ey, r.roc, r.roc_gw, r.r_ey, r.r_roc, r.score, r.mf ? "" : r.reason]));
 }
 function exportPortfolio() {
   downloadCsv(`cartera-magic-formula_${state.universe}_${today()}.csv`,
-    ["Rank MF", "Ticker", "Empresa", "Sector", "Divisa", "Precio", "Acciones", "Importe", "Earnings Yield", "ROC"],
-    portfolio().map((r) => [r.mf, r.symbol, r.name, r.sector_es, r.currency, r.price, r.shares, r.invested, r.ey, r.roc]));
+    ["Rank MF", "Ticker", "Empresa", "Sector", "Divisa", "Precio", "Acciones", "Importe", "Earnings Yield", "ROC Greenblatt", "ROC incl. fondo de comercio"],
+    portfolio().map((r) => [r.mf, r.symbol, r.name, r.sector_es, r.currency, r.price, r.shares, r.invested, r.ey, r.roc, r.roc_gw]));
 }
 
 // ------------------------------------------------------------------ detalle
@@ -319,7 +326,12 @@ function fillDrawer(r) {
     row("+", "Inmovilizado material neto", fmtBig(r.net_ppe, fc)) +
     `<tr class="total"><td class="op">=</td><td>Capital invertido</td><td>${fmtBig(r.capital, fc)}</td></tr>` +
     row("", "EBIT", fmtBig(r.ebit, fc)) +
-    `<tr class="total"><td class="op"></td><td>Return on Capital</td><td>${fmtPct(r.roc, false, 1)}</td></tr>`;
+    `<tr class="total"><td class="op"></td><td>Return on Capital (Greenblatt)</td><td>${fmtPct(r.roc, false, 1)}</td></tr>` +
+    `<tr><td class="op"></td><td colspan="2" class="sub-head">Variante con fondo de comercio</td></tr>` +
+    row("", "Capital invertido", fmtBig(r.capital, fc)) +
+    row("+", "Fondo de comercio e intangibles", fmtBig(r.goodwill, fc)) +
+    `<tr class="total"><td class="op">=</td><td>Capital incl. fondo de comercio</td><td>${fmtBig(r.capital_gw, fc)}</td></tr>` +
+    `<tr class="total"><td class="op"></td><td>ROC incl. fondo de comercio</td><td>${fmtPct(r.roc_gw, false, 1)}</td></tr>`;
 
   $("#d-source").textContent = `EBIT: ${r.ebit_source || "—"}${r.period ? ` · último periodo ${r.period}` : ""}` +
     (fc !== cur ? ` · cotiza en ${cur}, reporta en ${fc} (convertido al tipo actual)` : "") +
@@ -501,7 +513,7 @@ function init() {
   const saved = store.get("mf-theme", null);
   setTheme(saved || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark"));
   state.universe = store.get("mf-universe", "sp500");
-  for (const id of ["f-mcap", "f-top"]) {
+  for (const id of ["f-mcap", "f-top", "f-roc"]) {
     const v = store.get(`mf-${id}`, null);
     if (v != null && [...$(`#${id}`).options].some((o) => o.value === v)) $(`#${id}`).value = v;
   }
@@ -520,7 +532,7 @@ function init() {
     document.querySelectorAll("#universe-tabs button").forEach((x) => x.classList.toggle("active", x === b));
     poll();
   };
-  for (const id of ["f-mcap", "f-top"]) {
+  for (const id of ["f-mcap", "f-top", "f-roc"]) {
     $(`#${id}`).onchange = () => { store.set(`mf-${id}`, $(`#${id}`).value); refresh(); };
   }
   $("#f-sector").onchange = renderTable;

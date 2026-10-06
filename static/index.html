@@ -66,6 +66,12 @@
           <option value="0">Todas</option>
         </select>
       </label>
+      <label class="ctl" title="Greenblatt solo cuenta el capital tangible. La variante suma el fondo de comercio e intangibles pagados en adquisiciones.">Cálculo del ROC
+        <select id="f-roc">
+          <option value="tangible" selected>Greenblatt (original)</option>
+          <option value="gw">Incluyendo fondo de comercio</option>
+        </select>
+      </label>
       <label class="ctl">Sector
         <select id="f-sector"><option value="">Todos</option></select>
       </label>
@@ -91,7 +97,7 @@
               <th data-k="change_pct" class="num">Día</th>
               <th data-k="mcap_usd" class="num hide-sm">Cap. bursátil</th>
               <th data-k="ey" class="num" title="Earnings Yield = EBIT / Enterprise Value">Earnings Yield</th>
-              <th data-k="roc" class="num" title="Return on Capital = EBIT / (Capital circulante neto + Inmovilizado neto)">ROC</th>
+              <th data-k="rocx" class="num" id="roc-head" title="Return on Capital = EBIT / capital invertido (según el método elegido)">ROC</th>
               <th data-k="r_ey" class="num hide-sm">Rank EY</th>
               <th data-k="r_roc" class="num hide-sm">Rank ROC</th>
               <th data-k="score" class="num">Puntos</th>
@@ -178,6 +184,10 @@
       <li><strong>Puntuación.</strong> Se suman ambos puestos. La puntuación más baja encabeza la Magic Formula. Los empates se deshacen por mayor EY.</li>
       <li><strong>Tiempo real.</strong> El EBIT y el balance cambian con cada publicación de resultados, pero el EV cambia con el precio. Por eso el EY y el ranking se recalculan en cada actualización de cotizaciones.</li>
     </ol>
+
+    <h2>Variante: ROC incluyendo el fondo de comercio</h2>
+    <p>Greenblatt calcula el ROC solo con el capital <strong>tangible</strong> (circulante + inmovilizado material) para medir la calidad del negocio en sí. El problema es que una empresa que crece comprando otras paga mucho más que su capital tangible, y esa diferencia queda en el balance como <strong>fondo de comercio e intangibles</strong>, a menudo financiada con deuda. Con la fórmula original esas empresas parecen extraordinarias aunque se haya pagado caro por ellas.</p>
+    <p>Con el selector <strong>«Cálculo del ROC → Incluyendo fondo de comercio»</strong> el capital invertido suma esos activos y el ranking se recalcula. Ejemplo: Gen Digital (Norton, Avast) tiene un ROC original de varios miles por ciento porque casi no necesita capital tangible, pero al incluir lo que pagó por Avast y MoneyLion su rentabilidad sobre el capital es mucho más modesta. Ninguna de las dos versiones es «la correcta»: la original mide el negocio; la variante mide también lo bien o mal que se ha invertido en adquisiciones.</p>
 
     <h2>Datos</h2>
     <ul>
