@@ -24,9 +24,19 @@ if _env.exists():
             k, v = line.split("=", 1)
             os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
 
-SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip("/")
-SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY", "")
-SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY", "")
+def _key_env(name: str) -> str:
+    """Las claves son ASCII; si al copiarlas se colaron los puntos de una clave
+    oculta (•••), se ignoran para no romper la web con una clave inválida."""
+    v = os.getenv(name, "").strip()
+    if v and not v.isascii():
+        log.error("%s contiene caracteres no válidos (¿se copió oculta?); se ignora", name)
+        return ""
+    return v
+
+
+SUPABASE_URL = os.getenv("SUPABASE_URL", "").strip().rstrip("/")
+SUPABASE_ANON_KEY = _key_env("SUPABASE_ANON_KEY")
+SUPABASE_SERVICE_KEY = _key_env("SUPABASE_SERVICE_KEY")
 LOCAL_FILE = Path(__file__).parent / "data" / "snapshots.json"
 TABLE = "ranking_snapshots"
 
