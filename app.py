@@ -24,6 +24,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+import storage
 from universes import META, load_universes
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -66,6 +67,8 @@ class Store:
         self.last_price_update: float | None = None
         self.fund_progress = {"done": 0, "total": 0, "running": False}
         self.history_cache: dict[tuple, tuple[float, list]] = {}
+        self.snapshot = {"last_date": None, "state": "idle", "msg": None}
+        self.snapshot_lock = threading.Lock()
         if FUND_FILE.exists():
             try:
                 self.fund = json.loads(FUND_FILE.read_text())
@@ -356,6 +359,7 @@ def price_loop():
         try:
             if S.universes:
                 refresh_prices()
+                maybe_snapshot()
         except Exception:  # noqa: BLE001
             log.exception("price_loop error")
         mo = market_open()
@@ -422,6 +426,87 @@ def compute(sym: str) -> dict | None:
         "goodwill": gw, "capital_gw": capital_gw, "roc_gw": roc_gw,
         "ey": ey, "roc": roc, "eligible": reason is None, "reason": reason,
     }
+
+
+# --------------------------------------------------------------------------- ranking diario
+SNAPSHOT_MIN_CAP = 5e9   # mismo valor por defecto que la web
+SNAPSHOT_TOP = 50
+ROC_METHODS = ("tangible", "gw")
+NY = ZoneInfo("America/New_York")
+
+
+def rank_universe(universe: str, method: str, min_cap: float = SNAPSHOT_MIN_CAP) -> list[dict]:
+    """Mismo cálculo que hace la web (app.js → rank)."""
+    rows = []
+    for sym in S.universes.get(universe, []):
+        r = compute(sym)
+        if not r or not r["eligible"] or (r["mcap_usd"] or 0) < min_cap:
+            continue
+        rocx = r["roc_gw"] if method == "gw" else r["roc"]
+        if rocx is None:
+            continue
+        rows.append({**r, "rocx": rocx})
+    for i, r in enumerate(sorted(rows, key=lambda r: -r["ey"]), 1):
+        r["r_ey"] = i
+    for i, r in enumerate(sorted(rows, key=lambda r: -r["rocx"]), 1):
+        r["r_roc"] = i
+    rows.sort(key=lambda r: (r["r_ey"] + r["r_roc"], -r["ey"]))
+    for i, r in enumerate(rows, 1):
+        r["mf"] = i
+    return rows
+
+
+def snapshot_due() -> str | None:
+    """Fecha (Nueva York) a guardar si ya cerró Wall Street y hay precios de cierre."""
+    now = datetime.now(NY)
+    if now.weekday() >= 5 or now.time() < dtime(16, 20):
+        return None
+    date = now.date().isoformat()
+    if S.snapshot["last_date"] == date or not S.last_price_update:
+        return None
+    if datetime.fromtimestamp(S.last_price_update, NY) < now.replace(hour=16, minute=5, second=0):
+        return None  # todavía no hay un refresco posterior al cierre
+    return date
+
+
+def maybe_snapshot() -> None:
+    date = snapshot_due()
+    if not date or not S.snapshot_lock.acquire(blocking=False):
+        return
+    try:
+        S.snapshot["state"] = "running"
+        records, empty = [], []
+        for universe in META:
+            bsym = BENCHMARKS[universe]
+            for method in ROC_METHODS:
+                if storage.exists(date, universe, method):
+                    continue
+                with S.lock:
+                    ranked = rank_universe(universe, method)[:SNAPSHOT_TOP]
+                if not ranked:  # p. ej. falta el tipo de cambio: se reintenta luego
+                    empty.append(f"{universe}/{method}")
+                    continue
+                records.append({
+                    "date": date, "universe": universe, "roc_method": method,
+                    "min_cap": SNAPSHOT_MIN_CAP,
+                    "bench": {"s": bsym, "px": S.prices.get(bsym, {}).get("price")},
+                    "rows": [{"s": r["symbol"], "n": r["name"], "px": r["price"], "cur": r["currency"],
+                              "ey": round(r["ey"], 6), "roc": round(r["rocx"], 6), "mf": r["mf"]}
+                             for r in ranked],
+                })
+        storage.save(records)
+        if empty:
+            S.snapshot.update(state="partial", msg=f"{len(records)} guardados; pendientes: {', '.join(empty)}")
+            log.warning("Snapshot %s incomplete, will retry: %s", date, empty)
+            return
+        S.snapshot.update(last_date=date, state="done", msg=f"{len(records)} rankings guardados")
+        log.info("Snapshot %s: %d records (%s)", date, len(records),
+                 "Supabase" if storage.remote_enabled() else "local")
+    except Exception as e:  # noqa: BLE001
+        S.snapshot.update(state="error", msg=str(e)[:200])
+        log.exception("Snapshot failed")
+    finally:
+        S.snapshot_lock.release()
 
 
 # --------------------------------------------------------------------------- API
@@ -499,12 +584,47 @@ def history(sym: str, range: str = "1y"):  # noqa: A002
     return pts
 
 
+@app.get("/api/config")
+def config():
+    """Datos públicos para el inicio de sesión (la clave anon/publishable es pública)."""
+    enabled = bool(storage.SUPABASE_URL and storage.SUPABASE_ANON_KEY)
+    return {"auth": enabled,
+            "supabaseUrl": storage.SUPABASE_URL if enabled else None,
+            "supabaseAnonKey": storage.SUPABASE_ANON_KEY if enabled else None}
+
+
+@app.get("/api/cron/snapshot")
+def cron_snapshot():
+    """Lo llama la tarea diaria de GitHub Actions: despierta el servidor y guarda el
+    ranking del día si ya cerró Wall Street. Es idempotente."""
+    threading.Thread(target=maybe_snapshot, daemon=True).start()
+    return {**S.snapshot, "due": snapshot_due(), "last_price_update": S.last_price_update,
+            "storage": "supabase" if storage.remote_enabled() else "local"}
+
+
+@app.get("/api/snapshots")
+def snapshots(universe: str, method: str = "tangible", since: str = "2000-01-01"):
+    if universe not in META or method not in ROC_METHODS:
+        raise HTTPException(400, "Parámetros no válidos")
+    try:
+        datetime.strptime(since, "%Y-%m-%d")
+    except ValueError:
+        raise HTTPException(400, "Fecha no válida") from None
+    key = ("snap", universe, method, since)
+    cached = S.history_cache.get(key)
+    if cached and time.time() - cached[0] < 600:
+        return cached[1]
+    data = storage.load(universe, method, since)
+    S.history_cache[key] = (time.time(), data)
+    return data
+
+
 @app.get("/api/sim-history")
 def sim_history(symbols: str, start: str):
     """Cierres diarios desde `start` para una cartera simulada (precio, sin dividendos)."""
     syms = sorted({s.strip() for s in symbols.split(",") if s.strip()})
-    if not syms or len(syms) > 40:
-        raise HTTPException(400, "Entre 1 y 40 símbolos")
+    if not syms or len(syms) > 150:
+        raise HTTPException(400, "Entre 1 y 150 símbolos")
     try:
         datetime.strptime(start, "%Y-%m-%d")
     except ValueError:

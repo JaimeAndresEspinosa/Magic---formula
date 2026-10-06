@@ -1,0 +1,31 @@
+# Guarda el ranking del día. Render (plan gratuito) duerme el servidor si nadie
+# lo visita, así que esta tarea lo despierta después del cierre de Wall Street y
+# lo mantiene despierto hasta que el ranking queda guardado en Supabase.
+name: Ranking diario
+
+on:
+  schedule:
+    - cron: "40 21 * * 1-5"   # 21:40 UTC, lunes a viernes (tras el cierre de NY todo el año)
+  workflow_dispatch:           # permite lanzarla a mano desde la pestaña Actions
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Despertar el servidor y esperar al ranking del día
+        env:
+          SITE: https://magic-formula-wc0j.onrender.com
+        run: |
+          today=$(TZ=America/New_York date +%F)
+          for i in $(seq 1 18); do
+            resp=$(curl -s --max-time 120 "$SITE/api/cron/snapshot" || true)
+            echo "[$i] $resp"
+            if echo "$resp" | grep -q "\"last_date\":\"$today\""; then
+              echo "Ranking de $today guardado."
+              exit 0
+            fi
+            sleep 150
+          done
+          echo "No se pudo confirmar el ranking de $today"
+          exit 1

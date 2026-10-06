@@ -28,6 +28,7 @@
       <span class="mkt" id="mkt-us"><i></i>NYSE</span>
       <span class="mkt" id="mkt-eu"><i></i>Europa</span>
       <span class="live" id="live"><i></i><span id="live-text">Conectando…</span></span>
+      <button class="btn small" id="auth-btn" hidden>Entrar</button>
       <button class="icon-btn" id="theme-btn" title="Cambiar tema" aria-label="Cambiar tema">
         <svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" fill="currentColor"/></svg>
       </button>
@@ -170,17 +171,30 @@
         <p class="note">Universo: <b id="s-universe">—</b> · <span id="s-roc-note"></span> · se aplican los filtros de la pestaña Ranking (capitalización mínima). Cambia de universo arriba.</p>
       </div>
       <div class="controls">
+        <label class="ctl">Tipo
+          <select id="s-kind">
+            <option value="manual">Compra única</option>
+            <option value="auto">Estrategia Greenblatt automática</option>
+          </select>
+        </label>
         <label class="ctl grow">Nombre (opcional)
           <input id="s-name" type="search" placeholder="Ej.: Prueba octubre" autocomplete="off" maxlength="60">
         </label>
-        <label class="ctl">Empresas
+        <label class="ctl" id="s-n-wrap">Empresas
           <select id="s-n"><option value="10">10</option><option value="20" selected>20</option><option value="30">30</option></select>
+        </label>
+        <label class="ctl" id="s-per-wrap" hidden>Empresas por tramo
+          <select id="s-per"><option value="5" selected>5</option><option value="6">6</option><option value="7">7</option></select>
+        </label>
+        <label class="ctl" id="s-every-wrap" hidden>Nuevo tramo cada
+          <select id="s-every"><option value="2">2 meses</option><option value="3" selected>3 meses</option></select>
         </label>
         <label class="ctl">Importe ficticio (<span id="s-cur"></span>)
           <input id="s-amount" type="number" min="100" step="100" value="10000">
         </label>
         <button class="btn primary" id="s-create">Crear simulación</button>
       </div>
+      <p class="note" id="s-kind-note"></p>
     </div>
 
     <div id="s-empty" class="empty card">Todavía no tienes ninguna simulación. Crea la primera arriba: se guardará en este navegador.</div>
@@ -206,14 +220,26 @@
       <div class="card">
         <div class="sim-legend" id="s-legend"></div>
         <div class="chart tall" id="s-chart"></div>
-        <p class="note">Rentabilidad por precio, sin dividendos ni comisiones, igual para la cartera y para el índice. La simulación se guarda en este navegador; usa «Copiar enlace» para tenerla en otros dispositivos.</p>
+        <p class="note">Rentabilidad por precio, sin dividendos ni comisiones, igual para la cartera y para el índice. Con sesión iniciada la simulación se guarda en tu cuenta; sin sesión, en este navegador («Copiar enlace» la lleva a otro dispositivo).</p>
       </div>
       <div class="table-card" style="margin-top:16px">
         <div class="table-scroll">
           <table class="grid">
-            <thead><tr><th>Empresa</th><th class="num">Precio inicial</th><th class="num">Precio actual</th><th class="num">Rentabilidad</th><th class="num hide-sm">Valor</th></tr></thead>
+            <thead><tr id="s-head-row"></tr></thead>
             <tbody id="s-body"></tbody>
           </table>
+        </div>
+      </div>
+      <div id="s-auto-info" hidden>
+        <p class="sim-next" id="s-next"></p>
+        <h3 class="section-title">Movimientos</h3>
+        <div class="table-card">
+          <div class="table-scroll">
+            <table class="grid">
+              <thead><tr><th class="num">Fecha</th><th>Operación</th><th>Empresa</th><th class="num hide-sm">Tramo</th><th class="num">Precio</th><th class="num">Resultado / puesto</th></tr></thead>
+              <tbody id="s-log"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -251,6 +277,16 @@
     <h2>Variante: ROC incluyendo el fondo de comercio</h2>
     <p>Greenblatt calcula el ROC solo con el capital <strong>tangible</strong> (circulante + inmovilizado material) para medir la calidad del negocio en sí. El problema es que una empresa que crece comprando otras paga mucho más que su capital tangible, y esa diferencia queda en el balance como <strong>fondo de comercio e intangibles</strong>, a menudo financiada con deuda. Con la fórmula original esas empresas parecen extraordinarias aunque se haya pagado caro por ellas.</p>
     <p>Con el selector <strong>«Cálculo del ROC → Incluyendo fondo de comercio»</strong> el capital invertido suma esos activos y el ranking se recalcula. Ejemplo: Gen Digital (Norton, Avast) tiene un ROC original de varios miles por ciento porque casi no necesita capital tangible, pero al incluir lo que pagó por Avast y MoneyLion su rentabilidad sobre el capital es mucho más modesta. Ninguna de las dos versiones es «la correcta»: la original mide el negocio; la variante mide también lo bien o mal que se ha invertido en adquisiciones.</p>
+
+    <h2>Simulación automática de la estrategia</h2>
+    <p>La pestaña <strong>Simulación</strong> permite seguir la Magic Formula sin dinero real. La opción <strong>«Estrategia Greenblatt automática»</strong> reproduce el método del libro tal como lo haría un inversor:</p>
+    <ol class="steps">
+      <li><strong>Ranking guardado cada día.</strong> Tras el cierre de Wall Street el servidor guarda las 50 primeras de cada universo, con su precio de cierre. Así cada compra usa el ranking que existía ese día, sin mirar al futuro.</li>
+      <li><strong>Compras por tramos.</strong> El importe se divide en tramos. Se compran las 5–7 primeras ahora y otro tramo cada 2–3 meses, saltando las empresas que ya están en cartera, hasta tener 20–30.</li>
+      <li><strong>Venta al año.</strong> Cuando un tramo cumple un año se vende entero y el dinero se reinvierte en las primeras del ranking de ese día.</li>
+      <li><strong>Comparación justa.</strong> La cartera se compara con el índice de su universo en el mismo periodo, ambos sin dividendos ni comisiones.</li>
+    </ol>
+    <p>No hay rankings anteriores al inicio del proyecto, así que la simulación empieza desde hoy y no hay backtest hacia atrás. Es deliberado: con datos de hoy aplicados al pasado se conocerían cosas que en su momento no se sabían, y el resultado saldría inflado.</p>
 
     <h2>Datos</h2>
     <ul>
@@ -313,7 +349,37 @@
 </aside>
 
 <div class="tooltip" id="tooltip" hidden></div>
+
+<!-- ============================== ACCESO -->
+<div class="modal-scrim" id="auth-modal" hidden>
+  <div class="modal card" role="dialog" aria-labelledby="auth-title">
+    <button class="icon-btn modal-close" id="auth-close" aria-label="Cerrar">
+      <svg viewBox="0 0 24 24" width="18" height="18"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <div id="auth-form-view">
+      <h2 id="auth-title">Entrar</h2>
+      <p class="note">Te enviamos un enlace a tu correo para entrar, sin contraseña. Tus simulaciones se guardarán en tu cuenta y las verás en cualquier dispositivo.</p>
+      <form id="auth-form">
+        <label class="ctl">Correo electrónico
+          <input id="auth-email" type="email" required autocomplete="email" placeholder="tu@correo.com">
+        </label>
+        <button class="btn primary" type="submit" id="auth-submit">Enviarme el enlace</button>
+      </form>
+      <p class="note error" id="auth-error" hidden></p>
+    </div>
+    <div id="auth-sent-view" hidden>
+      <h2>Revisa tu correo</h2>
+      <p class="note">Te hemos enviado un enlace a <b id="auth-sent-email"></b>. Ábrelo en este dispositivo o en cualquier otro para entrar. Si no aparece en unos minutos, mira en la carpeta de spam.</p>
+    </div>
+    <div id="auth-user-view" hidden>
+      <h2>Tu cuenta</h2>
+      <p class="note">Has entrado como <b id="auth-user-email"></b>. Tus simulaciones se guardan en tu cuenta.</p>
+      <button class="btn" id="auth-logout">Cerrar sesión</button>
+    </div>
+  </div>
+</div>
 <script src="/static/app.js"></script>
 <script src="/static/sim.js"></script>
+<script src="/static/auth.js"></script>
 </body>
 </html>

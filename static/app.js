@@ -511,7 +511,7 @@ function setTheme(t) {
   if (state.drawerSym && state.history.length) drawChart();
 }
 
-function init() {
+async function init() {
   const saved = store.get("mf-theme", null);
   setTheme(saved || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark"));
   state.universe = store.get("mf-universe", "sp500");
@@ -568,7 +568,7 @@ function init() {
   };
   window.addEventListener("resize", () => { if (state.drawerSym && state.history.length) drawChart(); });
   window.addEventListener("hashchange", showView);
-  initSim();
+  await initSim();
   showView();
   poll();
   setInterval(poll, POLL_MS);

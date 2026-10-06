@@ -23,9 +23,14 @@ financieros reales de Yahoo Finance.
   cálculo de EV, EY, capital invertido y ROC, con la fuente del EBIT (TTM o anual).
 - **Cartera**: reparte un importe a partes iguales entre las primeras 10, 20 o 30
   del ranking, calcula cuántas acciones comprar y la exposición por sector.
-- **Simulación**: guarda las primeras empresas del ranking con el precio del
-  momento y sigue su evolución frente al índice, sin dinero real. Se guarda en
-  el navegador y se puede abrir en otro dispositivo con «Copiar enlace».
+- **Simulación** sin dinero real, frente al índice:
+  - *Compra única*: las primeras del ranking a precio del momento.
+  - *Estrategia Greenblatt automática*: un tramo de 5–7 empresas cada 2–3 meses,
+    venta al año y reinversión, usando el ranking que el servidor guarda cada día.
+- **Cuentas de usuario** (Supabase, enlace por email): las simulaciones se guardan
+  en la cuenta y se ven en cualquier dispositivo. Sin sesión se guardan en el
+  navegador y se comparten con «Copiar enlace». Configuración en
+  [`supabase/CONFIGURAR.md`](supabase/CONFIGURAR.md).
 - **Metodología**: explicación de la fórmula, de los datos y de sus limitaciones.
 
 ## Cómo arrancarla

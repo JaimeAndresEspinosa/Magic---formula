@@ -1,3 +1,11 @@
 __pycache__/
 .claude/
 data/*.tmp
+data/snapshots.json
+
+# Documentos personales y archivos temporales de Office: nunca al repositorio
+*.docx
+*.xlsx
+*.pdf
+~$*
+.env

@@ -231,6 +231,23 @@ table.grid { width: 100%; border-collapse: collapse; font-size: 13px; }
 .sim-legend .sw { width: 18px; height: 0; border-top: 2px solid var(--accent); }
 .sim-legend .sw.bench { border-top: 2px dashed var(--muted); }
 
+.sim-next { font-size: 13.5px; color: var(--text-2); margin: 16px 0 6px; }
+.section-title { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 18px 0 10px; }
+.pill.buy { background: var(--up-soft); color: var(--up); }
+.pill.sell { background: var(--down-soft); color: var(--down); }
+#s-kind-note { margin: 10px 0 0; }
+
+/* ---------- acceso */
+.btn.small { height: 32px; padding: 0 12px; font-size: 12.5px; }
+.modal-scrim { position: fixed; inset: 0; z-index: 70; background: rgba(5, 10, 20, .5); display: grid; place-items: center; padding: 16px; }
+.modal { position: relative; width: min(420px, 100%); padding: 26px 24px 22px; box-shadow: var(--shadow-lg); }
+.modal h2 { font-size: 19px; margin-bottom: 6px; }
+.modal form { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+.modal input[type="email"] { width: 100%; min-width: 0; }
+.modal .btn { justify-content: center; }
+.modal-close { position: absolute; top: 12px; right: 12px; }
+.note.error { color: var(--down); }
+
 /* ---------- methodology */
 .prose { max-width: 860px; padding-bottom: 20px; }
 .prose h1 { font-size: 26px; margin-bottom: 6px; }
