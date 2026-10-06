@@ -25,7 +25,7 @@ Render → servicio **magic-formula** → **Environment** → *Add Environment V
 
 | Variable | Valor | ¿Secreta? |
 |---|---|---|
-| `SUPABASE_URL` | `https://ljdnzaouxsklayeokqks.supabase.co` | No |
+| `SUPABASE_URL` | `https://tzlkrmrnpfcdggpngeoy.supabase.co` | No |
 | `SUPABASE_ANON_KEY` | la *Publishable key* (`sb_publishable_…`) o *anon* | No |
 | `SUPABASE_SERVICE_KEY` | la *Secret key* (`sb_secret_…`) o *service_role* | **Sí: no la compartas con nadie** |
 
