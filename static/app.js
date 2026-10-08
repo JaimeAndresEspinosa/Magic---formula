@@ -56,23 +56,28 @@ const median = (a) => {
 
 // ------------------------------------------------------------------ ranking
 const withGoodwill = () => $("#f-roc").value === "gw";
+const forward = () => $("#f-ebit").value === "fwd";
 
 function rank(rows) {
   const minCap = +$("#f-mcap").value;
-  const gw = withGoodwill();
+  const gw = withGoodwill(), fwd = forward();
   const elig = [], excl = [];
   for (const src of rows) {
-    // rocx = ROC usado en el ranking según el método elegido
-    const r = { ...src, rocx: gw ? src.roc_gw : src.roc };
+    // eyx / rocx = EY y ROC usados en el ranking según los métodos elegidos
+    const r = { ...src,
+      eyx: fwd ? src.ey_fwd : src.ey,
+      rocx: fwd ? (gw ? src.roc_gw_fwd : src.roc_fwd) : (gw ? src.roc_gw : src.roc) };
     if (!r.eligible) excl.push(r);
+    else if (fwd && r.crec_fwd == null) excl.push({ ...r, reason: "Sin previsión de analistas" });
+    else if (fwd && !(r.ey_fwd > 0)) excl.push({ ...r, reason: "Beneficio previsto negativo" });
     else if (gw && r.rocx == null) excl.push({ ...r, reason: "Fondo de comercio no disponible" });
     else if ((r.mcap_usd ?? 0) < minCap) excl.push({ ...r, reason: "Capitalización inferior al mínimo" });
     else elig.push(r);
   }
-  [...elig].sort((a, b) => b.ey - a.ey).forEach((r, i) => (r.r_ey = i + 1));
+  [...elig].sort((a, b) => b.eyx - a.eyx).forEach((r, i) => (r.r_ey = i + 1));
   [...elig].sort((a, b) => b.rocx - a.rocx).forEach((r, i) => (r.r_roc = i + 1));
   elig.forEach((r) => (r.score = r.r_ey + r.r_roc));
-  elig.sort((a, b) => a.score - b.score || b.ey - a.ey).forEach((r, i) => (r.mf = i + 1));
+  elig.sort((a, b) => a.score - b.score || b.eyx - a.eyx).forEach((r, i) => (r.mf = i + 1));
   state.ranked = elig;
   state.excluded = excl;
 }
@@ -115,7 +120,7 @@ function renderKpis() {
   const n = head.length;
   $("#kpis").innerHTML = [
     ["Empresas en el ranking", `${state.ranked.length}`, `de ${d.total} en el ${esc(d.name)}`],
-    [`EY mediano · Top ${n}`, fmtPct(median(head.map((r) => r.ey))), `Índice completo: ${fmtPct(median(state.ranked.map((r) => r.ey)))}`],
+    [`EY${forward() ? " previsto" : ""} mediano · Top ${n}`, fmtPct(median(head.map((r) => r.eyx))), `Índice completo: ${fmtPct(median(state.ranked.map((r) => r.eyx)))}`],
     [`ROC${withGoodwill() ? " c/ FdC" : ""} mediano · Top ${n}`, fmtPct(median(head.map((r) => r.rocx)), false, 0), `Índice completo: ${fmtPct(median(state.ranked.map((r) => r.rocx)), false, 0)}`],
     ["Última cotización", fmtTime(d.last_price_update), anyOpen(d.market_open) ? "Mercado abierto · se actualiza cada ~1 min" : "Mercado cerrado · último cierre"],
   ].map(([l, v, s]) => `<div class="kpi"><div class="label">${l}</div><div class="value">${v}</div><div class="sub">${s}</div></div>`).join("");
@@ -132,7 +137,7 @@ function metricCell(v, max, digits) {
 function renderTable() {
   const rows = visibleRows();
   const body = $("#grid-body");
-  const maxEy = Math.max(0.0001, ...state.ranked.slice(0, 50).map((r) => r.ey));
+  const maxEy = Math.max(0.0001, ...state.ranked.slice(0, 50).map((r) => r.eyx));
   const maxRoc = Math.max(0.0001, ...state.ranked.slice(0, 50).map((r) => Math.min(r.rocx, 3)));
 
   if (!rows.length) {
@@ -151,7 +156,7 @@ function renderTable() {
         <td class="num ${flash}">${fmtPrice(r.price, r.currency)}</td>
         <td class="num ${chg > 0 ? "pos" : chg < 0 ? "neg" : ""}">${fmtPct(chg, true, 2)}</td>
         <td class="num hide-sm">${fmtBig(r.mcap, r.currency)}</td>
-        <td class="num">${r.mf ? metricCell(r.ey, maxEy, 1) : fmtPct(r.ey)}</td>
+        <td class="num">${r.mf ? metricCell(r.eyx, maxEy, 1) : fmtPct(r.eyx)}</td>
         <td class="num">${r.mf ? metricCell(r.rocx, maxRoc, 0) : fmtPct(r.rocx, false, 0)}</td>
         <td class="num hide-sm">${r.r_ey ?? "—"}</td>
         <td class="num hide-sm">${r.r_roc ?? "—"}</td>
@@ -167,7 +172,8 @@ function renderTable() {
     th.classList.toggle("desc", th.dataset.k === state.sort.k && state.sort.dir === "desc");
   });
 
-  $("#roc-head").textContent = withGoodwill() ? "ROC c/ FdC" : "ROC";
+  $("#roc-head").textContent = (withGoodwill() ? "ROC c/ FdC" : "ROC") + (forward() ? " prev." : "");
+  $("#ey-head").textContent = forward() ? "EY previsto" : "Earnings Yield";
   $("#excluded-count").textContent = state.excluded.length ? `(${state.excluded.length})` : "";
 
   const d = state.data;
@@ -218,7 +224,7 @@ function renderPortfolio() {
     ["Invertido", fmtBig(invested, cur), amount - invested > amount * 0.1 && !frac
       ? `Quedan ${fmtBig(amount - invested, cur)} sin invertir: sube el importe o activa fracciones`
       : `Liquidez restante: ${fmtBig(amount - invested, cur)}`],
-    ["EY medio cartera", fmtPct(median(rows.map((r) => r.ey))), "Mediana de las posiciones"],
+    ["EY medio cartera", fmtPct(median(rows.map((r) => r.eyx))), forward() ? "Con beneficio previsto" : "Mediana de las posiciones"],
     ["ROC medio cartera", fmtPct(median(rows.map((r) => r.rocx)), false, 0), withGoodwill() ? "Incluyendo fondo de comercio" : "Mediana de las posiciones"],
   ].map(([l, v, s]) => `<div class="kpi"><div class="label">${l}</div><div class="value">${v}</div><div class="sub">${s}</div></div>`).join("");
 
@@ -230,7 +236,7 @@ function renderPortfolio() {
       <td class="num">${fmtPct(amount ? r.invested / amount : 0)}</td>
       <td class="num">${frac ? nf(0, 3).format(r.shares) : NF0.format(r.shares)}</td>
       <td class="num">${fmtPrice(r.invested, r.currency)}</td>
-      <td class="num hide-sm">${fmtPct(r.ey)}</td>
+      <td class="num hide-sm">${fmtPct(r.eyx)}</td>
       <td class="num hide-sm">${fmtPct(r.rocx, false, 0)}</td>
     </tr>`).join("") : `<tr><td colspan="8" class="empty">Aún no hay datos suficientes para este universo.</td></tr>`;
 
@@ -260,8 +266,8 @@ const today = () => new Date().toISOString().slice(0, 10);
 function exportRanking() {
   const rows = visibleRows();
   downloadCsv(`magic-formula_${state.universe}_${today()}.csv`,
-    ["Rank MF", "Ticker", "Empresa", "Sector", "Divisa", "Precio", "Var. dia", "Cap. bursatil", "EV", "EBIT", "Earnings Yield", "ROC Greenblatt", "ROC incl. fondo de comercio", "Rank EY", "Rank ROC", "Puntos", "Motivo exclusion"],
-    rows.map((r) => [r.mf, r.symbol, r.name, r.sector_es, r.currency, r.price, r.change_pct, r.mcap, r.ev, r.ebit, r.ey, r.roc, r.roc_gw, r.r_ey, r.r_roc, r.score, r.mf ? "" : r.reason]));
+    ["Rank MF", "Ticker", "Empresa", "Sector", "Divisa", "Precio", "Var. dia", "Cap. bursatil", "EV", "EBIT", "Earnings Yield", "ROC Greenblatt", "ROC incl. fondo de comercio", "Crecimiento esperado", "EY previsto", "ROC previsto", "Rank EY", "Rank ROC", "Puntos", "Motivo exclusion"],
+    rows.map((r) => [r.mf, r.symbol, r.name, r.sector_es, r.currency, r.price, r.change_pct, r.mcap, r.ev, r.ebit, r.ey, r.roc, r.roc_gw, r.crec_fwd, r.ey_fwd, r.roc_fwd, r.r_ey, r.r_roc, r.score, r.mf ? "" : r.reason]));
 }
 function exportPortfolio() {
   downloadCsv(`cartera-magic-formula_${state.universe}_${today()}.csv`,
@@ -317,7 +323,14 @@ function fillDrawer(r) {
     row("−", "Caja e inversiones c/p", fmtBig(r.cash, fc)) +
     `<tr class="total"><td class="op">=</td><td>Enterprise Value</td><td>${fmtBig(r.ev, fc)}</td></tr>` +
     row("", "EBIT", fmtBig(r.ebit, fc)) +
-    `<tr class="total"><td class="op"></td><td>Earnings Yield</td><td>${fmtPct(r.ey, false, 2)}</td></tr>`;
+    `<tr class="total"><td class="op"></td><td>Earnings Yield</td><td>${fmtPct(r.ey, false, 2)}</td></tr>` +
+    `<tr><td class="op"></td><td colspan="2" class="sub-head">Con el beneficio previsto por los analistas</td></tr>` +
+    (r.crec_fwd == null
+      ? `<tr><td class="op"></td><td colspan="2">Sin previsión de analistas disponible</td></tr>`
+      : row("", `Crecimiento esperado del beneficio${r.n_analistas ? ` (${Math.round(r.n_analistas)} analistas)` : ""}`, fmtPct(r.crec_fwd, true, 1)) +
+        row("", "EBIT previsto", fmtBig(r.ebit_fwd, fc)) +
+        `<tr class="total"><td class="op"></td><td>Earnings Yield previsto</td><td>${fmtPct(r.ey_fwd, false, 2)}</td></tr>` +
+        `<tr class="total"><td class="op"></td><td>ROC previsto (Greenblatt)</td><td>${fmtPct(r.roc_fwd, false, 1)}</td></tr>`);
 
   $("#d-roc").innerHTML =
     row("", "Activo corriente − caja", fmtBig(r.current_assets != null ? r.current_assets - r.cash : null, fc)) +
@@ -515,7 +528,7 @@ async function init() {
   const saved = store.get("mf-theme", null);
   setTheme(saved || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark"));
   state.universe = store.get("mf-universe", "sp500");
-  for (const id of ["f-mcap", "f-top", "f-roc"]) {
+  for (const id of ["f-mcap", "f-top", "f-roc", "f-ebit"]) {
     const v = store.get(`mf-${id}`, null);
     if (v != null && [...$(`#${id}`).options].some((o) => o.value === v)) $(`#${id}`).value = v;
   }
@@ -534,7 +547,7 @@ async function init() {
     document.querySelectorAll("#universe-tabs button").forEach((x) => x.classList.toggle("active", x === b));
     poll();
   };
-  for (const id of ["f-mcap", "f-top", "f-roc"]) {
+  for (const id of ["f-mcap", "f-top", "f-roc", "f-ebit"]) {
     $(`#${id}`).onchange = () => { store.set(`mf-${id}`, $(`#${id}`).value); refresh(); };
   }
   $("#f-sector").onchange = renderTable;

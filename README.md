@@ -12,6 +12,9 @@ financieros reales de Yahoo Finance.
   *Return on Capital* (EBIT / (capital circulante neto + inmovilizado neto)),
   suma los dos puestos y muestra las mejores. Se puede filtrar por
   capitalización mínima, sector y texto, y exportar a CSV.
+- **Beneficio de 12 meses o previsto**: el ranking puede usar el EBIT de los últimos
+  12 meses (Greenblatt) o una aproximación del EBIT previsto por los analistas
+  (EBIT de 12 meses × crecimiento esperado del BPA según el consenso de Yahoo).
 - **Dos formas de calcular el ROC**: la original de Greenblatt (solo capital
   tangible) o una variante que suma el fondo de comercio e intangibles, para no
   premiar a las empresas que crecen comprando otras caras y con deuda.

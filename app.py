@@ -147,6 +147,27 @@ def _ttm_ebit(q: pd.DataFrame, a: pd.DataFrame) -> tuple[float | None, str, str 
     return None, "—", None
 
 
+FWD_MIN, FWD_MAX = -0.5, 1.0   # límites del crecimiento esperado (evita cifras absurdas)
+
+
+def estimaciones(t) -> dict:
+    """Consenso de beneficio por acción de este ejercicio y del siguiente (mismo criterio
+    ajustado de los analistas). Crecimiento esperado = BPA año siguiente / BPA este año - 1."""
+    vacio = {"eps_0y": None, "eps_1y": None, "n_analistas": None, "crec_fwd": None}
+    try:
+        e = t.earnings_estimate
+    except Exception:  # noqa: BLE001
+        return vacio
+    if e is None or e.empty or "0y" not in e.index or "+1y" not in e.index:
+        return vacio
+    e0, e1 = _num(e.at["0y", "avg"]), _num(e.at["+1y", "avg"])
+    n = _num(e.at["+1y", "numberOfAnalysts"]) if "numberOfAnalysts" in e.columns else None
+    crec = None
+    if e0 and e1 and e0 > 0:
+        crec = min(max(e1 / e0 - 1, FWD_MIN), FWD_MAX)
+    return {"eps_0y": e0, "eps_1y": e1, "n_analistas": n, "crec_fwd": crec}
+
+
 def fetch_fundamentals(sym: str) -> dict:
     t = yf.Ticker(sym)
     info = t.info or {}
@@ -204,6 +225,7 @@ def fetch_fundamentals(sym: str) -> dict:
         "current_debt": _bs_value(bs, ["Current Debt And Capital Lease Obligation", "Current Debt"]) or 0.0,
         "net_ppe": _bs_value(bs, ["Net PPE"]) or 0.0,
         "goodwill": goodwill_intangibles(bs),
+        **estimaciones(t),
         "total_debt": debt or 0.0,
         "debt_missing": debt is None,
         "debt_source": debt_src if debt is not None else "no disponible",
@@ -394,6 +416,12 @@ def compute(sym: str) -> dict | None:
     gw = f.get("goodwill")
     capital_gw = capital + gw if gw is not None else None
     roc_gw = ebit / capital_gw if ebit is not None and capital_gw and capital_gw > 0 else None
+    # Variante forward: EBIT de 12 meses ajustado por el crecimiento que esperan los analistas
+    crec = f.get("crec_fwd")
+    ebit_fwd = ebit * (1 + crec) if ebit is not None and crec is not None else None
+    ey_fwd = ebit_fwd / ev if ebit_fwd is not None and ev and ev > 0 else None
+    roc_fwd = ebit_fwd / capital if ebit_fwd is not None and capital > 0 else None
+    roc_gw_fwd = ebit_fwd / capital_gw if ebit_fwd is not None and capital_gw and capital_gw > 0 else None
 
     reason = None
     if f.get("sector") in EXCLUDED_SECTORS:
@@ -424,6 +452,9 @@ def compute(sym: str) -> dict | None:
         "preferred": f["preferred"], "debt_source": f.get("debt_source"), "current_assets": ca, "current_liabilities": cl,
         "current_debt": f["current_debt"], "shares": shares,
         "goodwill": gw, "capital_gw": capital_gw, "roc_gw": roc_gw,
+        "crec_fwd": crec, "n_analistas": f.get("n_analistas"), "eps_0y": f.get("eps_0y"),
+        "eps_1y": f.get("eps_1y"), "ebit_fwd": ebit_fwd, "ey_fwd": ey_fwd,
+        "roc_fwd": roc_fwd, "roc_gw_fwd": roc_gw_fwd,
         "ey": ey, "roc": roc, "eligible": reason is None, "reason": reason,
     }
 

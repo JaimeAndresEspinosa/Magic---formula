@@ -68,6 +68,12 @@
           <option value="0">Todas</option>
         </select>
       </label>
+      <label class="ctl" title="Greenblatt usa el EBIT de los últimos 12 meses. La variante usa el beneficio que esperan los analistas para el próximo año.">Beneficio
+        <select id="f-ebit">
+          <option value="ttm" selected>Últimos 12 meses</option>
+          <option value="fwd">Previsto por analistas</option>
+        </select>
+      </label>
       <label class="ctl" title="Greenblatt solo cuenta el capital tangible. La variante suma el fondo de comercio e intangibles pagados en adquisiciones.">Cálculo del ROC
         <select id="f-roc">
           <option value="tangible" selected>Greenblatt (original)</option>
@@ -98,7 +104,7 @@
               <th data-k="price" class="num">Precio</th>
               <th data-k="change_pct" class="num">Día</th>
               <th data-k="mcap_usd" class="num hide-sm">Cap. bursátil</th>
-              <th data-k="ey" class="num" title="Earnings Yield = EBIT / Enterprise Value">Earnings Yield</th>
+              <th data-k="eyx" class="num" id="ey-head" title="Earnings Yield = EBIT / Enterprise Value">Earnings Yield</th>
               <th data-k="rocx" class="num" id="roc-head" title="Return on Capital = EBIT / capital invertido (según el método elegido)">ROC</th>
               <th data-k="r_ey" class="num hide-sm">Rank EY</th>
               <th data-k="r_roc" class="num hide-sm">Rank ROC</th>
@@ -273,6 +279,12 @@
       <li><strong>Puntuación.</strong> Se suman ambos puestos. La puntuación más baja encabeza la Magic Formula. Los empates se deshacen por mayor EY.</li>
       <li><strong>Tiempo real.</strong> El EBIT y el balance cambian con cada publicación de resultados, pero el EV cambia con el precio. Por eso el EY y el ranking se recalculan en cada actualización de cotizaciones.</li>
     </ol>
+
+    <h2>Variante: beneficio previsto por los analistas</h2>
+    <p>Greenblatt usa el beneficio de los <strong>últimos 12 meses</strong>. Pero el precio de una acción descuenta lo que la empresa <strong>va a ganar</strong>, así que muchos analistas prefieren mirar el beneficio previsto. Con el selector <strong>«Beneficio → Previsto por analistas»</strong> el ranking usa:</p>
+    <div class="eq"><span>EBIT previsto</span> = EBIT de 12 meses × (1 + crecimiento esperado)</div>
+    <p>El <strong>crecimiento esperado</strong> es el del beneficio por acción entre este ejercicio y el siguiente según el consenso de analistas de Yahoo Finance. Se comparan las dos previsiones porque usan el mismo criterio «ajustado»; compararlas con el beneficio contable daría crecimientos falsos. Se limita entre −50 % y +100 % para evitar cifras absurdas.</p>
+    <p>Es una <strong>aproximación</strong>: Yahoo no publica previsiones de EBIT, solo de beneficio por acción, así que se supone que los márgenes, los intereses y los impuestos se mantienen. Las empresas sin cobertura de analistas quedan fuera del ranking en este modo. El backtest histórico usa siempre el beneficio de 12 meses, porque las fuentes gratuitas no guardan las previsiones pasadas.</p>
 
     <h2>Variante: ROC incluyendo el fondo de comercio</h2>
     <p>Greenblatt calcula el ROC solo con el capital <strong>tangible</strong> (circulante + inmovilizado material) para medir la calidad del negocio en sí. El problema es que una empresa que crece comprando otras paga mucho más que su capital tangible, y esa diferencia queda en el balance como <strong>fondo de comercio e intangibles</strong>, a menudo financiada con deuda. Con la fórmula original esas empresas parecen extraordinarias aunque se haya pagado caro por ellas.</p>
