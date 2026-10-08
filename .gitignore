@@ -9,3 +9,11 @@ data/snapshots.json
 *.pdf
 ~$*
 .env
+
+# Datos descargados de WRDS: licencia académica, nunca al repositorio
+backtest/datos/
+*.parquet
+
+# Resultados del backtest con datos de WRDS: no se suben sin confirmar la licencia
+backtest/resultados_backtest/
+resultados_backtest/
