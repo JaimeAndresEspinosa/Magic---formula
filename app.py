@@ -679,7 +679,16 @@ def sim_history(symbols: str, start: str):
 
 @app.get("/")
 def index():
-    return FileResponse(BASE / "static" / "index.html")
+    return FileResponse(BASE / "static" / "index.html", headers={"Cache-Control": "no-cache"})
+
+
+@app.middleware("http")
+async def no_cache_static(request, call_next):
+    """Obliga al navegador a comprobar si hay una versión nueva de la web en cada visita."""
+    resp = await call_next(request)
+    if request.url.path.startswith("/static/"):
+        resp.headers["Cache-Control"] = "no-cache"
+    return resp
 
 
 app.mount("/static", StaticFiles(directory=BASE / "static"), name="static")
