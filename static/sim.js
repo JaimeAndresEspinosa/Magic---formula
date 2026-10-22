@@ -216,49 +216,60 @@ function planAuto(s, snaps) {
 }
 
 // Valora la estrategia día a día con los cierres históricos y el precio en vivo
+// El índice de comparación se compra igual que la cartera: en las mismas fechas, con
+// los mismos importes y manteniendo la misma liquidez. Así la diferencia mide solo la
+// selección de empresas y no el efecto de tener dinero sin invertir.
 function runAuto(s, data, live) {
   const { plan, hist } = data;
   const pxLive = new Map((live?.rows || []).map((r) => [r.symbol, r.price]));
-  const sleeves = Array.from({ length: s.sleeves }, () => ({ cash: s.amount / s.sleeves, pos: [] }));
+  const sleeves = Array.from({ length: s.sleeves }, () => ({ cash: s.amount / s.sleeves, pos: [], idx: 0, idxCost: 0 }));
   const log = [];
   const ev = [...plan.events];
   const priceAt = (sym, iso, fallback) => closeOn(hist, sym, iso) ?? fallback;
+  const bsym = ev[0]?.bench?.s;
+  const idxAt = (iso, fallback) => closeOn(hist, bsym, iso) ?? fallback;
 
   const apply = (e) => {
     const sl = sleeves[e.sleeve];
+    const bpx = idxAt(e.date, e.bench?.px);
     for (const p of sl.pos) {
       const px = priceAt(p.s, e.date, p.px);
       sl.cash += p.sh * px;
       log.push({ date: e.date, type: "Venta", s: p.s, n: p.n, px, ret: px / p.px - 1, sleeve: e.sleeve });
     }
     sl.pos = [];
+    // El índice del tramo se vende a la vez; su liquidez se guarda aparte
+    sl.idxCash = (sl.idxCash ?? s.amount / s.sleeves) + (bpx ? sl.idx * bpx : 0);
+    sl.idx = 0; sl.idxCost = 0;
     const per = sl.cash / Math.max(1, e.buys.length);
+    const idxPer = sl.idxCash / Math.max(1, e.buys.length);
     for (const b of e.buys) {
       const px = priceAt(b.s, e.date, b.px);
       if (!px) continue;
       sl.pos.push({ s: b.s, n: b.n, px, sh: per / px, date: e.date, sleeve: e.sleeve, mf: b.mf });
       sl.cash -= per;
       log.push({ date: e.date, type: "Compra", s: b.s, n: b.n, px, sleeve: e.sleeve, mf: b.mf });
+      if (bpx) { sl.idx += idxPer / bpx; sl.idxCost += idxPer; sl.idxCash -= idxPer; }
     }
   };
   const value = (iso, live = false) => sleeves.reduce((a, sl) => a + sl.cash +
     sl.pos.reduce((b, p) => b + p.sh * ((live && pxLive.get(p.s)) || priceAt(p.s, iso, p.px)), 0), 0);
+  const idxValue = (bpx) => sleeves.reduce((a, sl) => a + (sl.idxCash ?? s.amount / s.sleeves) + sl.idx * bpx, 0);
 
   const start = ev[0]?.date;
-  const bsym = ev[0]?.bench?.s;
-  const b0 = start ? (closeOn(hist, bsym, start) ?? ev[0].bench?.px) : null;
   const pts = [];
   if (start) {
     for (const d of hist.dates.filter((x) => x >= start && x < todayISO())) {
       while (ev.length && ev[0].date <= d) apply(ev.shift());
       const bc = closeOn(hist, bsym, d);
-      pts.push({ t: Date.parse(d + "T21:00:00Z"), v: value(d), b: bc && b0 ? bc / b0 - 1 : null });
+      pts.push({ t: Date.parse(d + "T21:00:00Z"), v: value(d), b: bc ? idxValue(bc) / s.amount - 1 : null });
     }
     while (ev.length) apply(ev.shift());
   }
   const nowV = start ? value(todayISO(), true) : s.amount;
   const bNow = live?.benchmark?.price ?? closeOn(hist, bsym, todayISO());
-  if (start) pts.push({ t: Date.now(), v: nowV, b: bNow && b0 ? bNow / b0 - 1 : null });
+  const bV = bNow ? idxValue(bNow) : s.amount;
+  if (start) pts.push({ t: Date.now(), v: nowV, b: bNow ? bV / s.amount - 1 : null });
   if (pts.length) pts.unshift({ t: Date.parse(start + "T14:00:00Z"), v: s.amount, b: 0 });
   pts.forEach((p) => (p.r = p.v / s.amount - 1));
 
@@ -267,8 +278,14 @@ function runAuto(s, data, live) {
     return { ...p, now, ret: now / p.px - 1, value: p.sh * now, sellBy: addMonths(p.date, 12) };
   }));
   const cash = sleeves.reduce((a, sl) => a + sl.cash, 0);
+  // Rentabilidad solo sobre lo invertido (posiciones abiertas), para la cartera y para el índice
+  const cost = positions.reduce((a, p) => a + p.sh * p.px, 0);
+  const idxCost = sleeves.reduce((a, sl) => a + sl.idxCost, 0);
+  const idxUnits = sleeves.reduce((a, sl) => a + sl.idx, 0);
   return { positions, cash, value: nowV, ret: nowV / s.amount - 1,
-    bret: bNow && b0 ? bNow / b0 - 1 : 0, pts, log: log.reverse(), next: plan.next, started: !!start };
+    bret: bV / s.amount - 1, pts, log: log.reverse(), next: plan.next, started: !!start,
+    invested: cost, retInv: cost ? positions.reduce((a, p) => a + p.value, 0) / cost - 1 : null,
+    bretInv: idxCost && bNow ? (idxUnits * bNow) / idxCost - 1 : null };
 }
 
 // ------------------------------------------------------------------ compra única
@@ -351,11 +368,16 @@ function paintSim(s) {
   const days = Math.max(0, Math.floor((Date.now() - Date.parse(s.start + "T00:00:00")) / 86400000));
   const cls = (x) => (x > 0 ? "pos" : x < 0 ? "neg" : "");
   const kpi = (l, val, sub) => `<div class="kpi"><div class="label">${l}</div><div class="value">${val}</div><div class="sub">${sub}</div></div>`;
+  const auto0 = isAuto(s);
+  const inv = auto0 && v.retInv != null;
   $("#s-kpis").innerHTML =
-    kpi("Valor actual", fmtPrice(v.value, s.cur), isAuto(s) && v.cash > 1 ? `Liquidez pendiente de invertir: ${fmtPrice(v.cash, s.cur)}` : `Inicial: ${fmtPrice(s.amount, s.cur)}`) +
-    kpi("Tu cartera", `<span class="${cls(v.ret)}">${fmtPct(v.ret, true, 2)}</span>`, `${days} ${days === 1 ? "día" : "días"} desde el inicio`) +
-    kpi(`Índice (${esc(s.uname)})`, `<span class="${cls(v.bret)}">${fmtPct(v.bret, true, 2)}</span>`, "Mismo periodo, sin dividendos") +
-    kpi("Diferencia", `<span class="${cls(diff)}">${fmtPct(diff, true, 2)}</span>`, diff >= 0 ? "Por encima del índice" : "Por debajo del índice");
+    kpi("Valor actual", fmtPrice(v.value, s.cur), auto0 && v.cash > 1 ? `Liquidez pendiente de invertir: ${fmtPrice(v.cash, s.cur)}` : `Inicial: ${fmtPrice(s.amount, s.cur)}`) +
+    kpi("Tu cartera", `<span class="${cls(v.ret)}">${fmtPct(v.ret, true, 2)}</span>`,
+      inv ? `Sobre lo invertido: <span class="${cls(v.retInv)}">${fmtPct(v.retInv, true, 2)}</span> · ${days} ${days === 1 ? "día" : "días"}` : `${days} ${days === 1 ? "día" : "días"} desde el inicio`) +
+    kpi(`Índice (${esc(s.uname)})`, `<span class="${cls(v.bret)}">${fmtPct(v.bret, true, 2)}</span>`,
+      auto0 ? `Comprado en las mismas fechas e importes${v.bretInv != null ? ` · sobre lo invertido: <span class="${cls(v.bretInv)}">${fmtPct(v.bretInv, true, 2)}</span>` : ""}` : "Mismo periodo, sin dividendos") +
+    kpi("Diferencia", `<span class="${cls(diff)}">${fmtPct(diff, true, 2)}</span>`, diff >= 0 ? "Por encima del índice" : "Por debajo del índice") +
+    (days < 365 ? `<p class="note kpi-warn">Con ${days} ${days === 1 ? "día" : "días"} el resultado todavía no es significativo: Greenblatt mide la estrategia a varios años, y puede pasar temporadas largas por debajo del índice.</p>` : "");
 
   const auto = isAuto(s);
   $("#s-head-row").innerHTML = `<th>Empresa</th>${auto ? '<th class="num hide-sm">Tramo</th><th class="num hide-sm">Comprada</th>' : ""}

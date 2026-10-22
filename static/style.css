@@ -308,6 +308,8 @@ table.breakdown { width: 100%; border-collapse: collapse; font-size: 13px; }
 .breakdown .sub-head { padding-top: 16px; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); text-align: left !important; font-family: var(--sans) !important; }
 .breakdown .op { color: var(--muted); width: 18px; font-family: var(--mono); }
 .note { font-size: 12px; color: var(--muted); margin-top: 10px; }
+.kpi-warn { grid-column: 1 / -1; margin: 0; }
+.flag { display: inline-block; margin-left: 6px; padding: 0 5px; border-radius: 4px; font: 500 10px/16px var(--sans, inherit); color: var(--down); background: var(--down-soft); vertical-align: 1px; cursor: help; }
 .d-summary { color: var(--text-2); font-size: 13.5px; line-height: 1.6; }
 
 .tooltip {

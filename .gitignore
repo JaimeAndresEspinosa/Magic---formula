@@ -17,3 +17,9 @@ backtest/datos/
 # Resultados del backtest con datos de WRDS: no se suben sin confirmar la licencia
 backtest/resultados_backtest/
 resultados_backtest/
+
+# Datos de Bloomberg: licencia académica, nunca al repositorio
+backtest/bloomberg/
+
+# Contexto privado para Claude (no se publica)
+CLAUDE.md

@@ -134,6 +134,14 @@ function metricCell(v, max, digits) {
   return `<span class="metric">${fmtPct(v, false, digits)}<span class="bar"><span style="width:${w}%"></span></span></span>`;
 }
 
+// Aviso junto al nombre: empresa con sede fuera del país del índice
+const HOME_COUNTRY = { sp500: "United States", ndx: "United States", ibex: "Spain" };
+function flags(r) {
+  const home = HOME_COUNTRY[state.data?.universe];
+  if (!home || !r.country || r.country === home) return "";
+  return `<span class="flag" title="Sede en ${esc(r.country)}. Puede tener normas contables, de gobierno corporativo y riesgo país distintos a los del resto del índice. Revisa sus cuentas antes de fiarte del ranking.">Extranjera</span>`;
+}
+
 function renderTable() {
   const rows = visibleRows();
   const body = $("#grid-body");
@@ -151,7 +159,7 @@ function renderTable() {
       const chg = r.change_pct;
       return `<tr data-s="${esc(r.symbol)}" class="${r.mf ? "" : "excluded"}" ${r.mf ? "" : `title="${esc(r.reason)}"`}>
         <td class="num">${r.mf ? `<span class="rank ${r.mf <= 10 ? "top" : ""}">${r.mf}</span>` : `<span class="pill">—</span>`}</td>
-        <td><div class="co"><b>${esc(r.symbol)}</b><span>${esc(r.name)}</span></div></td>
+        <td><div class="co"><b>${esc(r.symbol)}${flags(r)}</b><span>${esc(r.name)}</span></div></td>
         <td class="hide-sm"><span class="pill">${esc(r.sector_es)}</span></td>
         <td class="num ${flash}">${fmtPrice(r.price, r.currency)}</td>
         <td class="num ${chg > 0 ? "pos" : chg < 0 ? "neg" : ""}">${fmtPct(chg, true, 2)}</td>
