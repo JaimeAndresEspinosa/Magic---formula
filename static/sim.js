@@ -283,7 +283,7 @@ function runAuto(s, data, live) {
   const idxCost = sleeves.reduce((a, sl) => a + sl.idxCost, 0);
   const idxUnits = sleeves.reduce((a, sl) => a + sl.idx, 0);
   return { positions, cash, value: nowV, ret: nowV / s.amount - 1,
-    bret: bV / s.amount - 1, pts, log: log.reverse(), next: plan.next, started: !!start,
+    bret: bNow ? bV / s.amount - 1 : null, pts, log: log.reverse(), next: plan.next, started: !!start,
     invested: cost, retInv: cost ? positions.reduce((a, p) => a + p.value, 0) / cost - 1 : null,
     bretInv: idxCost && bNow ? (idxUnits * bNow) / idxCost - 1 : null };
 }
@@ -364,7 +364,7 @@ function paintSim(s) {
   }
   const live = sim.live.get(s.universe) || (state.data?.universe === s.universe ? state.data : null);
   const v = isAuto(s) ? runAuto(s, data, live) : runManual(s, data, live);
-  const diff = v.ret - v.bret;
+  const diff = v.bret == null ? null : v.ret - v.bret;
   const days = Math.max(0, Math.floor((Date.now() - Date.parse(s.start + "T00:00:00")) / 86400000));
   const cls = (x) => (x > 0 ? "pos" : x < 0 ? "neg" : "");
   const kpi = (l, val, sub) => `<div class="kpi"><div class="label">${l}</div><div class="value">${val}</div><div class="sub">${sub}</div></div>`;
@@ -376,8 +376,10 @@ function paintSim(s) {
       inv ? `Sobre lo invertido: <span class="${cls(v.retInv)}">${fmtPct(v.retInv, true, 2)}</span> · ${days} ${days === 1 ? "día" : "días"}` : `${days} ${days === 1 ? "día" : "días"} desde el inicio`) +
     kpi(`Índice (${esc(s.uname)})`, `<span class="${cls(v.bret)}">${fmtPct(v.bret, true, 2)}</span>`,
       auto0 ? `Comprado en las mismas fechas e importes${v.bretInv != null ? ` · sobre lo invertido: <span class="${cls(v.bretInv)}">${fmtPct(v.bretInv, true, 2)}</span>` : ""}` : "Mismo periodo, sin dividendos") +
-    kpi("Diferencia", `<span class="${cls(diff)}">${fmtPct(diff, true, 2)}</span>`, diff >= 0 ? "Por encima del índice" : "Por debajo del índice") +
-    (days < 365 ? `<p class="note kpi-warn">Con ${days} ${days === 1 ? "día" : "días"} el resultado todavía no es significativo: Greenblatt mide la estrategia a varios años, y puede pasar temporadas largas por debajo del índice.</p>` : "");
+    kpi("Diferencia", `<span class="${cls(diff)}">${fmtPct(diff, true, 2)}</span>`, diff == null ? "Sin datos del índice todavía" : diff >= 0 ? "Por encima del índice" : "Por debajo del índice") +
+    `<p class="note kpi-warn">Se compara con el índice del universo con el que se creó la simulación (${esc(s.uname)}).${inv
+      ? ` La estrategia invierte por tramos: hoy hay ${fmtPrice(v.invested, s.cur)} en acciones y ${fmtPrice(v.cash, s.cur)} en liquidez. «Sobre lo invertido» mide solo el dinero que ya está en acciones, es decir, lo bien que se han elegido las empresas; el porcentaje grande incluye también la liquidez, que no rinde. El índice se compra igual, en las mismas fechas e importes, para que la comparación sea justa.`
+      : ""}${days < 365 ? ` Con ${days} ${days === 1 ? "día" : "días"} el resultado todavía no es significativo: Greenblatt mide la estrategia a varios años.` : ""}</p>`;
 
   const auto = isAuto(s);
   $("#s-head-row").innerHTML = `<th>Empresa</th>${auto ? '<th class="num hide-sm">Tramo</th><th class="num hide-sm">Comprada</th>' : ""}
