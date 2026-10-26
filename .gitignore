@@ -27,3 +27,5 @@ CLAUDE.md
 # Backtest europeo: datos de Bloomberg y resultados intermedios (licencia académica)
 backtest/europa/datos/
 backtest/europa/resultados/
+backtest/para_subir_a_WRDS/*.csv
+backtest/resultados_forward/
