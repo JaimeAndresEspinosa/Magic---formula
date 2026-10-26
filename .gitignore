@@ -23,3 +23,7 @@ backtest/bloomberg/
 
 # Contexto privado para Claude (no se publica)
 CLAUDE.md
+
+# Backtest europeo: datos de Bloomberg y resultados intermedios (licencia académica)
+backtest/europa/datos/
+backtest/europa/resultados/
