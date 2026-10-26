@@ -43,7 +43,8 @@ roll_us = None
 if os.path.exists(F30):
     m30 = pd.read_csv(F30)
     m30["anio"] = m30.mes.str[:4].astype(int)
-    roll_us = m30.groupby("anio")[["rolling10", "rolling30"]].apply(lambda x: (1 + x).prod() - 1)
+    cols30 = [c for c in ["mf_ltm", "rolling10", "rolling30", "mitades15", "mitades30", "sp500", "sp500_igual_peso"] if c in m30]
+    roll_us = m30.groupby("anio")[cols30].apply(lambda x: (1 + x).prod() - 1)
 
 eu_full["ret"] = eu_full.ret_anio.clip(-1, 5)
 for p in (us, eu):
@@ -229,6 +230,8 @@ F_US = os.path.join(B, "resultados_rolling30", "panel_completo_eeuu.csv")
 if os.path.exists(F_US):
     us_x = pd.read_csv(F_US).rename(columns={"conm": "nombre", "gvkey": "id"})
     us_x["sector"] = us_x.gsector.map(GICS).fillna("Sin dato")
+    # el notebook se ejecutó con las tildes mal codificadas: «vÃ¡lidos» -> «válidos»
+    us_x["motivo"] = us_x.motivo.map(lambda s: s.encode("cp1252").decode("utf-8") if "Ã" in s else s)
 else:                                                        # hasta ejecutar el notebook: solo las elegibles
     us_x = us.assign(motivo="Elegible")
 us_x["pais"] = "US"
@@ -255,6 +258,38 @@ R["explorador"] = exp(us_x, "EE. UU.") + exp(eu_x, "Europa")
 R["cobertura"] = {"us_empresas": int(us_x.id.nunique()), "eu_empresas": int(eu_x.id.nunique()), "eu_descargadas": n_desc["eu"],
                   "us_completo": os.path.exists(F_US),
                   "motivos": {m: {k: int(v) for k, v in g.motivo.value_counts().items()} for m, g in [("us", us_x), ("eu", eu_x)]}}
+
+# ------------------------------------------------------------------ rolling: tercios (3 años) y mitades (2 años)
+def rotacion(p, n, k):
+    # parte de la cartera que se vende cada año: 1/k del dinero, salvo las compañías que vuelven a entrar en el tramo nuevo
+    tops = {a: set(g[g.puesto <= n].id) for a, g in p.groupby("anio")}
+    ov = [len(tops[a] & tops[a - k]) / n for a in tops if a - k in tops and len(tops[a]) == n and len(tops[a - k]) == n]
+    return float((1 - np.mean(ov)) / k)
+
+
+def bloque_rolling(df, periodos, p_panel):
+    out = {"anual": {c: {int(a): float(x) for a, x in df[c].dropna().items()} for c in df}, "periodos": {}, "riesgo": {}}
+    for a, b in periodos:
+        out["periodos"][f"{a}-{b}"] = {c: cagr(df.loc[a:b, c]) if df.loc[a:b, c].notna().all() else None for c in df}
+    a, b = periodos[0]
+    for c in df:
+        s = df.loc[a:b, c]
+        if s.notna().all():
+            v = pd.concat([pd.Series([1.0]), (1 + s).cumprod()], ignore_index=True)   # parte de 1: cuenta la caída del primer año
+            out["riesgo"][c] = {"vol": float(s.std()), "peor": float(s.min()), "dd": float((v / v.cummax() - 1).min()),
+                                "anios_sobre_original": int((s > df.loc[a:b, "mf_ltm"]).sum()), "n": int(len(s))}
+    out["rotacion"] = {"mf_ltm": rotacion(p_panel, 30, 1), "rolling10": rotacion(p_panel, 10, 3), "rolling30": rotacion(p_panel, 30, 3),
+                       "mitades15": rotacion(p_panel, 15, 2), "mitades30": rotacion(p_panel, 30, 2)}
+    return out
+
+
+R["rolling"] = {"eu": bloque_rolling(roll_eu.drop(columns=["indice_eq"]).rename(columns={"indice_cap": "indice"}),
+                                     [(2008, 2025), (2008, 2016), (2017, 2025)], eu)}
+if roll_us is not None:
+    R["rolling"]["us"] = bloque_rolling(roll_us.drop(columns=["sp500_igual_peso"]).rename(columns={"sp500": "indice"}).loc[2003:2025],
+                                        [(2003, 2025), (2003, 2014), (2015, 2025)], us)
+print("rolling", json.dumps({k: v["periodos"] for k, v in R["rolling"].items()}, default=float)[:900])
+print("rotacion", {k: v["rotacion"] for k, v in R["rolling"].items()})
 
 json.dump(R, open(os.path.join(OUT, "analisis.json"), "w", encoding="utf-8"), ensure_ascii=False, default=float)
 print("ok", os.path.getsize(os.path.join(OUT, "analisis.json")) // 1024, "KB")

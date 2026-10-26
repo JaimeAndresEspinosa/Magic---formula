@@ -32,7 +32,7 @@ def ret_anio(tickers, anio):
 
 
 # ------------------------------------------------------------------ rolling por tercios
-cohortes = {10: {}, 30: {}}
+cohortes = {10: {}, 15: {}, 30: {}}
 for a in ANIOS:
     rk = bt.ranking(bt.foto(a), "ebit")
     for n in cohortes:
@@ -42,9 +42,10 @@ filas = []
 for t in range(2006, 2026):
     fila = {"anio": t}
     fila["mf_ltm"] = ret_anio(cohortes[30][t], t).fillna(0).mean()
-    for n in cohortes:
-        tramos = [ret_anio(cohortes[n][f], t).fillna(0).mean() for f in (t, t - 1, t - 2) if f in cohortes[n]]
-        fila[f"rolling{n}"] = np.mean(tramos) if len(tramos) == 3 else np.nan
+    # (columna, tamaño del tramo, años que se mantiene cada tramo): tercios = 3 años, mitades = 2 años
+    for col, n, k in [("rolling10", 10, 3), ("rolling30", 30, 3), ("mitades15", 15, 2), ("mitades30", 30, 2)]:
+        tramos = [ret_anio(cohortes[n][f], t).fillna(0).mean() for f in range(t, t - k, -1) if f in cohortes[n]]
+        fila[col] = np.mean(tramos) if len(tramos) == k else np.nan
     filas.append(fila)
 roll = pd.DataFrame(filas).set_index("anio")
 ref = pd.read_csv(os.path.join(BASE, "resultados", "rentabilidad_anual_europa.csv"), index_col=0)
