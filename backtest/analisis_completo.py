@@ -15,10 +15,11 @@ B = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(B, "resultados_analisis")
 os.makedirs(OUT, exist_ok=True)
 GICS = {10: "Energía", 15: "Materiales", 20: "Industria", 25: "Consumo discrecional", 30: "Consumo básico",
-        35: "Salud", 45: "Tecnología", 50: "Comunicación"}
+        35: "Salud", 40: "Financiero", 45: "Tecnología", 50: "Comunicación", 55: "Utilities", 60: "Inmobiliario"}
 SECT_EU = {"Energy": "Energía", "Materials": "Materiales", "Industrials": "Industria",
            "Consumer Discretionary": "Consumo discrecional", "Consumer Staples": "Consumo básico",
-           "Health Care": "Salud", "Information Technology": "Tecnología", "Communication Services": "Comunicación"}
+           "Health Care": "Salud", "Information Technology": "Tecnología", "Communication Services": "Comunicación",
+           "Financials": "Financiero", "Utilities": "Utilities", "Real Estate": "Inmobiliario"}
 
 # ------------------------------------------------------------------ datos
 us = pd.read_csv(os.path.join(B, "resultados_forward", "panel_eeuu.csv"))
@@ -33,6 +34,16 @@ mens_us = pd.read_csv(os.path.join(B, "resultados_forward", "rentabilidad_mensua
 anual_eu = pd.read_csv(os.path.join(B, "europa", "resultados", "rentabilidad_anual_europa.csv"), index_col=0)
 anual_us = pd.read_csv(os.path.join(B, "resultados_forward", "rentabilidad_anual.csv"), index_col=0)
 evento_us = pd.read_csv(os.path.join(B, "resultados_forward", "tiempo_reconocimiento.csv"))
+# rolling por tercios y tenencia de Europa siguiendo a las empresas aunque salgan del índice (europa/rolling_y_panel_completo.py)
+roll_eu = pd.read_csv(os.path.join(B, "europa", "resultados", "rolling_europa.csv"), index_col=0)
+ten_eu = pd.read_csv(os.path.join(B, "europa", "resultados", "tenencia_europa.csv"))
+# EE. UU.: rolling con tramos de 10 y de 30 (notebook magic_formula_rolling30_eeuu.ipynb), si ya está ejecutado
+F30 = os.path.join(B, "resultados_rolling30", "rolling_mensual.csv")
+roll_us = None
+if os.path.exists(F30):
+    m30 = pd.read_csv(F30)
+    m30["anio"] = m30.mes.str[:4].astype(int)
+    roll_us = m30.groupby("anio")[["rolling10", "rolling30"]].apply(lambda x: (1 + x).prod() - 1)
 
 eu_full["ret"] = eu_full.ret_anio.clip(-1, 5)
 for p in (us, eu):
@@ -123,11 +134,12 @@ def ic(p):
     return pd.Series(s)
 
 
-def analiza(p, nombre, indice_cap, indice_eq, p_ret=None, rolling=None):
+def analiza(p, nombre, indice_cap, indice_eq, p_ret=None, rolling=None, rolling30=None):
     res = {}
     v = variantes(p, p_ret)
     if rolling is not None:
         v["rolling_tercios"] = rolling
+    v["rolling_30"] = rolling30 if rolling30 is not None else pd.Series(np.nan, index=v.index)
     res["variantes"] = {c: {"cagr_total": cagr(v[c]), "cagr_2006_2025": cagr(v[c].loc[2006:2025]),
                             "anual": {int(a): float(x) for a, x in v[c].dropna().items()}} for c in v}
     res["indice"] = {"cap": {int(a): float(x) for a, x in indice_cap.dropna().items()},
@@ -156,14 +168,20 @@ def analiza(p, nombre, indice_cap, indice_eq, p_ret=None, rolling=None):
     res["sector_ey"] = {s: {int(a): float(x) for a, x in g.groupby("anio").ey.median().items()}
                         for s, g in p.groupby("sector") if s not in ("Sin dato", "Otros")}
     res["cagr_2003_2025"] = {"original": cagr(v["original"].loc[2003:2025]), "rolling": cagr(v["rolling_tercios"].loc[2003:2025]),
+                             "rolling30": cagr(v["rolling_30"].loc[2003:2025]),
                              "cap": cagr(indice_cap.loc[2003:2025]), "eq": cagr(indice_eq.loc[2003:2025])}
     res["n_empresas"] = int(p.id.nunique())
     res["n_obs"] = int(len(p))
     return res, v
 
 
-R["us"], v_us = analiza(us, "EE. UU.", anual_us.sp500, anual_us.sp500_igual_peso, rolling=anual_us.rolling_ltm.loc[2003:])
-R["eu"], v_eu = analiza(eu, "Europa", anual_eu.indice_cap, anual_eu.indice_eq, p_ret=eu_full)
+R["us"], v_us = analiza(us, "EE. UU.", anual_us.sp500, anual_us.sp500_igual_peso, rolling=anual_us.rolling_ltm.loc[2003:],
+                        rolling30=None if roll_us is None else roll_us.rolling30.loc[2003:2025])
+R["eu"], v_eu = analiza(eu, "Europa", anual_eu.indice_cap, anual_eu.indice_eq, p_ret=eu_full,
+                        rolling=roll_eu.rolling10.dropna(), rolling30=roll_eu.rolling30.dropna())
+R["eu"]["cagr_2008_2025"] = {k: cagr(s.loc[2008:2025]) for k, s in
+                             [("original", roll_eu.mf_ltm), ("rolling10", roll_eu.rolling10), ("rolling30", roll_eu.rolling30),
+                              ("cap", roll_eu.indice_cap), ("eq", roll_eu.indice_eq)]}
 
 # error de la cartera forward
 for k, p in [("us", us), ("eu", eu)]:
@@ -186,24 +204,17 @@ R["eu"]["anticipacion"] = {"honesto": cagr(top_ret(eu, "puesto")), "sesgado": ca
 
 # tiempo de reconocimiento: EE. UU. de WRDS; Europa con el panel
 R["us"]["tenencia"] = evento_us.groupby("anio_tenencia")[["ret", "exceso_sp500", "exceso_igual_peso"]].mean().to_dict()
-ev = []
-for f in sorted(eu.anio.unique()):
-    coh = set(eu[(eu.anio == f) & (eu.puesto <= 30)].id)
-    for h in (0, 1, 2):
-        t = f + h
-        if t in anual_eu.index:
-            x = eu_full[(eu_full.anio == t) & eu_full.id.isin(coh)].ret
-            if len(x):
-                ev.append({"h": h + 1, "ret": x.mean(), "ex_cap": x.mean() - anual_eu.loc[t, "indice_cap"],
-                           "ex_eq": x.mean() - anual_eu.loc[t, "indice_eq"]})
-ev = pd.DataFrame(ev)
-R["eu"]["tenencia"] = {"ret": ev.groupby("h").ret.mean().to_dict(), "exceso_sp500": ev.groupby("h").ex_cap.mean().to_dict(),
-                       "exceso_igual_peso": ev.groupby("h").ex_eq.mean().to_dict()}
+g_ten = ten_eu.groupby("anio_tenencia")
+R["eu"]["tenencia"] = {"ret": g_ten.ret.mean().to_dict(), "exceso_sp500": g_ten.exceso_cap.mean().to_dict(),
+                       "exceso_igual_peso": g_ten.exceso_eq.mean().to_dict()}
 
 # serie mensual EE. UU. para el gráfico (2001-2026)
 m = mens_us.copy()
 R["us"]["mensual"] = {"mes": m.mes.tolist(), **{c: [None if pd.isna(x) else round(float(x), 6) for x in m[c]]
                                                   for c in ["mf_ltm", "mf_fwd", "rolling_ltm", "sp500", "sp500_igual_peso"]}}
+if roll_us is not None:
+    r30 = m30.set_index("mes").rolling30.reindex(m.mes)
+    R["us"]["mensual"]["rolling30"] = [None if pd.isna(x) else round(float(x), 6) for x in r30]
 
 # países (Europa)
 R["eu"]["pais_ey"] = {c: {int(a): float(x) for a, x in g.groupby("anio").ey.median().items()}
@@ -213,15 +224,37 @@ R["eu"]["espana"] = {"n_empresas": int(esp.id.nunique()),
                      "top": esp[esp.puesto <= 30].groupby("nombre").size().sort_values(ascending=False).head(12).to_dict(),
                      "mejor_puesto_medio": esp.groupby("nombre").puesto.median().sort_values().head(10).to_dict()}
 
-# explorador: empresa-año (métricas derivadas)
+# explorador: TODAS las empresas descargadas (también las excluidas por la fórmula, con el motivo)
+F_US = os.path.join(B, "resultados_rolling30", "panel_completo_eeuu.csv")
+if os.path.exists(F_US):
+    us_x = pd.read_csv(F_US).rename(columns={"conm": "nombre", "gvkey": "id"})
+    us_x["sector"] = us_x.gsector.map(GICS).fillna("Sin dato")
+else:                                                        # hasta ejecutar el notebook: solo las elegibles
+    us_x = us.assign(motivo="Elegible")
+us_x["pais"] = "US"
+eu_x = pd.read_csv(os.path.join(B, "europa", "resultados", "panel_completo_europa.csv")).rename(columns={"ticker": "id"})
+eu_x["sector"] = eu_x.sector.map(SECT_EU).fillna("Sin dato")
+n_desc = {"us": None, "eu": int(pd.read_pickle(os.path.join(B, "europa", "datos", "miembros.pkl")).ticker.nunique())}
+
+
+def nul(x, d):
+    return None if pd.isna(x) or not np.isfinite(x) else round(float(x), d)
+
+
 def exp(p, mercado):
+    p = p.copy()
+    p["g"] = (p.ebit_fwd / p.ebit - 1).where(p.ebit_fwd.notna() & (p.ebit > 0))
     rows = []
-    for _, r in p.sort_values(["id", "anio"]).iterrows():
+    for r in p.sort_values(["id", "anio"]).itertuples():
         rows.append([mercado, str(r.id), r.nombre, r.sector, int(r.anio), None if pd.isna(r.puesto) else int(r.puesto),
-                     round(float(r.ey), 4), round(float(r.roc), 3), None if pd.isna(r.g) else round(float(r.g), 3),
-                     round(float(r.ret), 4), round(float(r.mcap), 0)])
+                     nul(r.ey, 4), nul(r.roc, 3), nul(r.g, 3), nul(r.ret_anio, 4), nul(r.mcap, 0), r.motivo, r.pais])
     return rows
-R["explorador"] = exp(us, "EE. UU.") + exp(eu, "Europa")
+
+
+R["explorador"] = exp(us_x, "EE. UU.") + exp(eu_x, "Europa")
+R["cobertura"] = {"us_empresas": int(us_x.id.nunique()), "eu_empresas": int(eu_x.id.nunique()), "eu_descargadas": n_desc["eu"],
+                  "us_completo": os.path.exists(F_US),
+                  "motivos": {m: {k: int(v) for k, v in g.motivo.value_counts().items()} for m, g in [("us", us_x), ("eu", eu_x)]}}
 
 json.dump(R, open(os.path.join(OUT, "analisis.json"), "w", encoding="utf-8"), ensure_ascii=False, default=float)
 print("ok", os.path.getsize(os.path.join(OUT, "analisis.json")) // 1024, "KB")
