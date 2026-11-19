@@ -86,6 +86,29 @@
 .pj-report p { font-size: 14px; color: var(--text-2); line-height: 1.55; }
 .pj-report .act { display: flex; gap: 8px; margin-top: auto; padding-top: 8px; }
 
+/* informes en secuencia: el porqué y el informe */
+.pj-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 28px; position: relative; }
+.pj-steps::before { content: ""; position: absolute; left: 21px; top: 8px; bottom: 8px; width: 1px; background: var(--border); }
+.pj-steps > li { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 20px; position: relative; }
+.pj-step-mark { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.pj-step-mark .num { width: 43px; height: 43px; border-radius: 50%; display: grid; place-items: center; font: 600 16px var(--mono); color: var(--accent); background: var(--surface); border: 2px solid var(--accent); position: relative; z-index: 1; }
+.pj-step-mark .d { font: 500 12px var(--mono); color: var(--text-2); }
+.pj-step-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.pj-step-body .pj-report.main { grid-column: auto; }
+.pj-why { display: flex; flex-direction: column; gap: 8px; padding-top: 4px; }
+.pj-why p { font-size: 14.5px; color: var(--text-2); line-height: 1.6; }
+.pj-why .pj-led { font-size: 13.5px; padding-left: 12px; border-left: 2px solid var(--border); }
+.pj-why .pj-led b { color: var(--text); font-weight: 600; }
+@media (max-width: 1000px) {
+  .pj-step-body { grid-template-columns: 1fr; }
+}
+@media (max-width: 700px) {
+  .pj-steps::before { display: none; }
+  .pj-steps > li { grid-template-columns: 1fr; gap: 10px; }
+  .pj-step-mark { flex-direction: row; align-items: center; }
+  .pj-step-mark .num { width: 34px; height: 34px; font-size: 14px; }
+}
+
 /* limitaciones, herramientas, glosario */
 .pj-list { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 14.5px; color: var(--text-2); line-height: 1.55; }
 .pj-list strong { color: var(--text); }

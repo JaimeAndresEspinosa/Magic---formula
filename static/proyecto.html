@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/static/style.css?v=5">
-<link rel="stylesheet" href="/static/proyecto.css?v=2">
+<link rel="stylesheet" href="/static/proyecto.css?v=4">
 </head>
 <body>
 <header class="topbar">
@@ -147,9 +147,9 @@
         <ul>
           <li>Resultados del backtest en EE. UU. y Europa</li>
           <li>Beneficio previsto frente a histórico</li>
-          <li>Casos de Logista, Rovi y Endesa</li>
+          <li>Análisis de compañías concretas: Logista y Rovi</li>
         </ul>
-        <div class="src">Cinco informes, en HTML y PDF</div>
+        <div class="src">Cuatro informes, en HTML y PDF</div>
       </article>
     </div>
   </section>
@@ -201,13 +201,6 @@
             <dt class="s">Solución</dt><dd>Acceso a WRDS (CRSP y Compustat) a través de CUNEF y uso del laboratorio de Bloomberg de la University of Sussex.</dd>
             <dt class="s">Decisión</dt><dd>Las licencias académicas no permiten publicar los datos: el análisis se hace dentro de WRDS y aquí solo se muestran resultados agregados.</dd>
           </dl>
-        </div>
-      </li>
-      <li>
-        <span class="d">11 oct 2026</span>
-        <div>
-          <h3>Por qué se excluyen las eléctricas</h3>
-          <p>Análisis de Endesa para entender por qué la fórmula no mide bien a las <em>utilities</em> y por qué Greenblatt las deja fuera.</p>
         </div>
       </li>
       <li>
@@ -276,39 +269,73 @@
   <!-- ============================== INFORMES -->
   <section id="informes" aria-labelledby="h-inf">
     <h2 id="h-inf">Informes</h2>
-    <p class="sec-lead">Cinco informes, del más reciente al primero. Cada uno se puede leer en la web o descargar en PDF.</p>
-    <div class="pj-reports">
-      <article class="pj-report main">
-        <div class="meta"><span class="tag">Informe principal</span><span>26 oct 2026</span><span>17 páginas</span></div>
-        <h3>Magic Formula: EE. UU. y Europa</h3>
-        <p>El estudio completo: 25 años en EE. UU. y 20 en Europa, qué parte de la fórmula funciona en cada mercado, beneficio histórico frente al previsto, error de los analistas, plazo de tenencia, concentración y efecto de los sesgos del backtest. Gráficos interactivos.</p>
-        <div class="act"><a class="btn primary" href="/static/informes/eeuu-europa.html">Leer</a><a class="btn" href="/static/informes/eeuu-europa.pdf" download>PDF</a></div>
-      </article>
-      <article class="pj-report">
-        <div class="meta"><span>26 oct 2026</span><span>9 páginas</span></div>
-        <h3>Magic Formula en Europa y beneficio previsto</h3>
-        <p>Backtest sobre el STOXX Europe 600 entre 2006 y 2025 y comparación del EBIT histórico con el previsto por los analistas.</p>
-        <div class="act"><a class="btn" href="/static/informes/europa-forward.html">Leer</a><a class="btn" href="/static/informes/europa-forward.pdf" download>PDF</a></div>
-      </article>
-      <article class="pj-report">
-        <div class="meta"><span>25 oct 2026</span><span>7 páginas</span></div>
-        <h3>Backtest en EE. UU., 2015–2025</h3>
-        <p>Primer backtest <em>point-in-time</em> con CRSP y Compustat: rentabilidad, caídas, comparación con el S&amp;P 500 ponderado y equiponderado y composición de la cartera.</p>
-        <div class="act"><a class="btn" href="/static/informes/backtest-eeuu.html">Leer</a><a class="btn" href="/static/informes/backtest-eeuu.pdf" download>PDF</a></div>
-      </article>
-      <article class="pj-report">
-        <div class="meta"><span>11 oct 2026</span><span>9 páginas</span></div>
-        <h3>Endesa</h3>
-        <p>Por qué la fórmula no mide bien a las compañías eléctricas y por qué se excluyen del ranking.</p>
-        <div class="act"><a class="btn" href="/static/informes/endesa.html">Leer</a><a class="btn" href="/static/informes/endesa.pdf" download>PDF</a></div>
-      </article>
-      <article class="pj-report">
-        <div class="meta"><span>8 oct 2026</span><span>12 páginas</span></div>
-        <h3>Logista y Rovi</h3>
-        <p>Negocio, historia y valoración de dos compañías del IBEX que la fórmula sitúa arriba, y por qué el Earnings Yield de Logista sale inflado.</p>
-        <div class="act"><a class="btn" href="/static/informes/logista-rovi.html">Leer</a><a class="btn" href="/static/informes/logista-rovi.pdf" download>PDF</a></div>
-      </article>
-    </div>
+    <p class="sec-lead">Cuatro informes en el orden en que se hicieron. Cada uno responde a una pregunta que dejó abierta el anterior, y juntos cuentan cómo avanzó el proyecto. Se pueden leer en la web o descargar en PDF.</p>
+    <ol class="pj-steps">
+      <li>
+        <div class="pj-step-mark"><span class="num">1</span><span class="d">8 oct 2026</span></div>
+        <div class="pj-step-body">
+          <div class="pj-why">
+            <span class="eyebrow">Por qué este informe</span>
+            <p>La revisión del inversor pedía analizar compañías concretas, y la primera pregunta fue Logista: la fórmula la situaba primera del IBEX con un Earnings Yield del 19,7 %, una cifra que parecía demasiado buena. Había que comprobar si era real.</p>
+            <p class="pj-led"><b>Qué dejó abierto:</b> si la fórmula se equivoca con una sola empresa, ¿hasta qué punto funciona en conjunto? Eso solo se responde con un backtest.</p>
+          </div>
+          <article class="pj-report">
+            <div class="meta"><span>12 páginas</span><span>Análisis de compañías</span></div>
+            <h3>Logista y Rovi</h3>
+            <p>Negocio, historia y valoración de dos compañías del IBEX que la fórmula sitúa arriba. El Earnings Yield de Logista sale inflado porque resta como caja propia los impuestos del tabaco que debe a Hacienda y presta a su matriz; con criterios coherentes queda entre el 8 % y el 11 %.</p>
+            <div class="act"><a class="btn" href="/static/informes/logista-rovi.html">Leer</a><a class="btn" href="/static/informes/logista-rovi.pdf" download>PDF</a></div>
+          </article>
+        </div>
+      </li>
+      <li>
+        <div class="pj-step-mark"><span class="num">2</span><span class="d">25 oct 2026</span></div>
+        <div class="pj-step-body">
+          <div class="pj-why">
+            <span class="eyebrow">Por qué este informe</span>
+            <p>La revisión pedía comprobar si la estrategia habría funcionado desde 2015, comprando las 30 primeras frente al índice. Los datos de la web no servían: Yahoo solo tiene las empresas que existen hoy y no guarda cuándo se publicó cada dato. Por eso se consiguió acceso a CRSP y Compustat a través de WRDS.</p>
+            <p class="pj-led"><b>Qué dejó abierto:</b> la estrategia no batía al S&amp;P 500 en esa década. ¿Pasa lo mismo en Europa? ¿Mejoraría con el beneficio que esperan los analistas?</p>
+          </div>
+          <article class="pj-report">
+            <div class="meta"><span>7 páginas</span><span>Backtest · EE. UU.</span></div>
+            <h3>Backtest en EE. UU., 2015–2025</h3>
+            <p>Primer backtest <em>point-in-time</em>: 12,2 % anual frente al 13,4 % del S&amp;P 500 y el 11,1 % del equiponderado, con caídas menores. En esa década el índice lo empujaron unas pocas grandes tecnológicas caras que la fórmula no compra.</p>
+            <div class="act"><a class="btn" href="/static/informes/backtest-eeuu.html">Leer</a><a class="btn" href="/static/informes/backtest-eeuu.pdf" download>PDF</a></div>
+          </article>
+        </div>
+      </li>
+      <li>
+        <div class="pj-step-mark"><span class="num">3</span><span class="d">26 oct 2026</span></div>
+        <div class="pj-step-body">
+          <div class="pj-why">
+            <span class="eyebrow">Por qué este informe</span>
+            <p>Faltaban las otras dos peticiones de la revisión: ampliar el universo a Europa, porque en el IBEX solo quedan unas 14 empresas tras las exclusiones, y probar el EBIT previsto por los analistas. WRDS no tiene esos datos, así que se descargaron en el laboratorio de Bloomberg de la University of Sussex.</p>
+            <p class="pj-led"><b>Qué dejó abierto:</b> los dos mercados daban resultados distintos. Para compararlos de verdad hacía falta el mismo método y un periodo más largo.</p>
+          </div>
+          <article class="pj-report">
+            <div class="meta"><span>9 páginas</span><span>Backtest · Europa · forward</span></div>
+            <h3>Magic Formula en Europa y beneficio previsto</h3>
+            <p>Backtest sobre el STOXX Europe 600 entre 2006 y 2025: un 7,7 % anual frente al 6,7 % del índice, pero la ventaja depende de 2009. El EBIT previsto empeora la estrategia porque los analistas son optimistas.</p>
+            <div class="act"><a class="btn" href="/static/informes/europa-forward.html">Leer</a><a class="btn" href="/static/informes/europa-forward.pdf" download>PDF</a></div>
+          </article>
+        </div>
+      </li>
+      <li>
+        <div class="pj-step-mark"><span class="num">4</span><span class="d">26 oct 2026</span></div>
+        <div class="pj-step-body">
+          <div class="pj-why">
+            <span class="eyebrow">Por qué este informe</span>
+            <p>Reúne todo con el mismo método y responde a las preguntas que fueron surgiendo: EE. UU. ampliado a 2001–2026 para cubrir varios ciclos, qué parte de la fórmula funciona en cada mercado, cuánto tiempo conviene mantener cada cartera (la construcción por tercios propuesta en la revisión), cuánto importa la concentración y cuánto inflan los sesgos un backtest mal hecho.</p>
+            <p class="pj-led"><b>Conclusión:</b> a largo plazo la fórmula funciona en EE. UU.; en Europa la ventaja es pequeña; y el beneficio previsto no ayuda.</p>
+          </div>
+          <article class="pj-report main">
+            <div class="meta"><span class="tag">Informe principal</span><span>17 páginas</span><span>EE. UU. y Europa</span></div>
+            <h3>Magic Formula: EE. UU. y Europa</h3>
+            <p>El estudio completo: 12,2 % anual frente al 8,7 % del S&amp;P 500 entre 2001 y 2025; en EE. UU. paga el precio y en Europa la calidad; error de los analistas, plazo de tenencia, concentración y efecto de los sesgos. Gráficos interactivos.</p>
+            <div class="act"><a class="btn primary" href="/static/informes/eeuu-europa.html">Leer</a><a class="btn" href="/static/informes/eeuu-europa.pdf" download>PDF</a></div>
+          </article>
+        </div>
+      </li>
+    </ol>
   </section>
 
   <!-- ============================== LIMITACIONES -->
