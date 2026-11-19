@@ -1,0 +1,923 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Magic Formula: EE. UU. y Europa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: nota de análisis, una columna de lectura con cifras clave, gráficos y tablas a todo el ancho */
+:root {
+  --paper: #f6f7f5; --sheet: #ffffff; --ink: #16201f; --ink-2: #4a5654; --muted: #7d8886; --rule: #dfe3e1;
+  --accent: #0f5c57;      /* Magic Formula */
+  --accent-soft: #e3efed;
+  --second: #b0681a;      /* índice por capitalización */
+  --third: #8a94a6;       /* índice igual peso */
+  --warn: #a8321f; --warn-soft: #f6e6e2;
+  --display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f1514; --sheet: #151d1c; --ink: #e5ecea; --ink-2: #aab6b3; --muted: #7b8885;
+    --rule: #26302e; --accent: #4fb3a9; --accent-soft: #17302d; --second: #e0a25a; --third: #8d97a8;
+    --warn: #ec8b78; --warn-soft: #3a211c; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f1514; --sheet: #151d1c; --ink: #e5ecea; --ink-2: #aab6b3; --muted: #7b8885;
+  --rule: #26302e; --accent: #4fb3a9; --accent-soft: #17302d; --second: #e0a25a; --third: #8d97a8;
+  --warn: #ec8b78; --warn-soft: #3a211c; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font: 17px/1.62 var(--body); padding-inline: 16px; padding-block: 32px 64px; margin: 0; }
+.page { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
+h1, h2, h3 { font-family: var(--display); font-stretch: 88%; letter-spacing: -0.01em; line-height: 1.12; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(34px, 6vw, 52px); font-weight: 800; }
+h2 { font-size: 28px; font-weight: 750; }
+h3 { font-size: 19px; font-weight: 700; font-stretch: 95%; }
+p { margin: 0; }
+section { display: flex; flex-direction: column; gap: 20px; }
+.prose { display: flex; flex-direction: column; gap: 14px; }
+.prose ul, .prose ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+a { color: var(--accent); }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+header { display: flex; flex-direction: column; gap: 14px; border-bottom: 2px solid var(--ink); padding-bottom: 22px; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 18px; font-family: var(--mono); font-size: 13px; color: var(--ink-2); }
+.lede { font-size: 20px; color: var(--ink-2); max-width: 62ch; }
+.summary { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 22px 24px; display: flex; flex-direction: column; gap: 12px; }
+.summary ol { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 8px; }
+.sec-head { border-top: 1px solid var(--rule); padding-top: 26px; }
+.facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--rule); border-radius: 6px; background: var(--sheet); margin: 0; }
+.facts div { padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; border-left: 1px solid var(--rule); }
+.facts div:first-child { border-left: 0; }
+.facts dt { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.facts dd { margin: 0; font-family: var(--mono); font-size: 17px; font-variant-numeric: tabular-nums; }
+.facts small { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+@media (max-width: 620px) {
+  .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .facts div:nth-child(3) { border-left: 0; }
+  .facts div:nth-child(n+3) { border-top: 1px solid var(--rule); }
+}
+.table-wrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 6px; background: var(--sheet); }
+table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+th, td { padding: 9px 14px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--rule); }
+th:first-child, td:first-child { text-align: left; }
+thead th { font-family: var(--mono); font-size: 11.5px; font-weight: 500; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+tbody td { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+tbody td:first-child { font-family: var(--body); }
+tbody tr:last-child td { border-bottom: 0; }
+td.pos { color: var(--accent); font-weight: 500; }
+td.neg { color: var(--warn); }
+td.hl { color: var(--accent); font-weight: 500; }
+tr.ref td { color: var(--ink-2); }
+.caption { font-size: 13.5px; color: var(--muted); font-style: italic; }
+.callout { border-left: 3px solid var(--warn); background: var(--warn-soft); padding: 18px 20px; border-radius: 0 6px 6px 0; display: flex; flex-direction: column; gap: 10px; }
+.callout .eyebrow { color: var(--warn); }
+.callout.ok { border-left-color: var(--accent); background: var(--accent-soft); }
+.callout.ok .eyebrow { color: var(--accent); }
+figure { margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.chart { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 16px 14px 10px; position: relative; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart text { font-family: var(--mono); font-size: 11px; fill: var(--muted); }
+.chart .lbl { fill: var(--ink); font-size: 12px; }
+.chart .grid { stroke: var(--rule); stroke-width: 1; }
+.chart .zero { stroke: var(--ink-2); stroke-width: 1; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-family: var(--mono); font-size: 12.5px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--paper); font: 12px/1.4 var(--mono); padding: 6px 9px; border-radius: 4px; white-space: nowrap; transform: translate(-50%, calc(-100% - 10px)); }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.two > div { min-width: 0; background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; font-size: 15.5px; }
+.two ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+@media (max-width: 620px) { .two { grid-template-columns: 1fr; } }
+.steps { counter-reset: n; display: flex; flex-direction: column; gap: 14px; margin: 0; padding: 0; list-style: none; }
+.steps li { display: grid; grid-template-columns: 34px 1fr; gap: 12px; }
+.steps li::before { counter-increment: n; content: counter(n); font-family: var(--display); font-weight: 800; font-size: 22px; color: var(--accent); line-height: 1.3; }
+footer { font-size: 13.5px; color: var(--muted); border-top: 1px solid var(--rule); padding-top: 16px; }
+@media print {
+  body { padding: 0; background: #fff; font-size: 15px; }
+  .page { gap: 26px; }
+  .chart, .table-wrap, .callout, .summary, .two > div, .facts, figure { break-inside: avoid; }
+  h2, h3 { break-after: avoid; }
+  .tip { display: none; }
+}
+.watch { border: 1px solid var(--rule); background: var(--sheet); border-radius: 6px; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; font-size: 15.5px; }
+.watch .when { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.watch ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+@media print { .ctrl, #exp-q { display: none; } #exp-tabla { max-height: none; } }
+</style>
+
+</head>
+<body>
+<div style="font:500 13px/1.4 system-ui,-apple-system,Segoe UI,sans-serif;padding:10px 16px;background:rgba(127,127,127,.12);border-bottom:1px solid rgba(127,127,127,.25)"><a href="/proyecto#informes" style="color:inherit;text-decoration:none">&larr; Volver a El proyecto · Magic Formula</a></div>
+<style>
+.simple { border-left: 3px solid var(--ink-2); background: var(--sheet); padding: 14px 18px; border-radius: 0 6px 6px 0; display: flex; flex-direction: column; gap: 6px; font-size: 15.5px; }
+.simple .eyebrow { color: var(--ink-2); }
+.ctrl { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-family: var(--mono); font-size: 12.5px; }
+.ctrl button, .ctrl select, .ctrl input { font: inherit; border: 1px solid var(--rule); background: var(--sheet); color: var(--ink); border-radius: 4px; padding: 5px 10px; cursor: pointer; }
+.ctrl input { cursor: text; min-width: 0; flex: 1 1 220px; }
+.ctrl button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.ctrl button:focus-visible, .ctrl select:focus-visible, .ctrl input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.legend button { font: inherit; border: 0; background: none; color: var(--ink-2); cursor: pointer; padding: 0; }
+.seg-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-family: var(--mono); font-size: 12.5px; }
+.seg-row .mk { margin-right: 4px; min-width: 70px; }
+.seg-row .chip { font: inherit; border: 1px solid var(--rule); background: var(--sheet); color: var(--muted); border-radius: 999px; padding: 3px 11px 3px 9px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.seg-row .chip::before { content: ""; width: 11px; height: 11px; border: 1.5px solid var(--rule); border-radius: 3px; box-sizing: border-box; }
+.seg-row .chip[aria-pressed="true"] { color: var(--ink); border-color: var(--ink-2); }
+.seg-row .chip[aria-pressed="true"]::before { background: var(--accent); border-color: var(--accent); box-shadow: inset 0 0 0 2px var(--sheet); }
+.seg-row .chip i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; }
+.seg-row .chip:hover { border-color: var(--ink-2); }
+.seg-row .acc { font: inherit; border: 0; background: none; color: var(--accent); cursor: pointer; padding: 3px 4px; text-decoration: underline; text-underline-offset: 2px; }
+.seg-row label { display: inline-flex; gap: 6px; align-items: center; color: var(--ink-2); }
+.seg-row select { font: inherit; border: 1px solid var(--rule); background: var(--sheet); color: var(--ink); border-radius: 4px; padding: 3px 6px; }
+.segs { display: flex; flex-direction: column; gap: 8px; }
+.hint { font-size: 12.5px; color: var(--muted); font-style: italic; }
+@media print { .seg-row .acc, [id$="-rng"], .ctrl { display: none !important; } .seg-row .chip::before { display: none; } }
+.kpi2 { display: flex; flex-direction: column; gap: 24px; }
+@media (max-width: 620px) { .kpi2 { grid-template-columns: 1fr; } }
+.mk { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+td.neu { color: var(--ink-2); }
+table.wrap td, table.wrap th { white-space: normal; }
+.find { font-size: 14.5px; }
+.find strong { font-family: var(--display); font-stretch: 95%; }
+#exp-tabla { max-height: 340px; overflow: auto; }
+.chart .hl-line { stroke: var(--ink-2); stroke-dasharray: 3 3; }
+.chart .ln { transition: opacity .15s; }
+.chart .ln.dim { opacity: .12; }
+
+.cart-row { cursor: pointer; }
+span.hl { color: var(--accent); font-weight: 600; }
+#t-tercios th, #t-mitades th { white-space: normal; line-height: 1.35; vertical-align: bottom; }
+#t-tercios td, #t-mitades td, #t-tercios th, #t-mitades th { padding-inline: 10px; }
+table.txt td { text-align: left; font-family: var(--body); white-space: normal; }
+#car-tabla td:nth-child(-n+4):not(:first-child), #car-tabla th:nth-child(-n+4):not(:first-child) { text-align: left; }
+#car-tabla td:nth-child(-n+4):not(:first-child) { font-family: var(--body); white-space: normal; }
+.cart-row:hover td { background: var(--accent-soft); }
+</style>
+
+<main class="page">
+  <header>
+    <span class="eyebrow">Análisis · Magic Formula · EE.&nbsp;UU. 2001–2026 y Europa 2006–2025</span>
+    <h1>Magic Formula: qué funciona, dónde y por qué</h1>
+    <p class="lede">Análisis de 1.815 compañías elegibles y 16.651 observaciones empresa-año en los dos mayores mercados desarrollados. Datos <em>point-in-time</em> de CRSP y Compustat (WRDS) y del consenso histórico de analistas de Bloomberg.</p>
+    <div class="meta">
+      <span>Jaime Andrés Espinosa · ADE con minor en Data Science, CUNEF</span>
+      <span>26 de octubre de 2026</span>
+      <span>Datos: CRSP · Compustat · Bloomberg (BEst)</span>
+    </div>
+  </header>
+
+  <section class="summary" aria-labelledby="resumen">
+    <h2 id="resumen" style="font-size:22px">Conclusiones principales</h2>
+    <ol>
+      <li><strong>A largo plazo, la fórmula funciona en EE.&nbsp;UU.: CAGR del 12,2&nbsp;% frente al 8,7&nbsp;% del S&amp;P&nbsp;500 entre 2001 y 2025.</strong> 10.000&nbsp;$ se habrían convertido en 177.606&nbsp;$, frente a 79.655&nbsp;$. La menor rentabilidad relativa de 2016–2025 es coherente con un cambio de régimen de mercado más que con un deterioro de la estrategia: en 2001–2007 batió al índice por 10,9 puntos al año.</li>
+      <li><strong>Lo que explica la rentabilidad es distinto en cada mercado.</strong> En EE.&nbsp;UU. paga el precio: el quintil más barato por <em>Earnings Yield</em> gana un 11,9&nbsp;% anual y el más caro un 7,0&nbsp;%, mientras que el ROC por sí solo no discrimina. En Europa ocurre lo contrario: los extremos más baratos son trampas de valor y es la calidad (ROC) la que protege.</li>
+      <li><strong>Sustituir el EBIT histórico por el previsto no aporta en EE.&nbsp;UU. (12,1&nbsp;% frente a 11,9&nbsp;%) y resta en Europa (6,2&nbsp;% frente a 7,7&nbsp;%).</strong> La causa es el sesgo optimista del consenso: el EBIT publicado queda de mediana un -6,3&nbsp;% por debajo del previsto en EE.&nbsp;UU. y un -12,7&nbsp;% en Europa, el doble. En las empresas que selecciona la variante <em>forward</em>, la desviación sube al -9,9&nbsp;% y al -19,1&nbsp;%.</li>
+      <li><strong>El mercado tarda más de un año en reconocer la calidad, pero no tres.</strong> Cada cartera sigue batiendo al índice en su segundo año (+1,9&nbsp;pp en EE.&nbsp;UU., +4,1&nbsp;pp en Europa); en el tercero el exceso se mantiene en EE.&nbsp;UU. (+2,2&nbsp;pp) y desaparece en Europa (+0,4&nbsp;pp). La versión por tercios solo iguala a la anual con tramos de 30 compañías (13,2&nbsp;% frente a 13,0&nbsp;% en EE.&nbsp;UU.). <strong>Proponemos una tenencia de dos años (por mitades):</strong> en Europa rinde un 8,5&nbsp;% frente al 7,8&nbsp;% de la cartera anual; en EE.&nbsp;UU. la iguala (13,4&nbsp;% frente a 13,0&nbsp;%), y en los dos mercados con bastante menos rotación.</li>
+      <li><strong>Un backtest mal hecho exagera mucho el resultado.</strong> Usando solo las empresas que sobreviven hoy, la rentabilidad sube 1,9 puntos al año en EE.&nbsp;UU. y 4,1 en Europa; usando cuentas aún no publicadas, 2,1 puntos más en Europa.</li>
+      <li><strong>La concentración penaliza en los dos mercados:</strong> con 50 compañías el CAGR 2006–2025 es del 12,5&nbsp;% en EE.&nbsp;UU. y del 8,1&nbsp;% en Europa, por encima de la versión de 30, y con 10 cae al 10,7&nbsp;% y al 6,9&nbsp;%. La señal es débil compañía a compañía y necesita diversificación para materializarse.</li>
+    </ol>
+  </section>
+
+  <div class="simple" role="note">
+    <span class="eyebrow">En palabras sencillas</span>
+    <p>En EE.&nbsp;UU., comprar empresas baratas y rentables ha funcionado muy bien en 25 años, aunque los últimos diez han sido flojos. En Europa funciona algo, pero menos. Fiarse de las previsiones de los analistas no ayuda, sobre todo en Europa, donde se equivocan el doble. Conviene tener muchas empresas (30 o más) y mantenerlas uno o dos años. Y si se hace mal el backtest, por ejemplo olvidando las empresas que quebraron, sale mucho mejor de lo que fue en realidad.</p>
+  </div>
+
+  <dl class="facts">
+    <div><dt>Compañías elegibles</dt><dd>1.815</dd><small>EE. UU. 896 · Europa 919</small></div>
+    <div><dt>Observaciones</dt><dd>16.651</dd><small>empresa × año</small></div>
+    <div><dt>CAGR EE. UU.</dt><dd>12,2&nbsp;%</dd><small>S&amp;P 500: 8,7&nbsp;%</small></div>
+    <div><dt>CAGR Europa</dt><dd>7,7&nbsp;%</dd><small>STOXX 600: 6,7&nbsp;%</small></div>
+  </dl>
+
+  <!-- ================================================================ 1 -->
+  <section aria-labelledby="s1">
+    <div class="sec-head"><h2 id="s1">1. Rentabilidad en EE.&nbsp;UU. desde 2001</h2></div>
+    <p class="find">Pasa el ratón por el gráfico para ver el valor de cada cartera en cualquier mes. Elige el periodo (la inversión empieza el 1 de enero del año «desde») y qué carteras comparar: marca o desmarca cada una, o doble clic para ver solo esa.</p>
+    <figure>
+      <div class="segs"><div class="seg-row" id="us-rng"></div><div class="seg-row" id="us-leg"></div></div>
+      <div class="chart" id="us-chart" role="img" aria-label="Evolución mensual de 10.000 dólares de 2001 a 2026 en EE. UU."></div>
+      <figcaption class="caption">Evolución mensual de 10.000&nbsp;$ invertidos el 1 de enero del año elegido, escala logarítmica. Rentabilidad total con dividendos. La versión <em>forward</em> solo está disponible desde 2006 (inicio del consenso histórico de Bloomberg) y las rolling desde 2003, cuando ya hay tres tramos. Sin costes ni impuestos.</figcaption>
+    </figure>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>CAGR por periodo</th><th>MF original</th><th>MF forward</th><th>Rolling (tramos de 10)</th><th>S&amp;P 500</th><th>S&amp;P 500 equip.</th></tr></thead>
+        <tbody><tr><td>2001–2007</td><td class="hl">14,4&nbsp;%</td><td>—</td><td>—</td><td>3,5&nbsp;%</td><td>6,9&nbsp;%</td></tr>
+<tr><td>2008–2015</td><td>9,0&nbsp;%</td><td>10,1&nbsp;%</td><td class="hl">11,2&nbsp;%</td><td>5,9&nbsp;%</td><td>6,6&nbsp;%</td></tr>
+<tr><td>2016–2025</td><td>13,3&nbsp;%</td><td>13,2&nbsp;%</td><td>11,7&nbsp;%</td><td>14,8&nbsp;%</td><td>12,4&nbsp;%</td></tr>
+<tr><td>2006–2025</td><td>11,9&nbsp;%</td><td class="hl">12,1&nbsp;%</td><td>10,3&nbsp;%</td><td>10,9&nbsp;%</td><td>10,0&nbsp;%</td></tr>
+<tr><td><strong>2001–2025</strong></td><td class="hl">12,2&nbsp;%</td><td>—</td><td>—</td><td>8,7&nbsp;%</td><td>9,0&nbsp;%</td></tr></tbody>
+      </table>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>2001–2026, mensual</th><th>MF original</th><th>Rolling (10)</th><th>S&amp;P 500</th><th>S&amp;P 500 equip.</th></tr></thead>
+        <tbody>
+          <tr><td>Volatilidad anualizada</td><td>16,7&nbsp;%</td><td>18,1&nbsp;%</td><td>15,2&nbsp;%</td><td>16,3&nbsp;%</td></tr>
+          <tr><td>Máximo drawdown</td><td>-54,2&nbsp;%</td><td>-55,1&nbsp;%</td><td>-50,6&nbsp;%</td><td>-53,3&nbsp;%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout" role="note">
+      <span class="eyebrow">Régimen de mercado</span>
+      <h3>La década perdida del S&amp;P&nbsp;500 fue la mejor de la fórmula</h3>
+      <p>Entre 2001 y 2007 el S&amp;P&nbsp;500 apenas ganó un 3,5&nbsp;% anual tras el estallido de la burbuja tecnológica, y la Magic Formula un 14,4&nbsp;%. Cuando el mercado castiga las valoraciones excesivas, una estrategia que compra beneficio barato brilla. En 2016–2025 ocurrió lo contrario: la expansión de múltiplos se concentró en un grupo reducido de compañías de crecimiento de gran capitalización, que la fórmula casi nunca selecciona por su bajo <em>Earnings Yield</em>, y la estrategia quedó por detrás del índice ponderado por capitalización, aunque por delante del equiponderado. Las dos etapas responden al mismo factor de valor.</p>
+      <p>La estrategia no es defensiva: su caída máxima (-54,2&nbsp;%, 2007–2009) y su volatilidad (16,7&nbsp;% frente a 15,2&nbsp;%) son algo superiores a las del índice. Su ventaja procede de las recuperaciones y de los periodos de normalización de valoraciones, no de proteger en las caídas.</p>
+    </div>
+  </section>
+
+  <!-- ================================================================ 2 -->
+  <section aria-labelledby="s2">
+    <div class="sec-head"><h2 id="s2">2. Europa 2006–2025</h2></div>
+    <figure>
+      <div class="segs"><div class="seg-row" id="eu-rng"></div><div class="seg-row" id="eu-leg"></div></div>
+      <div class="chart" id="eu-chart" role="img" aria-label="Evolución anual de 10.000 euros en Europa de 2005 a 2025"></div>
+      <figcaption class="caption">Evolución de 10.000&nbsp;€ invertidos al inicio del periodo elegido, escala logarítmica, frecuencia anual. Rentabilidad total en euros. STOXX Europe 600 reconstruido con el mismo universo.</figcaption>
+    </figure>
+    <p class="find">La ventaja europea está concentrada en 2009 (+96&nbsp;% frente a +32&nbsp;% del índice), el año de rebote de las compañías cíclicas más castigadas. Sin ese año, la estrategia rinde un 4,4&nbsp;% anual frente al 5,5&nbsp;% del índice. El resultado europeo depende, por tanto, de un único episodio y debe tomarse con cautela.</p>
+  </section>
+
+  <!-- ================================================================ 3 -->
+  <section aria-labelledby="s3">
+    <div class="sec-head"><h2 id="s3">3. ¿Qué parte de la fórmula funciona?</h2></div>
+    <p class="find">Cada año se divide el universo en cinco grupos iguales (quintiles) según cada medida, y se calcula la rentabilidad del año siguiente de cada grupo. Si una medida tiene poder predictivo, la rentabilidad debería bajar del quintil 1 (mejor) al 5 (peor).</p>
+    <div class="ctrl" role="group" aria-label="Mercado y medida">
+      <button data-q="q_ey" aria-pressed="true">Barata (EY)</button><button data-q="q_roc" aria-pressed="false">Buena (ROC)</button><button data-q="q_mf" aria-pressed="false">Magic Formula</button><button data-q="q_crec" aria-pressed="false">Crecimiento esperado</button>
+    </div>
+    <figure>
+      <div class="seg-row" id="q-leg"></div>
+      <div class="chart" id="q-chart" role="img" aria-label="Rentabilidad anual compuesta por quintil"></div>
+      <figcaption class="caption" id="q-cap"></figcaption>
+    </figure>
+    <div class="callout ok" role="note">
+      <span class="eyebrow">Hallazgo</span>
+      <h3>EE.&nbsp;UU. paga el precio; Europa paga la calidad</h3>
+      <p><strong>EE.&nbsp;UU.:</strong> el <em>Earnings Yield</em> ordena las rentabilidades de forma casi perfecta, del 11,9&nbsp;% al 7,0&nbsp;%. El ROC por sí solo no discrimina (todos los quintiles entre 8,9&nbsp;% y 10,3&nbsp;%). La fórmula funciona sobre todo por su componente de valor.</p>
+      <p><strong>Europa:</strong> el quintil más barato (6,7&nbsp;%) rinde menos que los intermedios: el EBIT muy alto respecto al precio suele anticipar beneficios que caen (sectores cíclicos, compañías en dificultades). Aquí el ROC sí ordena, del 8,3&nbsp;% al 6,7&nbsp;%. Combinar las dos medidas es lo que evita las trampas de valor.</p>
+      <p><strong>Poder predictivo del ranking (IC):</strong> la correlación media entre el puesto y la rentabilidad siguiente es de 0,062 en EE.&nbsp;UU. (positiva el 76&nbsp;% de los años) frente a 0,020 en Europa (55&nbsp;%). En un modelo de selección de acciones, un IC sostenido de 0,05 ya se considera útil.</p>
+    </div>
+    <div class="simple" role="note"><span class="eyebrow">En palabras sencillas</span><p>Se ordenan todas las empresas de mejor a peor y se parten en cinco grupos. Si la medida funciona, el grupo 1 debería ganar más que el 5. En EE.&nbsp;UU. lo que más importa es que la empresa esté barata; en Europa, que sea un buen negocio.</p></div>
+  </section>
+
+  <!-- ================================================================ 4 -->
+  <section aria-labelledby="s4">
+    <div class="sec-head"><h2 id="s4">4. Rolling por tercios: ¿cuánto tarda el mercado en reconocer la calidad?</h2></div>
+    <p class="find"><strong>Hipótesis planteada en la revisión:</strong> el mercado no tiene por qué reconocer la calidad en un solo año, así que conviene construir la cartera por tercios: cada 1 de enero se compra un tramo con las primeras del ranking y se mantiene tres años. La cartera siempre combina tres tramos con el mismo peso, y cada año se sustituye el más antiguo.</p>
+
+    <h3>4.1 Rentabilidad de cada cartera en su primer, segundo y tercer año</h3>
+    <p class="find">Se forma cada año una cartera de 30 compañías y se sigue durante tres años, también las que salen del índice, comparándola con el índice ponderado por capitalización en cada año de tenencia.</p>
+    <figure>
+      <div class="legend"><span><i style="background:var(--accent)"></i>EE. UU.</span><span><i style="background:var(--second)"></i>Europa</span></div>
+      <div class="chart" id="h-chart" role="img" aria-label="Exceso de rentabilidad por año de tenencia"></div>
+      <figcaption class="caption">Exceso medio frente al S&amp;P&nbsp;500 (EE.&nbsp;UU., carteras formadas en 2001–2025) y al STOXX Europe 600 (Europa, 2006–2025) en cada año de tenencia, en puntos porcentuales.</figcaption>
+    </figure>
+
+    <h3>4.2 Resultado de la versión por tercios</h3>
+    <div class="table-wrap" id="t-tercios"></div>
+    <p class="caption">CAGR, rentabilidad total, sin costes. Entre paréntesis, el número aproximado de compañías en cartera. EE.&nbsp;UU. con datos mensuales de CRSP; Europa, anual. Cada periodo empieza cuando ya hay tres tramos.</p>
+    <div class="callout ok" role="note">
+      <span class="eyebrow">Conclusión</span>
+      <h3>El mercado tarda más de un año, pero no tres; y los tramos de 10 concentran demasiado</h3>
+      <p><strong>El plazo:</strong> la hipótesis se confirma en parte. Cada cartera sigue batiendo al índice en su segundo año (+1,9&nbsp;pp en EE.&nbsp;UU., +4,1&nbsp;pp en Europa, donde el exceso es incluso mayor que el del primer año). En el tercer año el exceso se mantiene en EE.&nbsp;UU. (+2,2&nbsp;pp), pero se agota en Europa (+0,4&nbsp;pp).</p>
+      <p><strong>La concentración:</strong> con tramos de 10 compañías la versión por tercios rinde menos que la anual en los dos mercados (12,4&nbsp;% frente a 13,0&nbsp;% en EE.&nbsp;UU.; 6,7&nbsp;% frente a 7,8&nbsp;% en Europa). Con tramos de 30, que reparten el riesgo entre unas 90 compañías, el resultado mejora con claridad: en EE.&nbsp;UU. iguala a la anual (13,2&nbsp;%) y en Europa se queda cerca (7,5&nbsp;%). La diferencia entre ambos tamaños de tramo mide el coste de concentrar.</p>
+      <p><strong>Lo que falta en Europa</strong> frente a la cartera anual es el tercer año: esas posiciones ocupan un tercio de la cartera sin generar exceso. Esto lleva directamente a la propuesta de la sección siguiente.</p>
+    </div>
+  </section>
+
+  <!-- ================================================================ 4b -->
+  <section aria-labelledby="s4b">
+    <div class="sec-head"><h2 id="s4b">5. Propuesta: Magic Formula por mitades (tenencia de dos años)</h2></div>
+    <div class="two">
+      <div>
+        <h3>Por qué</h3>
+        <p>Si el exceso se concentra en los dos primeros años, una tenencia de dos años debería capturarlo sin el lastre del tercero, y con tramos suficientemente grandes evitar el coste de concentración.</p>
+      </div>
+      <div>
+        <h3>Cómo</h3>
+        <p>Cada 1 de enero se compra un tramo nuevo y se vende el comprado hace dos años: la cartera combina siempre dos tramos con el mismo peso. Se prueban tramos de 15 (unas 30 compañías en total) y de 30 (unas 60).</p>
+      </div>
+    </div>
+    <div class="ctrl" role="group" aria-label="Mercado"><button data-rm="eu" aria-pressed="true">Europa 2008–2025</button><button data-rm="us" aria-pressed="false">EE. UU. 2003–2025</button></div>
+    <figure>
+      <div class="segs"><div class="seg-row" id="mit-rng"></div><div class="seg-row" id="mit-leg"></div></div>
+      <div class="chart" id="mit-chart" role="img" aria-label="Evolución de 10.000 invertidos con cada forma de construir la cartera"></div>
+      <figcaption class="caption" id="mit-cap"></figcaption>
+    </figure>
+    <div class="table-wrap" id="t-mitades"></div>
+    <p class="caption">Rotación: parte de la cartera que se vende cada año, descontando las compañías que vuelven a entrar en el tramo nuevo. Volatilidad y caída máxima con datos anuales (la caída máxima coincide con 2008 en todas las versiones).</p>
+    <div class="callout ok" role="note">
+      <span class="eyebrow">Resultado</span>
+      <h3>Dos años de tenencia mejoran a la cartera anual en Europa y la igualan en EE.&nbsp;UU., con menos rotación</h3>
+      <p><strong>Europa:</strong> la versión por mitades rinde un 8,2&nbsp;% anual con tramos de 15 y un 8,5&nbsp;% con tramos de 30, frente al 7,8&nbsp;% de la cartera anual, el 7,5&nbsp;% de la mejor versión por tercios y el 6,1&nbsp;% del índice. La mejora se mantiene en las dos mitades del periodo (11,2&nbsp;% frente a 10,5&nbsp;% en 2008–2016; 5,8&nbsp;% frente a 5,2&nbsp;% en 2017–2025) y llega con una rotación menor (35&nbsp;% de la cartera al año frente al 58&nbsp;%), lo que reduciría además los costes de transacción que el backtest no incluye.</p>
+      <p id="mit-us"><strong>EE.&nbsp;UU.:</strong> las diferencias entre formas de construir la cartera son mínimas: todas las versiones con tramos suficientemente grandes rinden entre un 12,9&nbsp;% y un 13,4&nbsp;% (por mitades, 13,4&nbsp;% con tramos de 15 y 12,9&nbsp;% con tramos de 30, frente al 13,0&nbsp;% de la anual). Como en EE.&nbsp;UU. el exceso persiste también en el tercer año, acortar o alargar la tenencia apenas cambia la rentabilidad. La ventaja práctica de la versión por mitades es la rotación: 26&nbsp;% de la cartera al año frente al 41&nbsp;%.</p>
+      <p><strong>Cautela:</strong> la propuesta nace del análisis de estos mismos datos, por lo que su resultado no es una validación independiente. La mejora, de medio punto al año, es inferior al margen de error estadístico de un periodo de 18 años. Antes de adoptarla convendría contrastarla con datos posteriores o en otros mercados.</p>
+    </div>
+    <div class="simple" role="note"><span class="eyebrow">En palabras sencillas</span><p>En la revisión se propuso comprar un tercio de la cartera cada año y mantener cada parte tres años, porque el mercado tarda en darse cuenta de que una empresa es buena. Tiene razón en que tarda más de un año, pero en Europa al tercer año ya no se gana nada extra. Por eso probamos mantener cada parte solo dos años, y en Europa sale mejor que todo lo demás, cambiando además menos empresas cada año.</p></div>
+  </section>
+
+  <!-- ================================================================ 5 -->
+  <section aria-labelledby="s5">
+    <div class="sec-head"><h2 id="s5">6. Los analistas: dónde y cuándo se equivocan</h2></div>
+    <div class="kpi2">
+      <figure>
+        <div class="segs"><div class="seg-row" id="erra-rng"></div><div class="seg-row" id="erra-leg"></div></div>
+        <div class="chart" id="err-anio" role="img" aria-label="Desviación mediana del EBIT publicado frente al previsto por año"></div>
+        <figcaption class="caption">EBIT publicado frente al previsto a 31 de diciembre del año anterior (mediana). Negativo = los analistas fueron optimistas.</figcaption>
+      </figure>
+      <figure>
+        <div class="segs"><div class="seg-row" id="errs-mk"></div><div class="seg-row" id="errs-leg"></div></div>
+        <div class="chart" id="err-sec" role="img" aria-label="Desviación mediana por sector"></div>
+        <figcaption class="caption">Desviación mediana por sector, 2006–2025.</figcaption>
+      </figure>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>2006–2025</th><th>Desviación mediana</th><th>% con EBIT inferior al previsto</th></tr></thead>
+        <tbody>
+          <tr><td>EE.&nbsp;UU., universo</td><td>-6,3&nbsp;%</td><td>67&nbsp;%</td></tr>
+          <tr><td>EE.&nbsp;UU., top 30 forward</td><td class="neg">-9,9&nbsp;%</td><td>72&nbsp;%</td></tr>
+          <tr><td>Europa, universo</td><td>-12,7&nbsp;%</td><td>75&nbsp;%</td></tr>
+          <tr><td>Europa, top 30 forward</td><td class="neg">-19,1&nbsp;%</td><td>85&nbsp;%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout" role="note">
+      <span class="eyebrow">Hallazgo</span>
+      <h3>El optimismo es sistemático, se dispara en las crisis y se concentra en los sectores cíclicos</h3>
+      <p>Los analistas no anticipan los cambios de ciclo: los mayores errores corresponden a las previsiones para 2009 y para 2020 (en Europa, un −34&nbsp;% en 2020). Por sectores, energía y tecnología acumulan las mayores desviaciones en los dos mercados; industria y consumo, las menores. En Europa el sesgo es mayor que en EE.&nbsp;UU. en todos los sectores, y en la mayoría lo duplica. Es coherente con una menor cobertura de analistas por compañía. Además, en Europa el optimismo no se ha corregido con el tiempo: entre 2023 y 2025 la desviación vuelve a superar el −12&nbsp;%.</p>
+      <p>Por eso la variante <em>forward</em> es neutral en EE.&nbsp;UU. (12,1&nbsp;% frente a 11,9&nbsp;% en 2006–2025) y resta en Europa (6,2&nbsp;% frente a 7,7&nbsp;%). La fórmula elige por construcción las compañías con mayor EBIT previsto en relación con su precio y su capital, y son precisamente aquellas en las que el consenso es más optimista: cuanto mayor es el sesgo del mercado, más «selecciona el error».</p>
+    </div>
+    <div class="simple" role="note"><span class="eyebrow">En palabras sencillas</span><p>Los analistas casi siempre esperan más beneficio del que luego llega, y fallan sobre todo justo antes de las crisis y en sectores que dependen mucho del ciclo, como la energía. En Europa se equivocan el doble que en EE.&nbsp;UU.</p></div>
+  </section>
+
+  <!-- ================================================================ 6 -->
+  <section aria-labelledby="s6">
+    <div class="sec-head"><h2 id="s6">7. Variantes de la fórmula</h2></div>
+    <p class="find">Todas con el mismo universo y periodo (2006–2025), cartera equiponderada y rebalanceo anual. Elige qué variantes y qué mercados comparar, y por qué mercado ordenar. Las versiones rolling, con otro periodo, se comparan en las secciones&nbsp;4 y 5.</p>
+    <div class="ctrl" role="group" aria-label="Ordenar"><button data-ord="us" aria-pressed="true">Ordenar por EE. UU.</button><button data-ord="eu" aria-pressed="false">Ordenar por Europa</button></div>
+    <figure>
+      <div class="segs"><div class="seg-row" id="var-mk"></div><div class="seg-row" id="var-leg"></div></div>
+      <div class="chart" id="var-chart" role="img" aria-label="CAGR 2006-2025 por variante"></div>
+      <figcaption class="caption">CAGR 2006–2025. Líneas discontinuas: índice ponderado por capitalización de cada mercado, en su color.</figcaption>
+    </figure>
+    <div class="table-wrap">
+      <table class="txt">
+        <thead><tr><th>Variante</th><th style="text-align:left">Qué cambia</th></tr></thead>
+        <tbody>
+          <tr><td>Original</td><td>EBIT de los últimos 12 meses (Greenblatt)</td></tr>
+          <tr><td>Forward</td><td>EBIT previsto por el consenso a 12 meses</td></tr>
+          <tr><td>Prudente</td><td>El menor entre el EBIT pasado y el previsto</td></tr>
+          <tr><td>Híbrida</td><td>Media de los puestos con EBIT pasado y previsto</td></tr>
+          <tr><td>Sin expectativas altas</td><td>Original, excluyendo el 20&nbsp;% de compañías con mayor crecimiento esperado</td></tr>
+          <tr><td>Máx. 6 por sector</td><td>Original, con un límite de 6 compañías por sector</td></tr>
+          <tr><td>Top 10 / Top 50</td><td>Original, con 10 o 50 compañías</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="find"><strong>Lectura:</strong> en EE.&nbsp;UU. ninguna variante cambia el resultado de forma relevante: la fórmula es robusta a estas decisiones de diseño, salvo la concentración en 10 compañías. En Europa, las variantes que reducen el peso de las previsiones o diversifican (top 50, sin expectativas altas, límite sectorial) mejoran ligeramente el resultado. Con 20 años de datos, diferencias inferiores a un punto no son concluyentes: estas comparaciones orientan, no demuestran.</p>
+  </section>
+
+  <!-- ================================================================ 7 -->
+  <section aria-labelledby="s7">
+    <div class="sec-head"><h2 id="s7">8. Cuánto engaña un backtest mal hecho</h2></div>
+    <figure>
+      <div class="chart" id="sesgo-chart" role="img" aria-label="Efecto de los sesgos en el CAGR"></div>
+      <figcaption class="caption">CAGR del top 30 con la metodología correcta y repitiendo el cálculo con cada sesgo introducido a propósito. EE. UU. 2001–2025 (anual) y Europa 2006–2025.</figcaption>
+    </figure>
+    <div class="callout ok" role="note">
+      <span class="eyebrow">Por qué importa</span>
+      <h3>Los datos gratuitos llevan incorporados estos dos sesgos</h3>
+      <p><strong>Supervivencia:</strong> limitando el universo a las compañías que siguen en el índice hoy, el CAGR pasa del 12,2&nbsp;% al 14,1&nbsp;% en EE.&nbsp;UU. y del 7,7&nbsp;% al 11,8&nbsp;% en Europa. Las fuentes gratuitas (Yahoo Finance, por ejemplo) solo tienen las empresas actuales.</p>
+      <p><strong>Anticipación:</strong> usando en el ranking de enero las cuentas del ejercicio recién cerrado, que se publican en febrero o marzo, el CAGR europeo pasa del 7,7&nbsp;% al 9,8&nbsp;%.</p>
+      <p>Un backtest con los dos sesgos mostraría en Europa una estrategia ganadora con claridad. El resultado real es mucho más modesto.</p>
+    </div>
+  </section>
+
+  <!-- ================================================================ 8 -->
+  <section aria-labelledby="s8">
+    <div class="sec-head"><h2 id="s8">9. Valoración por sector y país a lo largo del tiempo</h2></div>
+    <p class="find"><em>Earnings Yield</em> mediano (EBIT / EV) de las compañías elegibles. Cuanto más alto, más barato. Elige la vista, el periodo y qué sectores o países comparar: marca o desmarca cada uno, doble clic para ver solo ese, y pasa el ratón por un nombre para destacar su línea.</p>
+    <div class="ctrl" role="group" aria-label="Vista"><button data-v="us" aria-pressed="true">Sectores EE. UU.</button><button data-v="eu" aria-pressed="false">Sectores Europa</button><button data-v="pais" aria-pressed="false">Países Europa</button></div>
+    <figure>
+      <div class="segs"><div class="seg-row" id="val-rng"></div><div class="seg-row" id="val-leg"></div></div>
+      <div class="chart" id="val-chart" role="img" aria-label="Earnings Yield mediano por sector o país"></div>
+      <figcaption class="caption">Mediana anual del Earnings Yield (EBIT de los últimos 12 meses / EV) en la fecha de rebalanceo.</figcaption>
+    </figure>
+    <p class="find"><strong>Lectura:</strong> el mercado estadounidense se ha encarecido de forma sostenida: el EY mediano pasa del 8–9&nbsp;% en 2010–2013 al 4–5&nbsp;% en 2020–2025 (mínimo del 3,8&nbsp;% en 2021). Esto reduce el margen de seguridad de cualquier estrategia de valor y ayuda a explicar la última década. Europa cotiza hoy más barata que EE.&nbsp;UU. (5,8&nbsp;% frente a 4,6&nbsp;% en 2025). Por países, Noruega, Finlandia y Bélgica han sido de media los más baratos (EY en torno al 7&nbsp;%), y Suiza y Dinamarca los más caros (5,2&nbsp;%). España, con un 5,5&nbsp;%, está entre los caros, por el peso de compañías de calidad como Inditex o Amadeus. En todos los mercados, 2009 marca el punto de máxima oportunidad: el EY mediano supera el 11&nbsp;%.</p>
+  </section>
+
+  <!-- 9 -->
+  <section aria-labelledby="s9">
+    <div class="sec-head"><h2 id="s9">9. Explorador de compañías</h2></div>
+    <p class="find">El explorador con el histórico año a año de cada una de las compañías está disponible en la versión local del informe. No se incluye en la versión publicada porque contiene datos individuales de WRDS y Bloomberg sujetos a licencia académica.</p>
+  </section>
+
+  <!-- ================================================================ 10 -->
+  <section aria-labelledby="s10">
+    <div class="sec-head"><h2 id="s10">11. España</h2></div>
+    <p class="find">64 compañías españolas han formado parte del STOXX Europe 600 desde 2004; 39 de ellas han sido elegibles algún año (el resto son en su mayoría bancos, aseguradoras, eléctricas e inmobiliarias, que la fórmula excluye). Las que más veces entraron en el top 30 europeo: ACS (5 años), Mediaset España y Técnicas Reunidas (3 cada una). Técnicas Reunidas es la española mejor clasificada de media (puesto mediano 5). El Mercado Continuo completo no estaba disponible en Bloomberg con el código utilizado; queda como ampliación.</p>
+  </section>
+
+  <!-- ================================================================ 11 -->
+  <section aria-labelledby="s11">
+    <div class="sec-head"><h2 id="s11">12. Metodología y limitaciones</h2></div>
+    <div class="two">
+      <div>
+        <h3>Metodología</h3>
+        <ul>
+          <li><strong>EE.&nbsp;UU.:</strong> las 500 mayores acciones ordinarias por capitalización en cada fecha (CRSP), cuentas trimestrales con su fecha real de publicación (Compustat), rentabilidad total mensual con salidas de cotización. Consenso BEst de Bloomberg enlazado por CUSIP (1.033 de 1.037 compañías).</li>
+          <li><strong>Europa:</strong> miembros históricos del STOXX Europe 600, cuentas anuales con 6 meses de desfase, rentabilidad total anual en euros (Bloomberg).</li>
+          <li><strong>Rolling y años de tenencia:</strong> se sigue la rentabilidad total de cada compañía aunque salga del índice; si deja de cotizar, su último valor queda como liquidez. En Europa esto corrige una versión preliminar que, al perder las compañías que salían del índice, sobrestimaba la rolling (8,0&nbsp;% frente al 6,7&nbsp;% correcto).</li>
+          <li>Se excluyen financieras, <em>utilities</em> e inmobiliarias. Cartera equiponderada, rebalanceo el 1 de enero.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Limitaciones</h3>
+        <ul>
+          <li>Sin costes de transacción ni impuestos.</li>
+          <li>Europa con frecuencia anual: el riesgo intraanual está infraestimado.</li>
+          <li>Los análisis de quintiles y variantes usan rentabilidades anuales.</li>
+          <li>Comparar muchas variantes aumenta el riesgo de encontrar diferencias por azar.</li>
+          <li>El consenso es EBIT ajustado y el dato publicado es contable: parte del «error» es de definición.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="watch">
+      <span class="when">Próximos pasos</span>
+      <ul>
+        <li><strong>Validación fuera de la muestra de la tenencia por mitades</strong> (sección&nbsp;5): repetir el contraste en EE.&nbsp;UU. entre 1980 y 2000, periodo que CRSP y Compustat cubren y que no se ha utilizado para formular la propuesta, y en Europa con los datos que se vayan publicando a partir de 2026.</li>
+        <li><strong>Rentabilidad neta y ajustada por riesgo:</strong> incorporar costes de transacción en función de la rotación de cada versión, ratio de Sharpe, <em>information ratio</em> y <em>tracking error</em>, y una atribución a los factores de Fama-French para separar la aportación de la fórmula de su exposición a valor y tamaño.</li>
+        <li><strong>Europa con mayor precisión</strong> (segunda sesión de Bloomberg): rentabilidades mensuales, el índice oficial STOXX Europe 600 Net Return como referencia y ampliación del periodo anterior a 2006.</li>
+        <li><strong>Herramienta web:</strong> publicar los resultados agregados del backtest y mantener el EBIT de los últimos 12 meses como cálculo de referencia, con un aviso en el modo <em>forward</em> sobre el sesgo optimista del consenso, dado que ni la variante forward ni la híbrida mejoran el resultado.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>Análisis con fines educativos sobre datos históricos. Rentabilidades pasadas no garantizan rentabilidades futuras. No constituye una recomendación de inversión. Datos de WRDS y Bloomberg utilizados bajo licencia académica; documento de uso privado, no redistribuir.</footer>
+</main>
+
+<script>
+(function () {
+  const D = {"us":{"variantes":{"original":{"cagr_total":0.12196230416684606,"cagr_2006_2025":0.11858846619665586,"anual":{"2001":0.19065359380756952,"2002":-0.10433764008456323,"2003":0.35790536306043547,"2004":0.195337448336359,"2005":0.09083765862858381,"2006":0.15009910392416534,"2007":0.1814379021906286,"2008":-0.4260938788683467,"2009":0.4367421920070355,"2010":0.11918059079572815,"2011":0.11615608158328292,"2012":0.09573198014620822,"2013":0.4793925068147292,"2014":0.16943944487852736,"2015":0.01844076219116437,"2016":0.15080600734559546,"2017":0.2890973462784484,"2018":-0.0347757400178978,"2019":0.3612916274283349,"2020":0.07514737523796314,"2021":0.2383677217553696,"2022":-0.010641757346281054,"2023":0.21364749582340903,"2024":0.07817547318849831,"2025":0.036081839181220224}},"forward":{"cagr_total":0.12105747620406304,"cagr_2006_2025":0.12105747620406304,"anual":{"2006":0.10872775740319099,"2007":0.18809455039983933,"2008":-0.4363640894096559,"2009":0.44133315918126875,"2010":0.09792514035557835,"2011":0.12912545805423126,"2012":0.1817345194780634,"2013":0.4410036009236941,"2014":0.16537011062856358,"2015":0.07864484067117526,"2016":0.0628742557451131,"2017":0.30501060064504565,"2018":-0.039870438633357305,"2019":0.2967982608260485,"2020":0.12038480311300849,"2021":0.23617040031897782,"2022":0.019503026390054207,"2023":0.21410647869690952,"2024":0.07566837110730687,"2025":0.08694841278305092}},"prudente":{"cagr_total":0.1168493413255498,"cagr_2006_2025":0.1168493413255498,"anual":{"2006":0.08924653088975239,"2007":0.08556046851731454,"2008":-0.41772888500936045,"2009":0.4488564149758225,"2010":0.0886624810826397,"2011":0.1452656482540659,"2012":0.11615345625193946,"2013":0.4602881276272443,"2014":0.16766485431911135,"2015":0.04337341631594485,"2016":0.15127279213816516,"2017":0.2647211640192741,"2018":-0.0347757400178978,"2019":0.32846886593054575,"2020":0.07764754977608121,"2021":0.2796001489469486,"2022":-0.010051803345312683,"2023":0.27085592750432447,"2024":0.06926719125473915,"2025":0.06596372489613313}},"hibrida":{"cagr_total":0.1210452240618094,"cagr_2006_2025":0.1210452240618094,"anual":{"2006":0.11684012860934039,"2007":0.12636056883121188,"2008":-0.39706117772593913,"2009":0.42414102950014104,"2010":0.09743777220455657,"2011":0.13386550237291367,"2012":0.12462328680084399,"2013":0.4695167992416216,"2014":0.1717000719224191,"2015":0.07085818975182097,"2016":0.1167306711006772,"2017":0.2673984567544498,"2018":-0.0364488759856187,"2019":0.3121775992628613,"2020":0.07722883918283556,"2021":0.2659517218449839,"2022":-0.02714751177486409,"2023":0.2170094210921364,"2024":0.08588585550576029,"2025":0.12387301292538216}},"sin_expectativas_altas":{"cagr_total":0.11847565999785181,"cagr_2006_2025":0.11847565999785181,"anual":{"2006":0.15009910392416534,"2007":0.15487406476112212,"2008":-0.4260938788683467,"2009":0.4601415894432054,"2010":0.1356978221402608,"2011":0.11615608158328292,"2012":0.09702419124327756,"2013":0.4696817932193223,"2014":0.15801582643624165,"2015":0.05397764498475268,"2016":0.15211732408122297,"2017":0.2890973462784484,"2018":-0.05757879455994197,"2019":0.34336577746755703,"2020":0.06903636253045928,"2021":0.2423083975408672,"2022":-0.0061235210669646845,"2023":0.21364749582340903,"2024":0.07817547318849831,"2025":0.041103287860653766}},"max_6_por_sector":{"cagr_total":0.11506845201398086,"cagr_2006_2025":0.11157331284967653,"anual":{"2001":0.17519214812490205,"2002":-0.11455688016751256,"2003":0.33792049822664466,"2004":0.20356646427146022,"2005":0.09548403855784299,"2006":0.14229478918491995,"2007":0.17066432766121892,"2008":-0.4348744363739965,"2009":0.4394319335411245,"2010":0.13980135029360488,"2011":0.12695894162346183,"2012":0.1046751740760083,"2013":0.4424604427142213,"2014":0.16490630899659608,"2015":0.06417030466859844,"2016":0.1429600559932955,"2017":0.2788382590595951,"2018":-0.049495688307764005,"2019":0.37300382589895814,"2020":0.07206872470325848,"2021":0.20539129914297494,"2022":-0.0841377174486227,"2023":0.18332367044711614,"2024":0.06321450210093564,"2025":0.05793711599085153}},"top_50":{"cagr_total":0.12385894094388772,"cagr_2006_2025":0.12516850528781953,"anual":{"2001":0.15214348844703413,"2002":-0.09015931003269016,"2003":0.35059380520109534,"2004":0.17878705043491253,"2005":0.04957081126674124,"2006":0.17301441588430977,"2007":0.16553757972137503,"2008":-0.3655140870024917,"2009":0.47716807650442694,"2010":0.12972940277840167,"2011":0.10056017823409792,"2012":0.11677831673573877,"2013":0.4232184753467207,"2014":0.17516583133183744,"2015":0.03509254898504294,"2016":0.13083797445265996,"2017":0.2423340492210219,"2018":-0.055248270012006856,"2019":0.3246320684821141,"2020":0.1380255347699671,"2021":0.24367310165853912,"2022":-0.058596952881631505,"2023":0.22850671429990932,"2024":0.06661925569440391,"2025":0.11864470702854296}},"top_10":{"cagr_total":0.1191171241113218,"cagr_2006_2025":0.10730759444875759,"anual":{"2001":0.19469342043408328,"2002":-0.11421250884451602,"2003":0.3120367092525915,"2004":0.25763305596861613,"2005":0.24290235948395483,"2006":0.003394434551702713,"2007":0.1830909420012009,"2008":-0.45524714808594,"2009":0.3333033937882437,"2010":0.06580602219108952,"2011":0.2604384644602475,"2012":-0.03430359887597646,"2013":0.5106021940903606,"2014":0.30363062566957855,"2015":0.04521355315901947,"2016":0.07831066985011156,"2017":0.3547944473633654,"2018":0.09123842090403976,"2019":0.4215134044372323,"2020":0.07339476663676552,"2021":0.2963908375672287,"2022":-0.03388442957222472,"2023":0.20180187559121662,"2024":-0.021450566659124412,"2025":-0.06895846966629701}},"rolling_tercios":{"cagr_total":0.12447081981763852,"cagr_2006_2025":0.10318390835491931,"anual":{"2003":0.4144668172266827,"2004":0.2321977946320905,"2005":0.1955749586029367,"2006":0.0133663429255646,"2007":-0.0009502165930866,"2008":-0.4310923292468367,"2009":0.4335856790944139,"2010":0.0891894912462727,"2011":0.2470035302200139,"2012":-0.026731997219112,"2013":0.5062423773602587,"2014":0.2726433255618732,"2015":0.1294122660927874,"2016":0.0918657967374634,"2017":0.3056863061404304,"2018":0.0947802394199042,"2019":0.206458404403343,"2020":0.0779672170398699,"2021":0.3259983112311375,"2022":-0.0143813551647763,"2023":0.160246716030098,"2024":-0.0029128550757214,"2025":-0.0171361395615992}},"rolling_30":{"cagr_total":0.13157583232974956,"cagr_2006_2025":0.12028110678465742,"anual":{"2003":0.37521705667606464,"2004":0.16493475079742193,"2005":0.1053789045836786,"2006":0.1351599824862686,"2007":0.0873392215234301,"2008":-0.4081536587814859,"2009":0.45679074662485486,"2010":0.16404417465775012,"2011":0.12333609149617453,"2012":0.10994946603059907,"2013":0.48305497423070154,"2014":0.18995855113962667,"2015":0.05296512294876177,"2016":0.13733479696684192,"2017":0.26567102206231663,"2018":-0.02438660492770861,"2019":0.291317768103881,"2020":0.1024047228972862,"2021":0.26700091104262924,"2022":0.006379561348791141,"2023":0.1617517474184984,"2024":0.05065844983029799,"2025":0.08555486789990185}}},"indice":{"cap":{"2001":-0.1425380396069392,"2002":-0.2212930900373166,"2003":0.2871046754818724,"2004":0.1084875130876847,"2005":0.0629218985931014,"2006":0.1582875832068833,"2007":0.0878981271927108,"2008":-0.3763226345444126,"2009":0.2677877845290184,"2010":0.1521176772853429,"2011":-0.0008497419281634,"2012":0.1608294229105655,"2013":0.3169430314349568,"2014":0.126498489543994,"2015":0.0060719444084686,"2016":0.1121610588849304,"2017":0.2246722847512203,"2018":-0.0464625099134248,"2019":0.3110016250787508,"2020":0.231694719617336,"2021":0.2540563773682576,"2022":-0.1975846361463348,"2023":0.2689789269190792,"2024":0.2559624675101568,"2025":0.1769712026441461},"eq":{"2001":-0.1070666753266829,"2002":-0.1987067387598544,"2003":0.3562825237112552,"2004":0.1711942202175551,"2005":0.1081966407029741,"2006":0.1610591985832474,"2007":0.0877027388140556,"2008":-0.4134876619067704,"2009":0.3641271391261185,"2010":0.2239884193391945,"2011":-0.0166881665286229,"2012":0.1730478599754823,"2013":0.3335219614060982,"2014":0.1257952508051356,"2015":-0.0165513589860837,"2016":0.1192683115547779,"2017":0.219552095607268,"2018":-0.0746840484623095,"2019":0.3087954013131548,"2020":0.2008329636540751,"2021":0.2397920337726879,"2022":-0.1653580261547127,"2023":0.1793409795159886,"2024":0.1575950570366955,"2025":0.1490898869721908},"cap_cagr_2006_2025":0.10863589656408323,"eq_cagr_2006_2025":0.10048344286768085,"cap_cagr_total":0.08654707238660309,"eq_cagr_total":0.08962000409913617},"q_ey":{"cagr":{"1":0.11916466753523891,"2":0.1043179952351807,"3":0.09244907404535296,"4":0.08184927124944519,"5":0.07030461764729323}},"q_roc":{"cagr":{"1":0.09167501325035832,"2":0.09953920515352976,"3":0.1026095121907602,"4":0.09136523409765673,"5":0.08887515186862505}},"q_mf":{"cagr":{"1":0.11971392611255904,"2":0.1007869212199608,"3":0.08278182012011648,"4":0.09917877279134624,"5":0.073306904241766}},"q_crec":{"cagr":{"1":0.14042081530143524,"2":0.09532800654292473,"3":0.10172006466945271,"4":0.11419461418371735,"5":0.11530181628983893}},"ic":{"anual":{"2001":0.2854375942489209,"2002":0.24942285190221689,"2003":-0.153353608445633,"2004":0.046236648865153544,"2005":-0.11066999867187943,"2006":0.04965107512113012,"2007":0.02984092817747679,"2008":0.14400085391605386,"2009":0.22517256901109586,"2010":-0.2231062450672533,"2011":0.2558971270644458,"2012":0.010881217942866686,"2013":0.134253731895771,"2014":0.21898844500552186,"2015":0.07911273545677319,"2016":0.025271115615331637,"2017":0.0879084588835981,"2018":0.12001765230650478,"2019":0.036347012950528126,"2020":-0.10327823578337476,"2021":0.05942373717912638,"2022":0.14921559349179198,"2023":0.036703823453423996,"2024":-0.030015118479635252,"2025":-0.06707863847794328},"media":0.062251253102480496,"pct_pos":0.76},"error":{"por_anio":{"2006":-0.025339698861549742,"2007":-0.02496129790814483,"2008":-0.08364989443785109,"2009":-0.1029630541871921,"2010":0.024323229081282483,"2011":-0.01643088926561531,"2012":-0.07237328468289722,"2013":-0.06732208285174113,"2014":-0.06478733926805147,"2015":-0.11864446667058892,"2016":-0.08516737276930875,"2017":-0.047272727272727244,"2018":-0.061665720541724034,"2019":-0.09511441114608754,"2020":-0.14181213194833509,"2021":0.031181484660765424,"2022":-0.09019669039832273,"2023":-0.07410781752549678,"2024":-0.08618052781642982,"2025":-0.08668674915689534},"por_sector":{"Energía":-0.17760581076013526,"Tecnología":-0.14880148744100563,"Materiales":-0.09364380394488092,"Salud":-0.07340118152061686,"Comunicación":-0.0582267700610018,"Consumo discrecional":-0.0368976440698392,"Industria":-0.03462588749317319,"Consumo básico":-0.03438183964343505},"mediana":-0.06331338576398604,"pct_neg":0.6695196506550218,"top30_fwd_mediana":-0.09887256380226894,"top30_fwd_pct_neg":0.7157534246575342},"valoracion":{"ey_mediano":{"2001":0.0543290323758281,"2002":0.0583504678540218,"2003":0.0667563935265192,"2004":0.0609228049777176,"2005":0.06491904256228209,"2006":0.0693658160070127,"2007":0.06992387777380445,"2008":0.07072273503313084,"2009":0.1131414838517302,"2010":0.0804704529013532,"2011":0.0810467835341646,"2012":0.0933561762102662,"2013":0.0820932647135279,"2014":0.0662584643524673,"2015":0.0676008064321987,"2016":0.0656937795378419,"2017":0.0608606123163349,"2018":0.0544451341825662,"2019":0.061961697294936,"2020":0.04792019191303315,"2021":0.0377872838515564,"2022":0.0411718851711974,"2023":0.0519045597565968,"2024":0.0494135695799083,"2025":0.0459066819501138},"spread":{"2001":2.1711244280438757,"2002":1.8789027949117123,"2003":1.7207464802856394,"2004":1.7392852081023575,"2005":1.6918991091620383,"2006":1.7016837180549433,"2007":1.6962115343078876,"2008":1.630442925368141,"2009":1.8142520141955718,"2010":1.508244995256617,"2011":1.6557768123643613,"2012":1.7137629569646642,"2013":1.6964803556650807,"2014":1.5987957732564735,"2015":1.511642824933488,"2016":1.730590342981853,"2017":1.5786183736958317,"2018":1.6343154015891947,"2019":1.7104699383625215,"2020":1.7295209764770818,"2021":2.056779511705062,"2022":1.9659298780601961,"2023":2.4721480664618722,"2024":2.111673001835467,"2025":1.9691547365892719}},"sector_ey":{"Comunicación":{"2001":0.0483772382304599,"2002":0.0600915801385818,"2003":0.06083899858875925,"2004":0.0570764576805413,"2005":0.06519609912997446,"2006":0.0605414472150333,"2007":0.0608868536295776,"2008":0.0833846770727919,"2009":0.1159688347332899,"2010":0.09588446084659666,"2011":0.0915163475804414,"2012":0.09786447255048186,"2013":0.0893770070392996,"2014":0.0691259556438881,"2015":0.0652877994375908,"2016":0.0538732834275409,"2017":0.0717708385429981,"2018":0.062075057942864,"2019":0.06240235868658915,"2020":0.0455766719897154,"2021":0.0389616495582516,"2022":0.0299047537601419,"2023":0.05260522077001345,"2024":0.0595312707397308,"2025":0.04362804228045495},"Consumo básico":{"2001":0.0592796305678483,"2002":0.0648739599370319,"2003":0.0780964770618291,"2004":0.0712757156882085,"2005":0.0732022610158513,"2006":0.07704974065726494,"2007":0.0732304341247566,"2008":0.0768014921182351,"2009":0.09759823303951115,"2010":0.09311965322319346,"2011":0.0903506765799762,"2012":0.08727353174064975,"2013":0.08264688461432934,"2014":0.0678404559834983,"2015":0.0676368220973171,"2016":0.0608303476577317,"2017":0.0617729082433941,"2018":0.0608957792134961,"2019":0.0679413957122179,"2020":0.052865649923762,"2021":0.052103085475758246,"2022":0.0486199369886404,"2023":0.051104346728502156,"2024":0.0550290191702634,"2025":0.0586749809379986},"Consumo discrecional":{"2001":0.0692626562069861,"2002":0.06531373935630995,"2003":0.0836098752370082,"2004":0.0754340332500022,"2005":0.074434266986195,"2006":0.07174280337311001,"2007":0.0723029127954947,"2008":0.08458022720442715,"2009":0.1131414838517302,"2010":0.0819239292463612,"2011":0.0857443938081765,"2012":0.08886797124999585,"2013":0.0848396620109791,"2014":0.06913687845085364,"2015":0.0656778632166368,"2016":0.06623878441672,"2017":0.0683842813157298,"2018":0.0597172620904281,"2019":0.06536895716062505,"2020":0.0491761986796475,"2021":0.023367764670101848,"2022":0.0410458768982642,"2023":0.05284795071895845,"2024":0.0495519030648123,"2025":0.048165952964367445},"Energía":{"2001":0.0626140770689258,"2002":0.1051063598583059,"2003":0.04902476962363665,"2004":0.08046166515049291,"2005":0.0670405105869355,"2006":0.0657978100191248,"2007":0.1106840433611988,"2008":0.0728983701002073,"2009":0.1871662255574672,"2010":0.0829234362096758,"2011":0.0664114592106318,"2012":0.07722424566211405,"2013":0.0812120651007863,"2014":0.0677048910257498,"2015":0.08915879704912019,"2016":0.0750707729257722,"2017":0.0378505175702397,"2018":0.0294710268635473,"2019":0.06742860326045474,"2020":0.0501511675314349,"2021":0.0486213675001684,"2022":0.05226257967739585,"2023":0.1281702858342021,"2024":0.11084304391797695,"2025":0.0789478315564341},"Industria":{"2001":0.07809785970797635,"2002":0.0671676190115133,"2003":0.0752021243423039,"2004":0.0656712354973513,"2005":0.06997952724101861,"2006":0.07472068889934186,"2007":0.0795668087188071,"2008":0.0798919251461597,"2009":0.1273974485377247,"2010":0.08307487940877595,"2011":0.07856185024841819,"2012":0.0922757002563359,"2013":0.083645259243299,"2014":0.0664816159095431,"2015":0.0716440465210558,"2016":0.073936951393872,"2017":0.0648693537276492,"2018":0.0553742152421703,"2019":0.06519074451869039,"2020":0.05220139284176355,"2021":0.043168864984490504,"2022":0.0424666648844959,"2023":0.049429421823725395,"2024":0.0482029350863028,"2025":0.044373520338774},"Materiales":{"2001":0.0699923232538217,"2002":0.0605922858526197,"2003":0.06516639837546515,"2004":0.04519218404156385,"2005":0.056107042453152706,"2006":0.068460147259404,"2007":0.0674418505213483,"2008":0.0636575730493885,"2009":0.09774637243833585,"2010":0.0540060964060532,"2011":0.06358819676758524,"2012":0.0947896430663165,"2013":0.0674357134332305,"2014":0.0607101256568678,"2015":0.0663443957313555,"2016":0.0661886544667818,"2017":0.052110682276525,"2018":0.046507630175453854,"2019":0.0633584836015036,"2020":0.0431846373361403,"2021":0.0422738824343398,"2022":0.0517727924828082,"2023":0.0634627223100672,"2024":0.052928737165806455,"2025":0.0543751928885433},"Salud":{"2001":0.03659679559477385,"2002":0.0450725128383825,"2003":0.069623553500915,"2004":0.0612000541539324,"2005":0.0548485541495383,"2006":0.0662235727749017,"2007":0.0614695524890277,"2008":0.0596658597347788,"2009":0.0940780879709902,"2010":0.0869266797883203,"2011":0.0878116147194794,"2012":0.09834946203015775,"2013":0.08304717795495034,"2014":0.0633466562643426,"2015":0.0523053736249328,"2016":0.0528380405590769,"2017":0.0546133840768593,"2018":0.0474600239909574,"2019":0.0510489993903237,"2020":0.0390789168446557,"2021":0.0302624465302132,"2022":0.03568050532306465,"2023":0.0469271521310075,"2024":0.044380929455712606,"2025":0.046622852628934744},"Tecnología":{"2001":0.037834133902879305,"2002":0.036734735829744805,"2003":0.0467465850544098,"2004":0.0317016429620665,"2005":0.0495683123334803,"2006":0.0568116701055943,"2007":0.0536436076907592,"2008":0.0510852536242032,"2009":0.1106981329819774,"2010":0.0587701396029215,"2011":0.070957517944623,"2012":0.096377491809307,"2013":0.07860080783014975,"2014":0.0647730146466,"2015":0.0682149434352706,"2016":0.0712104536660939,"2017":0.05559123931735395,"2018":0.054763339395337854,"2019":0.0606588073950998,"2020":0.0411156912412997,"2021":0.0319834011847041,"2022":0.0308016957376588,"2023":0.0478867720903228,"2024":0.03752052431774905,"2025":0.0307691678987682}},"cagr_2003_2025":{"original":0.13008175887031026,"rolling":0.12447081981763852,"rolling30":0.13157583232974956,"cap":0.11380656170161019,"eq":0.11387808541976985},"n_empresas":896,"n_obs":8532,"supervivencia":{"honesto":0.12196230416684606,"sesgado":0.1412301662547979},"tenencia":{"ret":{"1":0.13886393678489278,"2":0.13221434373773527,"3":0.15060835599863626},"exceso_sp500":{"1":0.035448090454017395,"2":0.018550418826117594,"3":0.02238108261097798},"exceso_igual_peso":{"1":0.031398336545576055,"2":0.015809898683168556,"3":0.020503424691268625}},"mensual":{"mes":["2001-01","2001-02","2001-03","2001-04","2001-05","2001-06","2001-07","2001-08","2001-09","2001-10","2001-11","2001-12","2002-01","2002-02","2002-03","2002-04","2002-05","2002-06","2002-07","2002-08","2002-09","2002-10","2002-11","2002-12","2003-01","2003-02","2003-03","2003-04","2003-05","2003-06","2003-07","2003-08","2003-09","2003-10","2003-11","2003-12","2004-01","2004-02","2004-03","2004-04","2004-05","2004-06","2004-07","2004-08","2004-09","2004-10","2004-11","2004-12","2005-01","2005-02","2005-03","2005-04","2005-05","2005-06","2005-07","2005-08","2005-09","2005-10","2005-11","2005-12","2006-01","2006-02","2006-03","2006-04","2006-05","2006-06","2006-07","2006-08","2006-09","2006-10","2006-11","2006-12","2007-01","2007-02","2007-03","2007-04","2007-05","2007-06","2007-07","2007-08","2007-09","2007-10","2007-11","2007-12","2008-01","2008-02","2008-03","2008-04","2008-05","2008-06","2008-07","2008-08","2008-09","2008-10","2008-11","2008-12","2009-01","2009-02","2009-03","2009-04","2009-05","2009-06","2009-07","2009-08","2009-09","2009-10","2009-11","2009-12","2010-01","2010-02","2010-03","2010-04","2010-05","2010-06","2010-07","2010-08","2010-09","2010-10","2010-11","2010-12","2011-01","2011-02","2011-03","2011-04","2011-05","2011-06","2011-07","2011-08","2011-09","2011-10","2011-11","2011-12","2012-01","2012-02","2012-03","2012-04","2012-05","2012-06","2012-07","2012-08","2012-09","2012-10","2012-11","2012-12","2013-01","2013-02","2013-03","2013-04","2013-05","2013-06","2013-07","2013-08","2013-09","2013-10","2013-11","2013-12","2014-01","2014-02","2014-03","2014-04","2014-05","2014-06","2014-07","2014-08","2014-09","2014-10","2014-11","2014-12","2015-01","2015-02","2015-03","2015-04","2015-05","2015-06","2015-07","2015-08","2015-09","2015-10","2015-11","2015-12","2016-01","2016-02","2016-03","2016-04","2016-05","2016-06","2016-07","2016-08","2016-09","2016-10","2016-11","2016-12","2017-01","2017-02","2017-03","2017-04","2017-05","2017-06","2017-07","2017-08","2017-09","2017-10","2017-11","2017-12","2018-01","2018-02","2018-03","2018-04","2018-05","2018-06","2018-07","2018-08","2018-09","2018-10","2018-11","2018-12","2019-01","2019-02","2019-03","2019-04","2019-05","2019-06","2019-07","2019-08","2019-09","2019-10","2019-11","2019-12","2020-01","2020-02","2020-03","2020-04","2020-05","2020-06","2020-07","2020-08","2020-09","2020-10","2020-11","2020-12","2021-01","2021-02","2021-03","2021-04","2021-05","2021-06","2021-07","2021-08","2021-09","2021-10","2021-11","2021-12","2022-01","2022-02","2022-03","2022-04","2022-05","2022-06","2022-07","2022-08","2022-09","2022-10","2022-11","2022-12","2023-01","2023-02","2023-03","2023-04","2023-05","2023-06","2023-07","2023-08","2023-09","2023-10","2023-11","2023-12","2024-01","2024-02","2024-03","2024-04","2024-05","2024-06","2024-07","2024-08","2024-09","2024-10","2024-11","2024-12","2025-01","2025-02","2025-03","2025-04","2025-05","2025-06","2025-07","2025-08","2025-09","2025-10","2025-11","2025-12"],"mf_ltm":[0.176208,-0.064062,0.001707,0.082506,-0.029876,0.033442,-0.004743,-0.043432,-0.15086,0.057181,0.147295,0.014647,0.010749,0.00949,0.039442,0.018272,0.004701,-0.062867,-0.076373,0.017795,-0.099538,0.035368,0.01182,-0.00285,-0.003361,-0.034535,-0.001503,0.045696,0.094725,0.034299,0.002421,0.016394,0.001285,0.082214,0.044736,0.034909,0.031262,0.03796,-0.002193,-0.010271,-0.002022,0.021422,-0.055012,0.003311,0.023969,-0.002624,0.07461,0.066088,-0.017485,0.039597,-0.006253,-0.021503,0.041136,0.022346,0.040591,-0.021023,-0.02406,-0.025499,0.046301,0.01789,0.030653,0.005224,0.018859,-0.026255,-0.033053,0.008901,-0.012997,0.039965,0.022562,0.024401,0.057309,0.008907,0.031028,0.010333,0.014053,0.047528,0.048906,-0.008307,-0.009776,-0.010342,0.050095,0.034302,-0.041057,0.005654,-0.050595,-0.036978,-0.056654,0.032939,0.037649,-0.118687,-0.017912,0.026149,-0.120393,-0.204689,-0.105226,0.116675,-0.077537,-0.102397,0.082553,0.137855,0.091402,-0.003098,0.087161,0.043911,0.035923,-0.025381,0.064476,0.061491,-0.019428,0.005962,0.061673,-0.004655,-0.070533,-0.055124,0.052233,-0.043422,0.120852,0.036107,-0.011282,0.05781,0.0286,0.037275,0.01053,0.043877,0.014585,-0.007035,-0.028373,-0.023973,-0.061726,0.094608,0.007588,0.00307,0.056487,0.02626,0.047145,-0.026976,-0.080965,0.04704,-0.031187,0.035719,0.00244,-0.009732,0.011311,0.023245,0.06707,0.016458,0.042507,0.024647,0.052203,-0.000723,0.050792,-0.010279,0.032478,0.049941,0.048959,0.026901,-0.037167,0.04771,0.030585,-0.008069,0.042167,0.006452,-0.001977,0.038925,-0.014469,0.018963,0.046782,-0.008071,-0.031558,0.070877,-0.016101,0.005379,0.031995,-0.023352,0.008851,-0.061791,-0.008156,0.068356,-0.015603,-0.002368,-0.042903,0.023525,0.078672,-0.014271,0.02041,-0.007476,0.027726,0.004365,0.006974,-0.013213,0.071082,-0.006993,0.047842,0.054018,0.012379,0.002002,0.013476,0.016959,0.006928,0.011632,0.027016,0.007409,0.045787,0.012899,0.0525,-0.037582,-0.037297,0.014654,-0.004411,0.022091,0.034043,0.041534,0.011137,-0.051014,0.024086,-0.094174,0.109648,0.026993,0.012309,0.02893,-0.082769,0.06689,0.038346,-0.039248,0.033624,0.047167,0.047393,0.036238,-0.032874,-0.066335,-0.086155,0.094438,0.04505,-0.011908,0.03323,0.021991,-0.023941,-0.038688,0.113063,0.04542,0.0179,0.009477,0.075446,0.026398,0.00692,0.017667,0.005399,0.012774,-0.060834,0.046325,-0.019855,0.086407,-0.047225,-0.011532,0.035817,-0.03309,0.01428,-0.073663,0.050808,-0.025375,-0.061653,0.122088,0.062934,-0.026025,0.073011,-0.031973,0.021633,0.003856,-0.026802,0.071855,0.041086,-0.032695,-0.034437,-0.03309,0.084915,0.070742,-0.001726,0.030297,0.064598,-0.059545,0.035996,-0.004337,0.051672,0.037196,0.014957,-0.039763,0.040102,-0.082005,0.0409,-0.024283,0.001655,-0.020577,0.000359,0.028282,-0.042602,0.072597,0.017349,-0.031757,0.005838,-0.006443],"mf_fwd":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.020807,-0.006501,0.004794,-0.026116,-0.024053,0.006086,0.01107,0.055578,0.027127,-0.005308,0.040894,0.002484,0.029454,-0.00922,0.020745,0.030378,0.0494,-0.018171,-0.021061,0.012851,0.047632,0.040195,-0.01629,0.011311,-0.052578,-0.021819,-0.066165,0.043991,0.0468,-0.111732,-0.017002,0.019473,-0.139487,-0.219175,-0.090981,0.112652,-0.013117,-0.080814,0.079037,0.101072,0.083917,-0.002301,0.067821,0.03358,0.032575,-0.022819,0.06424,0.043444,-0.013922,0.001918,0.055319,-0.015631,-0.059808,-0.049345,0.034339,-0.035821,0.108692,0.040496,-0.010574,0.034918,0.026046,0.042635,0.009696,0.036072,0.020588,-0.006627,-0.021043,-0.035201,-0.050676,0.102973,0.002753,0.003519,0.066454,0.044432,0.047336,-0.024866,-0.042231,0.039527,-0.029361,0.054134,0.017115,-0.008278,-0.002878,0.018649,0.063641,0.016453,0.043204,0.024205,0.041231,0.004593,0.053549,-0.007403,0.02803,0.035651,0.043065,0.026907,-0.030185,0.0394,0.02592,-0.011108,0.042661,0.010348,-0.007465,0.044593,-0.016456,0.016085,0.047229,-0.003088,-0.030558,0.077935,-0.015153,0.009528,0.041126,-0.02153,0.013917,-0.044013,-0.005203,0.073441,-0.013799,-0.001625,-0.06985,0.009519,0.064229,-0.014972,0.02196,-0.006208,0.038084,-0.000927,-0.005401,-0.025309,0.064438,-0.006573,0.032427,0.059644,0.012786,0.007494,0.012097,0.019566,0.012235,0.015218,0.023622,0.015409,0.059878,0.000738,0.059804,-0.03019,-0.037468,0.008652,0.004165,0.015811,0.032674,0.0355,0.005493,-0.067023,0.033091,-0.089791,0.107126,-0.000174,0.008176,0.020818,-0.068007,0.066443,0.02921,-0.037445,0.020881,0.050203,0.053058,0.023966,-0.037305,-0.056038,-0.079161,0.107358,0.045845,-0.000712,0.032281,0.027511,-0.024563,-0.039808,0.115017,0.04441,0.042923,-0.015758,0.079306,0.026411,0.005233,0.032106,0.045144,0.023064,-0.05264,0.021157,-0.018302,0.068451,-0.030564,-0.014267,0.039662,-0.036852,0.036833,-0.061657,0.03887,-0.029987,-0.056932,0.12351,0.05531,-0.028112,0.065577,-0.035104,0.030442,0.000726,-0.018912,0.068461,0.04188,-0.027468,-0.032145,-0.032154,0.080239,0.072446,-0.005335,0.021414,0.057906,-0.059112,0.0382,0.00199,0.061972,0.031576,0.012433,-0.029629,0.028947,-0.076666,0.037796,-0.013602,0.007829,-0.034155,-0.017993,0.028956,-0.034932,0.087657,0.013889,-0.018586,0.039019,-0.005231],"rolling_ltm":[0.165669,-0.036626,0.003563,0.083014,-0.059909,0.071515,-0.062038,-0.022779,-0.133515,0.035962,0.150723,0.026327,0.007622,-0.023475,0.073331,0.022287,-0.003982,-0.114001,-0.078839,0.049,-0.147287,0.005568,0.003594,0.010837,-0.023103,-0.027557,-0.008684,0.033106,0.152423,0.030957,0.008096,0.002418,0.027654,0.073323,0.045883,0.049685,0.033365,0.01497,0.004455,-0.003731,-0.019127,0.031223,-0.045898,0.021233,0.021016,-0.029683,0.124749,0.069006,0.009308,0.035895,-0.016264,-0.021199,0.052704,0.045645,0.036582,0.003412,0.005702,-0.013145,0.024493,0.02014,0.025637,-0.02151,-0.006271,-0.056988,-0.052118,-0.015723,-0.008268,0.036041,0.019806,0.015813,0.057957,0.025626,0.028337,-0.024479,-0.016778,0.048211,0.053262,-0.049533,-0.055206,0.004323,-0.004713,0.041424,-0.037614,0.019778,0.006571,-0.079497,-0.095501,0.019092,0.005639,-0.133003,0.051925,0.047679,-0.093989,-0.240163,-0.099608,0.118388,-0.01074,-0.130506,0.081984,0.099928,0.074132,0.031756,0.099234,0.025833,-0.010005,-0.015786,0.090281,0.054871,-0.000533,-0.013099,0.054481,-0.05255,-0.056808,-0.039511,0.047839,-0.022146,0.120142,0.03633,-0.003279,0.029105,0.042848,0.080487,0.040667,0.063748,0.032636,0.007739,-0.042683,-0.03282,-0.056711,0.092775,0.011531,-0.004908,0.034339,0.025946,0.038393,-0.060327,-0.064198,0.028709,-0.08737,0.048693,0.012194,-0.007138,-0.016611,0.032308,0.081526,-0.019597,0.051607,0.04925,0.055605,0.031787,0.024191,0.005103,0.014949,0.037457,0.067517,0.021526,-0.019321,0.055338,0.035663,-0.021719,0.057031,0.027374,-0.010018,0.044985,-0.008189,0.04512,0.03995,0.002177,0.001601,0.091604,0.013246,-0.000232,0.079285,-0.007977,-0.030625,-0.036716,-0.007188,0.028209,-0.026368,0.026199,-0.055623,0.018874,0.050551,-0.020044,0.022169,0.005032,0.033273,-0.010132,0.009779,-0.02104,0.071752,-0.009855,0.034321,0.052174,0.014957,0.021341,-0.012181,0.022671,0.007765,0.031626,-0.0032,0.030065,0.074477,-0.001123,0.081045,-0.021365,-0.047387,0.023769,-0.013225,0.057906,0.034351,0.045742,0.036396,-0.039788,0.026071,-0.079728,0.098732,-0.014109,0.006047,0.024517,-0.046539,0.041953,0.03112,-0.05466,0.009649,0.028908,0.052755,0.020308,-0.02618,-0.031465,-0.077035,0.085179,0.03018,0.006079,0.016474,0.022724,-0.02323,-0.04214,0.110998,0.018865,0.031492,0.025198,0.101793,0.026062,-0.007024,0.019353,0.001733,0.013424,-0.068442,0.039806,0.01732,0.095394,-0.066718,-0.023059,-0.007387,-0.011412,0.017717,-0.065661,0.047891,-0.031469,-0.025447,0.12617,0.064322,-0.022789,0.050099,-0.051165,0.042765,0.023757,-0.036764,0.060157,0.016171,-0.032419,-0.052609,-0.035325,0.092442,0.088128,-0.000898,0.027778,0.064049,-0.068253,0.071648,-0.024827,0.084829,0.005087,-0.003305,-0.057945,0.007259,-0.091163,0.038467,-0.05111,0.009315,-0.019505,-0.022463,0.035967,-0.069418,0.115733,0.012363,-0.04834,0.020427,-0.024969],"sp500":[0.033291,-0.103167,-0.07077,0.081296,0.004175,-0.025244,-0.014854,-0.063838,-0.082056,0.021105,0.078118,0.009492,-0.017075,-0.021224,0.037744,-0.059735,-0.007265,-0.072381,-0.072905,0.007284,-0.105325,0.085455,0.053955,-0.057565,-0.025679,-0.015976,0.010832,0.080783,0.053981,0.013546,0.01747,0.019443,-0.010878,0.055414,0.011624,0.050114,0.019461,0.01578,-0.016183,-0.015524,0.013036,0.018253,-0.035761,0.003972,0.013172,0.01346,0.042164,0.034256,-0.024924,0.021624,-0.01636,-0.019292,0.033526,0.003908,0.038192,-0.006228,0.010219,-0.01561,0.038033,0.000973,0.030063,-0.002247,0.014673,0.01394,-0.027483,0.000967,0.005305,0.022987,0.023949,0.03399,0.02051,0.01273,0.018429,-0.018783,0.012506,0.042513,0.037035,-0.014748,-0.026846,0.015625,0.04316,0.023143,-0.04001,-0.00321,-0.06485,-0.023747,-0.006147,0.050044,0.01676,-0.077034,-0.016567,0.008821,-0.09721,-0.173126,-0.071615,0.014539,-0.080054,-0.099636,0.086288,0.090107,0.062729,-0.003271,0.075772,0.032098,0.038269,-0.020439,0.059993,0.019453,-0.037615,0.031409,0.059724,0.012917,-0.081193,-0.049866,0.069867,-0.040501,0.088698,0.039461,4.9e-05,0.06618,0.022112,0.033061,-0.002039,0.029012,-0.013662,-0.017317,-0.019573,-0.054325,-0.075013,0.10794,-0.003663,0.004194,0.048864,0.043662,0.030593,-0.007781,-0.061096,0.040047,0.012627,0.023889,0.026475,-0.015973,0.005187,0.008826,0.052587,0.009775,0.036103,0.019531,0.021046,-0.015139,0.05212,-0.026464,0.033093,0.043631,0.027977,0.02748,-0.033994,0.046554,0.005759,0.005609,0.022456,0.019823,-0.014515,0.040423,-0.01543,0.021692,0.028783,-0.004261,-0.027437,0.057261,-0.014003,0.009079,0.013436,-0.019888,0.020756,-0.061641,-0.027039,0.078235,0.001213,-0.015921,-0.052626,-0.001944,0.065366,0.005833,0.016576,0.003333,0.035802,0.001342,0.001008,-0.017922,0.036002,0.018777,0.021781,0.039149,0.001861,0.010617,0.015146,0.0064,0.020971,0.004581,0.019353,0.023567,0.030228,0.011391,0.058347,-0.036935,-0.024555,0.003099,0.022443,0.005549,0.034989,0.033352,0.004846,-0.068614,0.019527,-0.088718,0.080617,0.031844,0.018945,0.041407,-0.061695,0.070472,0.013141,-0.015007,0.014508,0.021839,0.036531,0.028735,0.003424,-0.078465,-0.119768,0.129414,0.052418,0.025602,0.060676,0.075399,-0.035613,-0.029739,0.117125,0.041107,-0.008829,0.020634,0.034161,0.051559,0.005189,0.027904,0.021544,0.029604,-0.045529,0.071279,-0.009689,0.035887,-0.059959,-0.03008,0.036347,-0.091964,-0.003441,-0.084106,0.094832,-0.038653,-0.091339,0.080383,0.05379,-0.05898,0.064625,-0.022058,0.035968,0.012424,0.005429,0.067917,0.032109,-0.017274,-0.047659,-0.021627,0.095866,0.045044,0.016299,0.055992,0.030431,-0.042645,0.048602,0.035546,0.012685,0.027283,0.021561,-0.007545,0.065479,-0.02784,0.032066,-0.01166,-0.058745,-0.002119,0.063941,0.05187,0.021327,0.018525,0.037473,0.020482,-0.004171,0.000882],"sp500_igual_peso":[0.04157,-0.087672,-0.0721,0.090857,0.008898,-0.024028,-0.023587,-0.054849,-0.117113,0.036248,0.088294,0.026068,-0.008022,-0.021537,0.057954,-0.034017,-0.012624,-0.080407,-0.088814,0.003,-0.096788,0.062413,0.065444,-0.047842,-0.017078,-0.016786,0.005568,0.077175,0.08131,0.007767,0.021659,0.038115,-0.016257,0.069671,0.021693,0.04273,0.023129,0.021572,-0.007399,-0.025258,0.020476,0.024768,-0.04264,0.002652,0.033591,0.020422,0.055703,0.036193,-0.026972,0.026118,-0.012103,-0.029065,0.042878,0.020375,0.047305,-0.004257,0.014842,-0.022877,0.04175,0.00941,0.044362,-0.002916,0.019476,0.015735,-0.030549,0.001687,-0.010265,0.022563,0.021283,0.037643,0.028108,0.005573,0.028222,-0.004302,0.009157,0.040945,0.038453,-0.014352,-0.032307,0.007429,0.039959,0.022549,-0.042603,-0.004465,-0.059966,-0.018588,-0.017633,0.060536,0.034462,-0.08275,-0.025945,0.010224,-0.128346,-0.207626,-0.085416,0.034623,-0.072983,-0.099223,0.089164,0.125443,0.062011,-0.006966,0.084919,0.041513,0.051695,-0.034996,0.057375,0.042148,-0.037118,0.044149,0.062865,0.02628,-0.074678,-0.054279,0.072143,-0.037988,0.100324,0.04248,0.011599,0.065643,0.021353,0.037366,0.006014,0.031532,-0.007528,-0.017861,-0.029806,-0.059967,-0.090311,0.122845,-0.007281,-0.007878,0.060078,0.043889,0.023687,-0.006863,-0.069513,0.034364,0.005058,0.028774,0.023996,-0.007404,0.010435,0.020172,0.061638,0.008771,0.040964,0.014508,0.019692,-0.013118,0.0558,-0.02215,0.04036,0.037107,0.020331,0.030869,-0.028765,0.055962,9e-05,-0.001908,0.025049,0.025594,-0.02213,0.043609,-0.024542,0.024498,0.02658,-0.000863,-0.021541,0.056399,-0.006243,0.001063,0.012201,-0.022478,0.012529,-0.054462,-0.032866,0.067198,0.000932,-0.02271,-0.063933,0.00843,0.070684,0.01126,0.013405,0.002422,0.041674,0.000468,0.002268,-0.021758,0.0436,0.010939,0.029251,0.0347,-0.000244,0.01106,0.013054,0.008067,0.017905,-0.001586,0.026662,0.016539,0.033229,0.012293,0.049467,-0.040939,-0.007945,-0.000424,0.015368,0.006806,0.030123,0.022823,0.000402,-0.076011,0.023958,-0.090628,0.096539,0.036771,0.01235,0.037941,-0.059791,0.07236,0.013656,-0.019668,0.015518,0.014608,0.036712,0.023737,-0.003612,-0.077134,-0.158931,0.132833,0.067433,0.01853,0.056436,0.040113,-0.017312,-0.012737,0.13538,0.041575,-0.006848,0.040611,0.033594,0.046156,0.013002,0.016459,0.013462,0.026001,-0.039747,0.063352,-0.027776,0.043793,-0.064686,-0.017029,0.027434,-0.081021,0.001681,-0.090856,0.089621,-0.030069,-0.09381,0.091846,0.064751,-0.051723,0.071484,-0.028175,0.004724,-0.001951,-0.022955,0.07217,0.03452,-0.031677,-0.044834,-0.037047,0.100494,0.063304,-0.003289,0.048698,0.043023,-0.045857,0.028666,0.00125,0.034279,0.028026,0.019486,-0.008631,0.074095,-0.063924,0.046585,-0.006274,-0.042792,-0.007938,0.050206,0.039858,0.01099,0.026041,0.01863,-0.000541,0.004347,0.004482],"rolling30":[0.176208,-0.064062,0.001707,0.082506,-0.029876,0.033442,-0.004743,-0.043432,-0.15086,0.057181,0.147295,0.014647,0.021947,-0.009335,0.056795,0.004289,0.000819,-0.06744,-0.081831,0.008424,-0.100485,0.058264,0.027726,-0.02136,-0.020911,-0.024937,-0.005,0.059674,0.110021,0.026138,0.018744,0.027913,-0.006708,0.079154,0.031057,0.036381,0.028225,0.023594,-0.009163,-0.001889,-0.0052,0.020591,-0.043545,0.005007,0.026145,-0.006321,0.073574,0.047602,-0.017942,0.026031,0.000256,-0.021064,0.034597,0.020081,0.027575,-0.008004,-0.005959,-0.011606,0.042178,0.017049,0.033698,-0.002586,0.009503,-0.02274,-0.024866,0.006163,0.003012,0.03532,0.023181,0.013919,0.0388,0.016411,0.027934,-0.006171,0.000581,0.046218,0.035128,-0.022265,-0.030345,0.001807,0.02458,0.029447,-0.030481,0.011325,-0.049212,-0.038205,-0.046133,0.025079,0.022316,-0.108529,-0.005217,0.024445,-0.096552,-0.200062,-0.094295,0.088785,-0.068049,-0.109135,0.086762,0.157152,0.057105,0.001806,0.105791,0.042705,0.04007,-0.020857,0.065288,0.053309,-0.028595,0.015615,0.071028,0.002376,-0.068608,-0.068148,0.059179,-0.044657,0.124726,0.057307,-0.005298,0.057938,0.0331,0.053448,0.019149,0.038283,0.011857,-0.001121,-0.033136,-0.032202,-0.078896,0.109806,0.007383,0.001541,0.051591,0.02847,0.033667,-0.017205,-0.069383,0.038226,-0.024562,0.027888,0.020203,-0.012593,0.013591,0.021334,0.068536,0.010449,0.046753,0.02919,0.048401,0.002793,0.044913,-0.008569,0.032925,0.055474,0.045031,0.027512,-0.026467,0.051197,0.027383,-0.014244,0.041372,0.01282,-0.00524,0.038763,-0.01587,0.023161,0.048489,-0.002159,-0.028303,0.079353,-0.01871,0.009506,0.035608,-0.02482,0.005748,-0.053017,-0.004991,0.069206,-0.008526,-0.001077,-0.036518,0.017467,0.06872,-0.011928,0.023057,3.5e-05,0.03337,-0.000831,0.006428,-0.01085,0.053636,-0.008423,0.034898,0.04651,0.014364,0.007697,0.011164,0.013685,0.008035,0.010085,0.014474,0.020512,0.049353,0.008363,0.059721,-0.028071,-0.0406,0.010888,-0.001431,0.023851,0.032293,0.039058,0.013571,-0.054925,0.027651,-0.095256,0.097951,0.013026,-0.003153,0.025271,-0.060862,0.06101,0.029158,-0.040031,0.025646,0.043347,0.050639,0.026349,-0.029848,-0.056561,-0.081143,0.088564,0.042537,0.006513,0.032979,0.023435,-0.025684,-0.034732,0.11566,0.034532,0.021713,0.025007,0.068221,0.026,0.007648,0.014448,0.004058,0.011052,-0.05041,0.040633,-0.007295,0.084396,-0.028285,-0.008657,0.029639,-0.034687,0.020544,-0.063117,0.042741,-0.021179,-0.056817,0.118153,0.054607,-0.031585,0.054535,-0.040783,0.023129,0.012878,-0.03583,0.065021,0.02602,-0.023622,-0.035513,-0.023886,0.080714,0.0589,0.006972,0.023329,0.058582,-0.05647,0.052406,-0.00162,0.048284,0.015742,0.003209,-0.042304,0.026993,-0.075259,0.046518,-0.011555,-0.00506,-0.018775,0.006441,0.034921,-0.040717,0.058652,0.020325,-0.019776,0.011882,0.004149]}},"eu":{"variantes":{"original":{"cagr_total":0.07686264291574707,"cagr_2006_2025":0.07686264291574707,"anual":{"2006":0.17645248154177015,"2007":-0.03393534663974854,"2008":-0.4767896506937001,"2009":0.9593268336479533,"2010":0.23701445351840159,"2011":-0.02702741931287229,"2012":0.21098068691031083,"2013":0.3879909817387811,"2014":0.024699668900241053,"2015":0.1186266012002149,"2016":0.02434624754082084,"2017":0.06402496529578,"2018":-0.2202321939504807,"2019":0.26170176451835647,"2020":-0.010959063815691806,"2021":0.2173563925633625,"2022":-0.13170894491242732,"2023":0.19529976808882327,"2024":0.07529723178572882,"2025":0.1296350183636412}},"forward":{"cagr_total":0.062347186609827965,"cagr_2006_2025":0.062347186609827965,"anual":{"2006":0.23092118923208887,"2007":0.023715111656867814,"2008":-0.5058660867558712,"2009":0.7200554372782694,"2010":0.24438980332056148,"2011":-0.1038929512020695,"2012":0.2234752634459525,"2013":0.308145546613343,"2014":0.006321576687585013,"2015":0.15657368070807068,"2016":0.015119582492239018,"2017":0.012725733721642618,"2018":-0.26846542585603805,"2019":0.3218286200996874,"2020":-0.10056568084615479,"2021":0.20043797407970967,"2022":-0.10198881258360333,"2023":0.12968804687814156,"2024":0.12097174490282918,"2025":0.2345028631068243}},"prudente":{"cagr_total":0.07225162764691184,"cagr_2006_2025":0.07225162764691184,"anual":{"2006":0.1780961107820977,"2007":-0.04522206033122987,"2008":-0.4577806421388443,"2009":0.7739352217475648,"2010":0.2206374641961411,"2011":-0.05693341754176287,"2012":0.21951169376530527,"2013":0.36214184692215934,"2014":0.024714382633108108,"2015":0.1001039908778556,"2016":0.01709057484892645,"2017":0.06115518418062024,"2018":-0.21105273605562294,"2019":0.2741225431321274,"2020":-0.04047522036364982,"2021":0.2581713330204428,"2022":-0.0734471592741763,"2023":0.14921042770035464,"2024":0.06565164903336534,"2025":0.1643560019358671}},"hibrida":{"cagr_total":0.06571234429712502,"cagr_2006_2025":0.06571234429712502,"anual":{"2006":0.19668753363010527,"2007":-0.05530799669130512,"2008":-0.4771602858450953,"2009":0.7542322787926817,"2010":0.18965714772985348,"2011":-0.0730003533820394,"2012":0.23388557411476688,"2013":0.34919810078720753,"2014":0.008230860046555577,"2015":0.09867509055627739,"2016":0.015047172855535149,"2017":0.07333812950057475,"2018":-0.26912196126917626,"2019":0.3275582471579134,"2020":-0.031688146539753985,"2021":0.258211594732922,"2022":-0.08953005193728494,"2023":0.15434269517778706,"2024":0.060105190087627124,"2025":0.1801914028336529}},"sin_expectativas_altas":{"cagr_total":0.07956911266758704,"cagr_2006_2025":0.07956911266758704,"anual":{"2006":0.17803759635448657,"2007":-0.03393534663974854,"2008":-0.47329040466133127,"2009":0.9513443623264511,"2010":0.23555723490287564,"2011":-0.02702741931287229,"2012":0.21098068691031083,"2013":0.39910905159472826,"2014":0.024699668900241053,"2015":0.14179400567254444,"2016":0.015728714260889103,"2017":0.06402496529578,"2018":-0.2202321939504807,"2019":0.26170176451835647,"2020":0.003002473336179441,"2021":0.2173563925633625,"2022":-0.13170894491242732,"2023":0.2114307875609797,"2024":0.07529723178572882,"2025":0.1296350183636412}},"max_6_por_sector":{"cagr_total":0.07943143779968342,"cagr_2006_2025":0.07943143779968342,"anual":{"2006":0.20244662491265583,"2007":-0.04294209913544673,"2008":-0.4758583258689298,"2009":1.0268409817698947,"2010":0.19076443072503546,"2011":-0.04905376652298605,"2012":0.26042935332818073,"2013":0.34252936598654027,"2014":0.01890834096569458,"2015":0.1792041435669166,"2016":0.025787570819985964,"2017":0.058281942896784074,"2018":-0.21818429909224976,"2019":0.2690008114682044,"2020":-0.010959063815691806,"2021":0.20983660387419178,"2022":-0.13170894491242732,"2023":0.19529976808882327,"2024":0.10057533449159053,"2025":0.11314719574132205}},"top_50":{"cagr_total":0.081379496321478,"cagr_2006_2025":0.081379496321478,"anual":{"2006":0.17663430368833788,"2007":-0.03550967926220729,"2008":-0.49867623231716385,"2009":0.9402219967676883,"2010":0.2834566505915213,"2011":-0.03502348826921169,"2012":0.24451533830694866,"2013":0.33547987862709744,"2014":0.029866151368449147,"2015":0.14495592202960123,"2016":0.06210033479923266,"2017":0.11333161141236299,"2018":-0.1845759910079806,"2019":0.3222368727148423,"2020":-0.036299602759584305,"2021":0.23056800379333553,"2022":-0.1314150946386373,"2023":0.17263057460785813,"2024":0.025309146051539586,"2025":0.13028923659851555}},"top_10":{"cagr_total":0.06933764807183351,"cagr_2006_2025":0.06933764807183351,"anual":{"2006":0.230512146225934,"2007":-0.038328900016710396,"2008":-0.4653675602467556,"2009":0.7016497981160656,"2010":0.1940288229917202,"2011":-0.020527563948375696,"2012":0.1504062721302669,"2013":0.4496267148245948,"2014":-0.09615289385777147,"2015":0.08733557749110687,"2016":0.1078964282845835,"2017":0.03237827077214847,"2018":-0.3026753580409878,"2019":0.2887162316438808,"2020":0.12571229008908308,"2021":0.1533836093821587,"2022":-0.12829896477802918,"2023":0.19602995531597883,"2024":0.06495551970496523,"2025":0.25001020586402845}},"rolling_tercios":{"cagr_total":0.06732780836510877,"cagr_2006_2025":0.06732780836510877,"anual":{"2008":-0.4298523470054409,"2009":0.7408340499407872,"2010":0.2246453752346487,"2011":-0.1252108729023201,"2012":0.2377276877983435,"2013":0.4294492532934436,"2014":-0.0131245540920989,"2015":0.0581962191091298,"2016":0.1108791785464684,"2017":0.0212892405435994,"2018":-0.2706076904505714,"2019":0.3057539944779734,"2020":0.1161739405359856,"2021":0.1396130742305092,"2022":-0.1045396714273669,"2023":0.0526131759802283,"2024":0.1262130680190569,"2025":0.1272412398407014}},"rolling_30":{"cagr_total":0.07509846770749395,"cagr_2006_2025":0.07509846770749395,"anual":{"2008":-0.4509364351025822,"2009":0.8760039840067577,"2010":0.2485207201997896,"2011":-0.1335865595171604,"2012":0.2156757501512415,"2013":0.3418222957649496,"2014":0.0346346821241979,"2015":0.1103294354195662,"2016":0.0784064132405795,"2017":0.0690388475494469,"2018":-0.2478381617835517,"2019":0.3156905082009567,"2020":0.0316737409058501,"2021":0.1561953399007792,"2022":-0.0740610281231572,"2023":0.1478169480923481,"2024":0.1092261649279292,"2025":0.0991316979945154}}},"indice":{"cap":{"2006":0.207150363020934,"2007":0.0463735821477576,"2008":-0.426770209094891,"2009":0.3145341564457705,"2010":0.1310937007433535,"2011":-0.0900825243779682,"2012":0.1936280651137817,"2013":0.2052315112287959,"2014":0.0779895381339611,"2015":0.0975473887213371,"2016":0.0264515183200734,"2017":0.1207939245673613,"2018":-0.0948671694269399,"2019":0.267099959593426,"2020":-0.0086740510043351,"2021":0.2552827656233981,"2022":-0.1067861022110809,"2023":0.1623761665639017,"2024":0.0771811709594704,"2025":0.1913705041528516},"eq":{"2006":0.2903310635222726,"2007":-0.0069806197742809,"2008":-0.4688268881906571,"2009":0.4844268681750591,"2010":0.2051705381611173,"2011":-0.1272223699260802,"2012":0.2425623101304249,"2013":0.2456837692819496,"2014":0.0786112208067432,"2015":0.1358056676626374,"2016":0.0274417369446344,"2017":0.1521172746366635,"2018":-0.1133076187735035,"2019":0.2845944785224388,"2020":0.0046407971380841,"2021":0.2323206683185259,"2022":-0.1761681248653422,"2023":0.1593757254801288,"2024":0.0889593107457319,"2025":0.1969669272904009},"cap_cagr_2006_2025":0.06684295710865551,"eq_cagr_2006_2025":0.07423486692320203,"cap_cagr_total":0.06684295710865551,"eq_cagr_total":0.07423486692320203},"q_ey":{"cagr":{"1":0.0665098349620612,"2":0.08857990486464495,"3":0.07887418152055625,"4":0.08699794940034566,"5":0.06422315760768194}},"q_roc":{"cagr":{"1":0.08348331099782813,"2":0.08380139661642949,"3":0.0771012056370366,"4":0.07679597381640102,"5":0.06740922226255375}},"q_mf":{"cagr":{"1":0.07597372116506662,"2":0.08383523213251776,"3":0.07746356158253187,"4":0.08419651578500309,"5":0.06793245866920716}},"q_crec":{"cagr":{"1":0.07402517006777054,"2":0.07514128035708989,"3":0.07409580937064475,"4":0.08051280547298534,"5":0.08734111591926297}},"ic":{"anual":{"2006":-0.10096721933920705,"2007":-0.07940756413647183,"2008":0.02338073426243159,"2009":0.29016581680128045,"2010":0.03856833959257995,"2011":0.16305584368885245,"2012":0.04467519982162468,"2013":-0.014716709256903557,"2014":-0.08013631726685379,"2015":-0.0034140135229143664,"2016":0.0014743814866052631,"2017":0.008012732735873825,"2018":-0.02615379846883427,"2019":0.09524529805673312,"2020":-0.11222025322400879,"2021":-0.05551792598720196,"2022":0.08768573927255523,"2023":0.1103385193732088,"2024":-0.03341753020877309,"2025":0.03474037675736878},"media":0.019569582521897277,"pct_pos":0.55},"error":{"por_anio":{"2006":-0.027687308840917413,"2007":-0.04980444703603948,"2008":-0.13036165831158592,"2009":-0.20991759112519814,"2010":0.01495610946224657,"2011":-0.12463424902544218,"2012":-0.13042916318193737,"2013":-0.1722484668885606,"2014":-0.15846245861482777,"2015":-0.11634977571759131,"2016":-0.14364174581804856,"2017":-0.10497207335714365,"2018":-0.13569965897876723,"2019":-0.14848801799086497,"2020":-0.34134909313226003,"2021":-0.006998360539367976,"2022":-0.08896543988074268,"2023":-0.12212683575599614,"2024":-0.14889412250016731,"2025":-0.17079282655520373},"por_sector":{"Energía":-0.22626079881618344,"Tecnología":-0.1651168224748964,"Materiales":-0.15376144204129982,"Salud":-0.14431037228503873,"Comunicación":-0.12292878067991231,"Consumo básico":-0.10672522054140049,"Industria":-0.0952279643250713,"Consumo discrecional":-0.09014541508429474},"mediana":-0.12671064242035301,"pct_neg":0.7500932951859685,"top30_fwd_mediana":-0.1905279666291691,"top30_fwd_pct_neg":0.8466666666666667},"valoracion":{"ey_mediano":{"2006":0.0659557792866614,"2007":0.0604590454002419,"2008":0.06929238530269775,"2009":0.117664371250275,"2010":0.0837778434507418,"2011":0.058933252726300345,"2012":0.08151931668209789,"2013":0.0738337155357038,"2014":0.062529617916792,"2015":0.059920302382321045,"2016":0.05298921232316055,"2017":0.0551795684743403,"2018":0.0514145159195282,"2019":0.0619723360257476,"2020":0.0522822992200444,"2021":0.04903502423990525,"2022":0.032896513768508745,"2023":0.0587449353868554,"2024":0.05764904231578985,"2025":0.0576604961607219},"spread":{"2006":1.6478395026500825,"2007":1.757653942535167,"2008":1.809705289100323,"2009":2.128262633970223,"2010":1.8136933669974324,"2011":1.7401721476608398,"2012":1.947604704012644,"2013":1.7406599301282084,"2014":1.7665024068110824,"2015":1.6349475729477345,"2016":1.6709324781643518,"2017":1.747808326473857,"2018":1.8087271152725886,"2019":1.9517849579207127,"2020":2.0270289338116143,"2021":2.032391232703916,"2022":2.2688296260247283,"2023":2.2522585690296055,"2024":2.3534771806028574,"2025":2.079793744940722}},"sector_ey":{"Comunicación":{"2006":0.0760827794758775,"2007":0.0765015899474312,"2008":0.0781141862276112,"2009":0.10841628261183756,"2010":0.087488432720341,"2011":0.06990035506048185,"2012":0.091317353280753,"2013":0.0812403420206997,"2014":0.05979404219557445,"2015":0.06163798153428675,"2016":0.0584794121788252,"2017":0.0594980990536417,"2018":0.0569752369274702,"2019":0.0623972043438889,"2020":0.0520037542291439,"2021":0.0551186527731296,"2022":0.051904059749811,"2023":0.0604059957756419,"2024":0.0567011463810245,"2025":0.0518185627801009},"Consumo básico":{"2006":0.0643452660680033,"2007":0.058454607445062604,"2008":0.06792350635819519,"2009":0.0942034297558702,"2010":0.0690556045444498,"2011":0.06294699133278454,"2012":0.0775296471423243,"2013":0.0663306014542199,"2014":0.0659916739891384,"2015":0.0593763991213675,"2016":0.0457649390638435,"2017":0.05121436905330295,"2018":0.0483811998924708,"2019":0.05452730479413085,"2020":0.0508457123717797,"2021":0.05123484546792175,"2022":0.0375334484070814,"2023":0.055563603996197156,"2024":0.06095168411968885,"2025":0.061470857269691453},"Consumo discrecional":{"2006":0.0686675361488311,"2007":0.06367613411136035,"2008":0.07239992354580335,"2009":0.12974111200959293,"2010":0.08359052885690155,"2011":0.0531073983156947,"2012":0.0845863444222806,"2013":0.07420075939721141,"2014":0.0657948552289458,"2015":0.0631461768266542,"2016":0.0637904776816049,"2017":0.0668575915292126,"2018":0.06062012993239235,"2019":0.07448148745538721,"2020":0.0554286137904558,"2021":0.04947426581304095,"2022":0.029131655171121547,"2023":0.0716049376901181,"2024":0.05779569912027385,"2025":0.0672837421695701},"Energía":{"2006":0.0662475002721332,"2007":0.07152911438527534,"2008":0.1072201416125623,"2009":0.20631625099645112,"2010":0.127085695433373,"2011":0.0769278225642806,"2012":0.0961446296165979,"2013":0.0809900788545501,"2014":0.0943324672056415,"2015":0.1002430542197634,"2016":0.0536965334144941,"2017":0.033198056934263045,"2018":0.03869665555662085,"2019":0.0639308977097439,"2020":0.0822719340466461,"2021":0.1127367860181028,"2022":0.0386915781792297,"2023":0.09763696277483924,"2024":0.2381441518457814,"2025":0.18064087003957924},"Industria":{"2006":0.0646059509674777,"2007":0.0601031861412933,"2008":0.0692664115467244,"2009":0.1279401603679187,"2010":0.0951094377803303,"2011":0.057453104593567,"2012":0.0858981190577689,"2013":0.0779919536652552,"2014":0.06274851806118165,"2015":0.0631161731831337,"2016":0.05736875754813435,"2017":0.0588377289720871,"2018":0.0550523922268117,"2019":0.06652916257676825,"2020":0.0553945575797574,"2021":0.0496609540649989,"2022":0.0288479096847702,"2023":0.0572221465849712,"2024":0.05565894220524255,"2025":0.0572803427883698},"Materiales":{"2006":0.0765278273668749,"2007":0.0663228637018801,"2008":0.076962616066862,"2009":0.1588733245994155,"2010":0.092608594668069,"2011":0.045157718577162,"2012":0.0858139664166103,"2013":0.076739241701682,"2014":0.0661761064494276,"2015":0.0610944969437988,"2016":0.057812616716477194,"2017":0.0579892516921988,"2018":0.0525450835213719,"2019":0.0785651283963705,"2020":0.06615396089356845,"2021":0.0538574110474849,"2022":0.0438196141877534,"2023":0.08554934881196269,"2024":0.094054517205123,"2025":0.07424022335546654},"Salud":{"2006":0.0475205812431579,"2007":0.0453136854413573,"2008":0.0496160053863353,"2009":0.0761342727520786,"2010":0.0655179194728326,"2011":0.055630076771236,"2012":0.0648108950796699,"2013":0.0556884455990098,"2014":0.051396087605061855,"2015":0.04974483021904845,"2016":0.040894961348542105,"2017":0.045299977871729,"2018":0.0407039775738364,"2019":0.0456954836183846,"2020":0.0352944914854104,"2021":0.0327504274126036,"2022":0.029511407514134898,"2023":0.038935191472026,"2024":0.0430715195614356,"2025":0.0367282889601043},"Tecnología":{"2006":0.057702786092131,"2007":0.0535033941449402,"2008":0.0583238914608557,"2009":0.1132549327719093,"2010":0.0792942155221548,"2011":0.0421854456808721,"2012":0.081465271221518,"2013":0.0874129033257069,"2014":0.0526711989429261,"2015":0.04507297611231475,"2016":0.0441809643117218,"2017":0.0458585550836072,"2018":0.03250585606371085,"2019":0.0474456703875817,"2020":0.0361747537654907,"2021":0.0304359219730273,"2022":0.0220890090660694,"2023":0.04880835661960645,"2024":0.047538776859598,"2025":0.0446083351854329}},"cagr_2003_2025":{"original":0.07686264291574707,"rolling":0.06732780836510877,"rolling30":0.07509846770749395,"cap":0.06684295710865551,"eq":0.07423486692320203},"n_empresas":919,"n_obs":8119,"cagr_2008_2025":{"original":0.078497348660864,"rolling10":0.06732780836510877,"rolling30":0.07509846770749395,"cap":0.06068582293924396,"eq":0.06800593774397701},"supervivencia":{"honesto":0.07686264291574707,"sesgado":0.11776860664758448},"anticipacion":{"honesto":0.07686264291574707,"sesgado":0.09780521433364808},"tenencia":{"ret":{"1":0.1092293256928631,"2":0.11670418899738258,"3":0.0813028190694206},"exceso_sp500":{"1":0.026883112731815206,"2":0.04092661551317076,"3":0.003891690510961341},"exceso_igual_peso":{"1":0.012404188928515721,"2":0.030063574693978603,"3":-0.010538974904965873}},"pais_ey":{"BE":{"2006":0.08134677791477665,"2007":0.0684891435890031,"2008":0.09010746238544545,"2009":0.1245888979085108,"2010":0.0813196104952618,"2011":0.0828858642548699,"2012":0.07558971401711305,"2013":0.0668929459835121,"2014":0.0650560850841799,"2015":0.06705122039580905,"2016":0.054340698881858954,"2017":0.0538647862624627,"2018":0.0573891195377247,"2019":0.0647020998062953,"2020":0.065467731329704,"2021":0.0697144818319421,"2022":0.04093850218158025,"2023":0.062403954868355954,"2024":0.05905200421782,"2025":0.0636996295325037},"CH":{"2006":0.0470636987131704,"2007":0.0480401381457495,"2008":0.0609772855705983,"2009":0.0917595035958878,"2010":0.07211929291020774,"2011":0.0480548217184966,"2012":0.071726086814866,"2013":0.0601791765951522,"2014":0.05434937090619415,"2015":0.0585658004863815,"2016":0.04868057538596765,"2017":0.0471698961939235,"2018":0.0431376887838085,"2019":0.0527209400503924,"2020":0.037075720930868195,"2021":0.03398708085099675,"2022":0.0264350556952653,"2023":0.0487183714840842,"2024":0.04081549401297915,"2025":0.0457718170299259},"DE":{"2006":0.0723847738295526,"2007":0.0646785473835029,"2008":0.0677688757824127,"2009":0.12040311525975385,"2010":0.1023956550160847,"2011":0.0543463475717823,"2012":0.0895584133273048,"2013":0.08140088473882605,"2014":0.06348140929409174,"2015":0.06289392992995345,"2016":0.056642361035428704,"2017":0.0606390852681359,"2018":0.057172518869080605,"2019":0.073038875375474,"2020":0.0586843574147179,"2021":0.04977197838953755,"2022":0.0321066706341127,"2023":0.0640305154694541,"2024":0.0557652606642357,"2025":0.0574687326179238},"DK":{"2006":0.0707005164298301,"2007":0.0425278294881538,"2008":0.0462834403778548,"2009":0.11042098720635,"2010":0.0661751760810157,"2011":0.04257579589627415,"2012":0.0738342582872081,"2013":0.071443632572018,"2014":0.053052120384447995,"2015":0.0469791268891278,"2016":0.0425836859436058,"2017":0.047622583388846396,"2018":0.0367282232812735,"2019":0.0449252633638727,"2020":0.03984943589863,"2021":0.028112214020752202,"2022":0.028667370059131,"2023":0.0417710359589434,"2024":0.0478656793998146,"2025":0.05434438393104},"ES":{"2006":0.0530136826400447,"2007":0.04812609350619395,"2008":0.0481854921706587,"2009":0.0605611889866929,"2010":0.0622804737452094,"2011":0.06479233563886505,"2012":0.0702979983298693,"2013":0.06548077093753395,"2014":0.05832112585158335,"2015":0.056563815500333806,"2016":0.0457309724158748,"2017":0.05448264615023195,"2018":0.0483574219089624,"2019":0.06452070684105934,"2020":0.0439198707825766,"2021":0.0547245503475343,"2022":0.042918949660747704,"2023":0.0561426581509252,"2024":0.049461941766790654,"2025":0.0494332725475803},"FI":{"2006":0.0652690414405561,"2007":0.0550260126480369,"2008":0.0674718218805298,"2009":0.19438679109372134,"2010":0.1011642572507945,"2011":0.0531276732502148,"2012":0.0955220398101826,"2013":0.0761610612608898,"2014":0.0670159527576635,"2015":0.06625666615228185,"2016":0.0506743311580311,"2017":0.0588283276412146,"2018":0.0535245741485396,"2019":0.0662665891406583,"2020":0.05473555253865435,"2021":0.0503137426912671,"2022":0.038065621524111096,"2023":0.0666855416053881,"2024":0.0810859391982729,"2025":0.0707055378920937},"FR":{"2006":0.0644110655705216,"2007":0.0567677849352927,"2008":0.06974823642702195,"2009":0.1080361612276062,"2010":0.08969033334112445,"2011":0.05965657646991355,"2012":0.08768830125687124,"2013":0.0804789834057336,"2014":0.0709106014079417,"2015":0.06749345648150601,"2016":0.05760415662556445,"2017":0.0537291229046071,"2018":0.0584421485752954,"2019":0.0617305263056767,"2020":0.0558726789714593,"2021":0.0603825451928514,"2022":0.0349467324520662,"2023":0.0570333131915601,"2024":0.06566825129106496,"2025":0.06510825157361791},"GB":{"2006":0.0687466987957962,"2007":0.06706966745260995,"2008":0.0745788475221509,"2009":0.1216218110023949,"2010":0.0889341044967888,"2011":0.0647914989815563,"2012":0.0802873854021469,"2013":0.070832666810793,"2014":0.062187176139856595,"2015":0.060100114796043255,"2016":0.052052276014934895,"2017":0.0598768081024107,"2018":0.0530666940967095,"2019":0.0610643706320267,"2020":0.0545888512241994,"2021":0.0537075324191516,"2022":0.035985287725579754,"2023":0.0632388517329419,"2024":0.0676811350842021,"2025":0.06064429034255145},"IT":{"2006":0.0588810674822897,"2007":0.0606260409667636,"2008":0.065712011285905,"2009":0.13427179413807294,"2010":0.0956630108554087,"2011":0.0860691490263075,"2012":0.09372177457294235,"2013":0.08521129253264201,"2014":0.0654738820812878,"2015":0.0687366040511848,"2016":0.0477280591555201,"2017":0.056027944098577004,"2018":0.0517711641019293,"2019":0.0640741429368269,"2020":0.03532251061714235,"2021":0.0380340704296519,"2022":0.02723222658727785,"2023":0.0496750808095544,"2024":0.0505713154157074,"2025":0.0525868303334496},"NL":{"2006":0.06525556452975881,"2007":0.0578947054189921,"2008":0.0583035103407121,"2009":0.12070445665906934,"2010":0.0715586076196356,"2011":0.05780405060858445,"2012":0.087718655560053,"2013":0.0744316158244569,"2014":0.0524708293915131,"2015":0.0569952978515085,"2016":0.0518464299675513,"2017":0.0521180971091572,"2018":0.0455686373749589,"2019":0.0503106127089523,"2020":0.0459561217996162,"2021":0.0475471152760926,"2022":0.02707339614961425,"2023":0.06441882415199375,"2024":0.0483151500570692,"2025":0.055383456197013806},"NO":{"2006":0.11040277547023644,"2007":0.0541725626418482,"2008":0.0451233268300293,"2009":0.1459411727604044,"2010":0.11330130336994801,"2011":0.0605697559263776,"2012":0.1003318717980578,"2013":0.0604984364770134,"2014":0.07957353107239874,"2015":0.09293138544764801,"2016":0.09319426199525879,"2017":0.0488932441304592,"2018":0.046783176616178,"2019":0.0601127507279981,"2020":0.0676906299574356,"2021":0.0513222276720926,"2022":0.0216570062965715,"2023":0.0650606165103861,"2024":0.0785398382846109,"2025":0.078787830130272},"SE":{"2006":0.06773283417674385,"2007":0.0608260372895349,"2008":0.07507129710156529,"2009":0.1263188879170746,"2010":0.0753050658689172,"2011":0.050321725967596,"2012":0.07711045324084764,"2013":0.0742090607954483,"2014":0.059288125901998445,"2015":0.0592504008433211,"2016":0.0531575205615904,"2017":0.0568109962878643,"2018":0.0483108449536857,"2019":0.06815590212721284,"2020":0.0520037542291439,"2021":0.0443146314884356,"2022":0.034240553241436295,"2023":0.0566323945540869,"2024":0.04698643929635725,"2025":0.045279499751041355}},"espana":{"n_empresas":39,"top":{"ACS ACTIVIDADES CONS Y SERV":5,"MEDIASET ESPANA COMUNICACION":3,"TECNICAS REUNIDAS SA":3,"ALTADIS SA":1,"INDRA SISTEMAS SA":1,"ATRESMEDIA CORP DE MEDIOS DE":1,"OTIS MOBILITY SA":1,"TELEFONICA SA":1},"mejor_puesto_medio":{"TECNICAS REUNIDAS SA":5.0,"ALTADIS SA":32.0,"PUIG BRANDS SA-B":51.0,"MEDIASET ESPANA COMUNICACION":73.5,"ATRESMEDIA CORP DE MEDIOS DE":93.0,"INDRA SISTEMAS SA":106.0,"AMADEUS IT GROUP SA":109.0,"OTIS MOBILITY SA":120.0,"MOEVE SA":141.0,"TELEFONICA MOVILES SA":148.0}}},"explorador":[],"cobertura":{"us_empresas":1280,"eu_empresas":1353,"eu_descargadas":1353,"us_completo":true,"motivos":{"us":{"Elegible":8532,"Financiera":2055,"Utility":657,"EBIT negativo":513,"Inmobiliaria":454,"Sin cuentas completas":174,"EV o capital no válidos":22},"eu":{"Elegible":8517,"Financiera":2045,"Sin cuentas completas":1031,"Utility":601,"EBIT negativo":516,"Inmobiliaria":479,"EV o capital no válidos":12}}},"rolling":{"eu":{"anual":{"mf_ltm":{"2006":0.1764524815417701,"2007":-0.0339353466397485,"2008":-0.4703009489917607,"2009":0.9593268336479532,"2010":0.2370144535184016,"2011":-0.0270274193128722,"2012":0.2109806869103108,"2013":0.3879909817387812,"2014":0.024699668900241,"2015":0.1186266012002149,"2016":0.0243462475408208,"2017":0.06402496529578,"2018":-0.2242348580844232,"2019":0.2617017645183565,"2020":-0.0109590638156917,"2021":0.2173563925633625,"2022":-0.1317089449124273,"2023":0.1952997680888232,"2024":0.0752972317857288,"2025":0.1296350183636411},"rolling10":{"2008":-0.4298523470054409,"2009":0.7408340499407872,"2010":0.2246453752346487,"2011":-0.1252108729023201,"2012":0.2377276877983435,"2013":0.4294492532934436,"2014":-0.0131245540920989,"2015":0.0581962191091298,"2016":0.1108791785464684,"2017":0.0212892405435994,"2018":-0.2706076904505714,"2019":0.3057539944779734,"2020":0.1161739405359856,"2021":0.1396130742305092,"2022":-0.1045396714273669,"2023":0.0526131759802283,"2024":0.1262130680190569,"2025":0.1272412398407014},"rolling30":{"2008":-0.4509364351025822,"2009":0.8760039840067577,"2010":0.2485207201997896,"2011":-0.1335865595171604,"2012":0.2156757501512415,"2013":0.3418222957649496,"2014":0.0346346821241979,"2015":0.1103294354195662,"2016":0.0784064132405795,"2017":0.0690388475494469,"2018":-0.2478381617835517,"2019":0.3156905082009567,"2020":0.0316737409058501,"2021":0.1561953399007792,"2022":-0.0740610281231572,"2023":0.1478169480923481,"2024":0.1092261649279292,"2025":0.0991316979945154},"mitades15":{"2007":-0.0398703335190236,"2008":-0.4321689580288111,"2009":0.9333407614525516,"2010":0.2422393417292525,"2011":-0.0867766252271653,"2012":0.2328196364245488,"2013":0.403966388709272,"2014":-0.0080598359066196,"2015":0.0931407423403098,"2016":0.0460721530255814,"2017":0.0692563550441899,"2018":-0.2540405833455933,"2019":0.295103371023642,"2020":0.0829551299762829,"2021":0.1578764392807474,"2022":-0.0300747860006476,"2023":0.0625071698544411,"2024":0.1052589025330817,"2025":0.1496955225797857},"mitades30":{"2007":-0.0471343326710178,"2008":-0.4397585005551058,"2009":1.0287315675344069,"2010":0.2695593793010677,"2011":-0.107601125256642,"2012":0.1864691349820331,"2013":0.3874616393709277,"2014":0.0326062834254536,"2015":0.1145955056149607,"2016":0.064358748739135,"2017":0.0684644067347458,"2018":-0.2409073395696871,"2019":0.3259787101679601,"2020":0.0358972733936874,"2021":0.179893107499958,"2022":-0.0773241390137559,"2023":0.1325563591066976,"2024":0.0804617269718154,"2025":0.1184484058562403},"indice":{"2006":0.207150363020934,"2007":0.0463735821477576,"2008":-0.426770209094891,"2009":0.3145341564457705,"2010":0.1310937007433535,"2011":-0.0900825243779682,"2012":0.1936280651137817,"2013":0.2052315112287959,"2014":0.0779895381339611,"2015":0.0975473887213371,"2016":0.0264515183200734,"2017":0.1207939245673613,"2018":-0.0948671694269399,"2019":0.267099959593426,"2020":-0.0086740510043351,"2021":0.2552827656233981,"2022":-0.1067861022110809,"2023":0.1623761665639017,"2024":0.0771811709594704,"2025":0.1913705041528516}},"periodos":{"2008-2025":{"mf_ltm":0.078497348660864,"rolling10":0.06732780836510877,"rolling30":0.07509846770749395,"mitades15":0.08223390229097993,"mitades30":0.0845530625135873,"indice":0.06068582293924396},"2008-2016":{"mf_ltm":0.10545336596951249,"rolling10":0.09058834274319882,"rolling30":0.09437946612348691,"mitades15":0.10444286591892182,"mitades30":0.11185387035553451,"indice":0.03432600259538665},"2017-2025":{"mf_ltm":0.052198642543725526,"rolling10":0.044563384607634315,"rolling30":0.05615716581489627,"mitades15":0.06047153312314779,"mitades30":0.057922607250063374,"indice":0.08771742386950931}},"riesgo":{"mf_ltm":{"vol":0.2895482554892179,"peor":-0.4703009489917607,"dd":-0.47030094899176067,"anios_sobre_original":0,"n":18},"rolling10":{"vol":0.25815007188604305,"peor":-0.4298523470054409,"dd":-0.42985234700544095,"anios_sobre_original":8,"n":18},"rolling30":{"vol":0.27301158001511194,"peor":-0.4509364351025822,"dd":-0.4509364351025822,"anios_sobre_original":10,"n":18},"mitades15":{"vol":0.28100857311379596,"peor":-0.4321689580288111,"dd":-0.43216895802881106,"anios_sobre_original":11,"n":18},"mitades30":{"vol":0.2996731043891435,"peor":-0.4397585005551058,"dd":-0.4397585005551058,"anios_sobre_original":10,"n":18},"indice":{"vol":0.17738896851248423,"peor":-0.426770209094891,"dd":-0.42677020909489105,"anios_sobre_original":11,"n":18}},"rotacion":{"mf_ltm":0.5754385964912281,"rolling10":0.28431372549019607,"rolling30":0.26209150326797387,"mitades15":0.3796296296296296,"mitades30":0.35462962962962963}},"us":{"anual":{"mf_ltm":{"2003":0.35790536306043585,"2004":0.19533744833635924,"2005":0.09083765862858395,"2006":0.15009910392416526,"2007":0.18143790219062872,"2008":-0.4260938788683465,"2009":0.4367421920070369,"2010":0.11918059079572862,"2011":0.11615608158328294,"2012":0.0957319801462082,"2013":0.47939250681472956,"2014":0.1694394448785279,"2015":0.01844076219116486,"2016":0.15080600734559546,"2017":0.2890973462784483,"2018":-0.03477574001789774,"2019":0.3612916274283351,"2020":0.07514737523796344,"2021":0.2383677217553697,"2022":-0.010641757346280922,"2023":0.21364749582340958,"2024":0.07817547318849805,"2025":0.036081839181220765},"rolling10":{"2003":0.41446681722668255,"2004":0.2321977946320899,"2005":0.19557495860293694,"2006":0.013366342925564823,"2007":-0.0009502165930862505,"2008":-0.43109232924683705,"2009":0.43358567909441414,"2010":0.08918949124627296,"2011":0.24700353022001376,"2012":-0.02673199721911157,"2013":0.5062423773602587,"2014":0.2726433255618732,"2015":0.12941226609278744,"2016":0.09186579673746298,"2017":0.30568630614043024,"2018":0.09478023941990377,"2019":0.20645840440334307,"2020":0.07796721703986997,"2021":0.32599831123113665,"2022":-0.014381355164775678,"2023":0.16024671603009755,"2024":-0.0029128550757211435,"2025":-0.01713613956159943},"rolling30":{"2003":0.37521705667606464,"2004":0.16493475079742193,"2005":0.1053789045836786,"2006":0.1351599824862686,"2007":0.0873392215234301,"2008":-0.4081536587814859,"2009":0.45679074662485486,"2010":0.16404417465775012,"2011":0.12333609149617453,"2012":0.10994946603059907,"2013":0.48305497423070154,"2014":0.18995855113962667,"2015":0.05296512294876177,"2016":0.13733479696684192,"2017":0.26567102206231663,"2018":-0.02438660492770861,"2019":0.291317768103881,"2020":0.1024047228972862,"2021":0.26700091104262924,"2022":0.006379561348791141,"2023":0.1617517474184984,"2024":0.05065844983029799,"2025":0.08555486789990185},"mitades15":{"2003":0.40805442414151005,"2004":0.18748840726077232,"2005":0.19501637754959278,"2006":0.06523824785180143,"2007":0.09904598154644306,"2008":-0.4567148781340067,"2009":0.45677369182204663,"2010":0.09189515241160229,"2011":0.20544097349809376,"2012":0.06710834132453658,"2013":0.504484182256592,"2014":0.1991580443869425,"2015":0.10180677435308172,"2016":0.1007917973209076,"2017":0.2998101779219775,"2018":0.08823825602438395,"2019":0.29886846344283313,"2020":0.08790302746489553,"2021":0.29402371890606505,"2022":0.026888665258279598,"2023":0.14887414923923292,"2024":0.03109568990486955,"2025":0.0014169835993205204},"mitades30":{"2003":0.350839866144101,"2004":0.16766357381547548,"2005":0.09127227037493091,"2006":0.12809122496868786,"2007":0.10868494649561344,"2008":-0.41734665820595396,"2009":0.44854820134071494,"2010":0.15833922113400378,"2011":0.14134750927759443,"2012":0.10590212974841529,"2013":0.4897128128755488,"2014":0.18292942211309926,"2015":0.03574402802655374,"2016":0.1313431062144399,"2017":0.281847210057967,"2018":-0.02122140508244985,"2019":0.3253009430890126,"2020":0.09738392668290818,"2021":0.24946937321467866,"2022":0.0036521361858377066,"2023":0.1725293824926748,"2024":0.05730944553544015,"2025":0.05037344852025116},"indice":{"2003":0.28710467548187224,"2004":0.10848751308768478,"2005":0.06292189859310171,"2006":0.15828758320688285,"2007":0.08789812719271062,"2008":-0.37632263454441217,"2009":0.2677877845290191,"2010":0.15211767728534364,"2011":-0.0008497419281641161,"2012":0.16082942291056512,"2013":0.31694303143495595,"2014":0.12649848954399423,"2015":0.006071944408468699,"2016":0.11216105888493,"2017":0.2246722847512197,"2018":-0.04646250991342471,"2019":0.31100162507875106,"2020":0.231694719617336,"2021":0.25405637736825737,"2022":-0.19758463614633437,"2023":0.2689789269190792,"2024":0.25596246751015683,"2025":0.17697120264414523}},"periodos":{"2003-2025":{"mf_ltm":0.13008175887031048,"rolling10":0.1244708198176383,"rolling30":0.13157583232974956,"mitades15":0.13370784896106036,"mitades30":0.12916281232526083,"indice":0.11380656170161019},"2003-2014":{"mf_ltm":0.13760035104144985,"rolling10":0.13054932658199725,"rolling30":0.1401805974944752,"mitades15":0.1374755069902065,"mitades30":0.1372741522367109,"indice":0.0957317303308447},"2015-2025":{"mf_ltm":0.12193632006373045,"rolling10":0.11787698876307662,"rolling30":0.12226286127658792,"mitades15":0.12961190807589262,"mitades30":0.120380043811531,"indice":0.1338647751531592}},"riesgo":{"mf_ltm":{"vol":0.18518255339014542,"peor":-0.4260938788683465,"dd":-0.4260938788683465,"anios_sobre_original":0,"n":23},"rolling10":{"vol":0.1991532258322376,"peor":-0.43109232924683705,"dd":-0.4316329147555208,"anios_sobre_original":11,"n":23},"rolling30":{"vol":0.17858807771089572,"peor":-0.4081536587814859,"dd":-0.4081536587814859,"anios_sobre_original":15,"n":23},"mitades15":{"vol":0.19216809106119162,"peor":-0.4567148781340067,"dd":-0.4567148781340067,"anios_sobre_original":12,"n":23},"mitades30":{"vol":0.18081700993423488,"peor":-0.41734665820595396,"dd":-0.41734665820595396,"anios_sobre_original":14,"n":23},"indice":{"vol":0.16787241734927982,"peor":-0.37632263454441217,"dd":-0.37632263454441217,"anios_sobre_original":9,"n":23}},"rotacion":{"mf_ltm":0.4111111111111111,"rolling10":0.18636363636363637,"rolling30":0.19494949494949498,"mitades15":0.2579710144927536,"mitades30":0.26449275362318836}}}};
+  const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  const nf = (v, d = 1) => v.toLocaleString("es-ES", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const pct = (v, d = 1) => (v == null || isNaN(v) ? "—" : (v > 0 ? "+" : "") + nf(v * 100, d) + " %");
+  const pcU = (v, d = 1) => (v == null || isNaN(v) ? "—" : nf(v * 100, d) + " %");
+  const W = 700;
+  // marcas de eje «redondas» (1, 2, 2,5 o 5 × 10^n)
+  function nice(lo, hi, n = 5) {
+    if (!(hi > lo)) return [lo];
+    const raw = (hi - lo) / n, mag = 10 ** Math.floor(Math.log10(raw));
+    const st = [1, 2, 2.5, 5, 10].map((x) => x * mag).find((x) => x >= raw), out = [];
+    for (let v = Math.ceil(lo / st) * st; v <= hi + st * 1e-9; v += st) out.push(Math.abs(v) < st * 1e-6 ? 0 : +v.toFixed(10));
+    return out;
+  }
+  function tip(box) { let t = box.querySelector(".tip"); if (!t) { t = document.createElement("div"); t.className = "tip"; t.hidden = true; box.appendChild(t); } return t; }
+  function place(t, box, svg, sx, sy, H) {
+    const r = svg.getBoundingClientRect(), bb = box.getBoundingClientRect();
+    t.style.left = `${Math.min(bb.width - 150, Math.max(150, (sx / W) * r.width + (r.left - bb.left)))}px`;
+    t.style.top = `${(sy / H) * r.height + (r.top - bb.top)}px`; t.hidden = false;
+  }
+
+  // ---------- gráfico de líneas genérico con cursor
+  function lineChart(box, opt) {
+    const { xs, series, fmtY, fmtX, log, H = 300, ticks, xTick, yPct } = opt;
+    const padL = 58, padR = 16, padT = 12, padB = 26;
+    const vis = series.filter((s) => s.on !== false);
+    const all = vis.flatMap((s) => s.v.filter((x) => x != null && isFinite(x)));
+    if (!all.length) { vacio(box, vis.length ? "Sin datos en el periodo elegido." : "Marca al menos una serie para compararla."); return; }
+    let lo = Math.min(...all), hi = Math.max(...all);
+    const f = log ? Math.log : (x) => x;
+    if (!log) { const pad = (hi - lo) * 0.08 || 0.01; lo -= pad; hi += pad; }
+    const n = xs.length, x = (i) => padL + (i / (n - 1)) * (W - padL - padR);
+    const y = (v) => padT + (1 - (f(v) - f(lo)) / (f(hi) - f(lo))) * (H - padT - padB);
+    let s = `<svg viewBox="0 0 ${W} ${H}">`;
+    (ticks ? ticks(lo, hi) : nice(lo, hi)).forEach((g) => {
+      if (g < lo || g > hi) return;
+      s += `<line class="grid" x1="${padL}" x2="${W - padR}" y1="${y(g)}" y2="${y(g)}"/><text x="${padL - 8}" y="${y(g) + 4}" text-anchor="end">${fmtY(g)}</text>`;
+    });
+    if (!log && lo < 0 && hi > 0) s += `<line class="zero" x1="${padL}" x2="${W - padR}" y1="${y(0)}" y2="${y(0)}"/>`;
+    xs.forEach((v, i) => { if (xTick(v, i)) s += `<text x="${x(i)}" y="${H - 6}" text-anchor="middle">${fmtX(v)}</text>`; });
+    vis.forEach((se) => {
+      let d = "", pen = false;
+      se.v.forEach((v, i) => { if (v == null || !isFinite(v)) { pen = false; return; } d += `${pen ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`; pen = true; });
+      s += `<path class="ln" data-n="${se.n}" d="${d}" fill="none" stroke="${se.c}" stroke-width="${se.w || 2}" stroke-linejoin="round"${se.dash ? ' stroke-dasharray="4 3"' : ""}/>`;
+    });
+    if (opt.marks) opt.marks.i.forEach((i) => { const v = vis[opt.marks.s]?.v[i]; if (v != null) s += `<circle cx="${x(i)}" cy="${y(v)}" r="4" fill="${opt.marks.c}" stroke="var(--sheet)" stroke-width="1.5"/>`; });
+    s += `<line class="hl-line" id="cur" y1="${padT}" y2="${H - padB}" visibility="hidden"/><rect x="${padL}" y="${padT}" width="${W - padL - padR}" height="${H - padT - padB}" fill="transparent" class="hit"/>`;
+    box.innerHTML = s + "</svg>";
+    const svg = box.querySelector("svg"), t = tip(box), cur = box.querySelector("#cur"), hit = box.querySelector(".hit");
+    const move = (e) => {
+      const r = svg.getBoundingClientRect(), sx = ((e.clientX - r.left) / r.width) * W;
+      const i = Math.max(0, Math.min(n - 1, Math.round(((sx - padL) / (W - padL - padR)) * (n - 1))));
+      cur.setAttribute("x1", x(i)); cur.setAttribute("x2", x(i)); cur.setAttribute("visibility", "visible");
+      t.textContent = `${fmtX(xs[i], true)} · ` + vis.map((se) => `${se.n} ${se.v[i] == null ? "—" : opt.fmtTip(se.v[i])}`).join(" · ");
+      place(t, box, svg, x(i), padT + 8, H);
+    };
+    hit.addEventListener("mousemove", move);
+    hit.addEventListener("mouseleave", () => { t.hidden = true; cur.setAttribute("visibility", "hidden"); });
+  }
+
+  // segmentador: casillas para elegir qué series comparar (clic añade o quita, doble clic deja solo esa,
+  // pasar el ratón destaca la línea); «Todos» y «Restablecer» vuelven a marcar todo o la selección inicial
+  const swatch = (s) => (s.c ? `<i style="${s.dash ? `background:repeating-linear-gradient(90deg,${s.c} 0 4px,transparent 4px 7px)` : `background:${s.c}`}"></i>` : "");
+  function legend(el, series, redraw, chart, label = "Comparar") {
+    series.forEach((s) => { if (s.def === undefined) s.def = s.on !== false; });
+    el.innerHTML = `<span class="mk">${label}</span>` + series.map((s, i) => `<button type="button" class="chip" aria-pressed="${s.on !== false}" data-i="${i}" title="Clic: añadir o quitar · Doble clic: ver solo esta">${swatch(s)}${s.n}</button>`).join("")
+      + (series.length > 2 ? `<button type="button" class="acc" data-all="1">Todos</button><button type="button" class="acc" data-all="def">Restablecer</button>` : "");
+    let timer;
+    el.querySelectorAll("[data-i]").forEach((b) => {
+      const s = series[+b.dataset.i];
+      b.addEventListener("click", () => { clearTimeout(timer); timer = setTimeout(() => { s.on = s.on === false; redraw(); }, 220); });
+      b.addEventListener("dblclick", () => { clearTimeout(timer); series.forEach((x) => (x.on = x === s)); redraw(); });
+      if (chart) {
+        b.addEventListener("mouseenter", () => chart.querySelectorAll(".ln").forEach((p) => p.classList.toggle("dim", p.dataset.n !== s.n)));
+        b.addEventListener("mouseleave", () => chart.querySelectorAll(".ln").forEach((p) => p.classList.remove("dim")));
+      }
+    });
+    el.querySelectorAll("[data-all]").forEach((b) => b.addEventListener("click", () => { series.forEach((x) => (x.on = b.dataset.all === "1" ? true : x.def)); redraw(); }));
+  }
+  const vivos = (series) => series.filter((s) => s.on !== false);
+  const vacio = (box, txt = "Marca al menos una serie para compararla.") => (box.innerHTML = `<p class="caption" style="padding:24px 8px">${txt}</p>`);
+
+  // periodo: desde / hasta (años)
+  function rango(el, yrs, st, redraw) {
+    const op = (sel) => yrs.map((a) => `<option${a === sel ? " selected" : ""}>${a}</option>`).join("");
+    el.innerHTML = `<span class="mk">Periodo</span><label>Desde <select data-r="0">${op(st.a0)}</select></label><label>hasta <select data-r="1">${op(st.a1)}</select></label>`
+      + `<button type="button" class="acc" data-r="all">Todo el periodo</button>`;
+    const s0 = el.querySelector('[data-r="0"]'), s1 = el.querySelector('[data-r="1"]');
+    const upd = () => { let a = +s0.value, b = +s1.value; if (a > b) [a, b] = [b, a]; st.a0 = a; st.a1 = b; s0.value = a; s1.value = b; redraw(); };
+    s0.addEventListener("change", upd); s1.addEventListener("change", upd);
+    el.querySelector('[data-r="all"]').addEventListener("click", () => { s0.value = yrs[0]; s1.value = yrs[yrs.length - 1]; upd(); });
+  }
+  const paso = (n) => (n > 16 ? 4 : n > 8 ? 2 : 1);
+
+  // ---------- barras agrupadas
+  function bars(box, cats, groups, opt = {}) {
+    const H = opt.H || 260, padL = opt.padL || 58, padR = 12, padT = 14, padB = opt.padB || 30;
+    const vals = groups.flatMap((g) => g.v.filter((x) => x != null));
+    let lo = Math.min(0, ...vals, opt.ref ?? 0), hi = Math.max(0, ...vals, ...(opt.refs || []).map((r) => r.v));
+    const pad = (hi - lo) * 0.12; hi += pad; if (lo < 0) lo -= pad;
+    const y = (v) => padT + (1 - (v - lo) / (hi - lo)) * (H - padT - padB);
+    const step = (W - padL - padR) / cats.length, bw = Math.min(cats.length <= 5 ? 48 : 26, (step * 0.7) / groups.length);
+    let s = `<svg viewBox="0 0 ${W} ${H}">`;
+    nice(lo, hi).forEach((g) => s += `<line class="grid" x1="${padL}" x2="${W - padR}" y1="${y(g)}" y2="${y(g)}"/><text x="${padL - 8}" y="${y(g) + 4}" text-anchor="end">${opt.fmt(g)}</text>`);
+    s += `<line class="zero" x1="${padL}" x2="${W - padR}" y1="${y(0)}" y2="${y(0)}"/>`;
+    (opt.refs || []).forEach((r) => s += `<line x1="${padL}" x2="${W - padR}" y1="${y(r.v)}" y2="${y(r.v)}" stroke="${r.c}" stroke-dasharray="5 4" stroke-width="1.3"/>`);
+    cats.forEach((c, i) => {
+      const cx = padL + step * i + step / 2;
+      groups.forEach((g, j) => {
+        const v = g.v[i]; if (v == null) return;
+        const bx = cx - (groups.length * bw) / 2 + j * bw;
+        s += `<rect class="bar" data-i="${i}" data-j="${j}" x="${bx}" y="${y(Math.max(0, v))}" width="${bw - 2}" height="${Math.max(1, Math.abs(y(v) - y(0)))}" rx="2" fill="${opt.colorOf ? opt.colorOf(v) : g.c}"/>`;
+        if (opt.labels && cats.length <= 30) s += `<text x="${bx + (bw - 2) / 2}" y="${v >= 0 ? y(v) - 5 : y(v) + 13}" text-anchor="middle" style="fill:var(--ink);font-size:10.5px">${opt.fmt(v)}</text>`;
+      });
+      const lab = String(c);
+      if (opt.noX) return;                                          // muchas barras: el nombre va en el tooltip y en la tabla
+      s += opt.rot ? `<text x="${cx}" y="${H - padB + 12}" text-anchor="end" transform="rotate(-28 ${cx} ${H - padB + 12})">${lab}</text>`
+                   : `<text x="${cx}" y="${H - 8}" text-anchor="middle">${lab}</text>`;
+    });
+    box.innerHTML = s + "</svg>";
+    const t = tip(box), svg = box.querySelector("svg");
+    box.querySelectorAll("rect.bar").forEach((r) => {
+      r.addEventListener("mouseenter", () => {
+        const i = +r.dataset.i, j = +r.dataset.j;
+        t.textContent = `${cats[i]} · ${groups[j].n}: ${opt.fmt(groups[j].v[i])}`;
+        place(t, box, svg, +r.getAttribute("x"), +r.getAttribute("y"), H);
+      });
+      r.addEventListener("mouseleave", () => (t.hidden = true));
+    });
+  }
+
+  const C = () => ({ acc: css("--accent"), sec: css("--second"), thi: css("--third"), warn: css("--warn"), ink: css("--ink-2") });
+
+  // ---------- 1. EE. UU. mensual
+  const M = D.us.mensual;
+  function cum(arr) { let v = 10000, out = []; arr.forEach((r) => { if (r == null) { out.push(out.length && out[out.length - 1] != null ? out[out.length - 1] : null); return; } v *= 1 + r; out.push(v); }); return out; }
+  function cumFrom(arr) { let v = null, out = []; arr.forEach((r) => { if (r == null) { out.push(v); return; } v = (v == null ? 10000 : v) * (1 + r); out.push(v); }); return out; }
+  let usS;
+  const usYrs = [...new Set(M.mes.map((m) => +m.slice(0, 4)))].filter((a) => M.mes.includes(`${a}-12`) || a === 2001);
+  const usR = { a0: usYrs[0], a1: usYrs[usYrs.length - 1] };
+  function drawUS() {
+    const c = C();
+    if (!usS) usS = [
+      { n: "MF original", k: "mf_ltm", w: 2.6, col: "acc" }, { n: "MF forward", k: "mf_fwd", col: "warn" },
+      { n: "Rolling (10)", k: "rolling_ltm", dash: true, col: "pur" },
+      ...(M.rolling30 ? [{ n: "Rolling (30)", k: "rolling30", dash: true, col: "blu" }] : []),
+      { n: "S&P 500", k: "sp500", col: "sec" }, { n: "S&P 500 equip.", k: "sp500_igual_peso", on: false, col: "thi" }];
+    const pal = { ...c, pur: "#7b5ea7", blu: "#3b7dd8" };
+    const i0 = M.mes.findIndex((m) => m >= `${usR.a0}-01`), i1 = M.mes.findLastIndex((m) => m <= `${usR.a1}-12`), xs = M.mes.slice(i0, i1 + 1);
+    usS.forEach((s) => { s.c = pal[s.col]; const a = M[s.k].slice(i0, i1 + 1); s.v = a[0] == null ? a.map(() => null) : cum(a); });
+    legend(document.getElementById("us-leg"), usS, drawUS, document.getElementById("us-chart"), "Carteras");
+    lineChart(document.getElementById("us-chart"), {
+      xs, series: usS, log: true, H: 320,
+      ticks: () => [5000, 7500, 10000, 15000, 20000, 30000, 50000, 100000, 200000], fmtY: (v) => (v >= 1000 ? nf(v / 1000, 0) + "k $" : v),
+      fmtX: (m, full) => (full ? m : m.slice(0, 4)), xTick: (m) => m.endsWith("-01") && (+m.slice(0, 4) - usR.a0) % paso(usR.a1 - usR.a0) === 0,
+      fmtTip: (v) => nf(v, 0) + " $" });
+  }
+
+  rango(document.getElementById("us-rng"), usYrs, usR, drawUS);
+
+  // ---------- 2. Europa anual
+  let euS;
+  const euYrs = Object.keys(D.eu.variantes.original.anual).map(Number).sort(), euR = { a0: euYrs[0], a1: euYrs[euYrs.length - 1] };
+  function drawEU() {
+    const c = C(), V = D.eu.variantes, I = D.eu.indice, yrs = euYrs.filter((a) => a >= euR.a0 && a <= euR.a1);
+    const xs = [yrs[0] - 1, ...yrs];
+    const cumA = (o) => { let v = 10000; return [10000, ...yrs.map((a) => (o[a] == null ? null : (v *= 1 + o[a])))]; };
+    if (!euS) euS = [{ n: "MF original", o: V.original.anual, w: 2.6 }, { n: "MF forward", o: V.forward.anual }, { n: "STOXX 600", o: I.cap }, { n: "STOXX 600 equip.", o: I.eq, on: false }];
+    const col = [c.acc, c.warn, c.sec, c.thi];
+    euS.forEach((s, i) => { s.c = col[i]; s.v = cumA(s.o); });
+    legend(document.getElementById("eu-leg"), euS, drawEU, document.getElementById("eu-chart"), "Carteras");
+    lineChart(document.getElementById("eu-chart"), { xs, series: euS, H: 280, log: true, ticks: () => [5000, 7500, 10000, 15000, 20000, 30000, 40000, 50000],
+      fmtY: (v) => nf(v / 1000, 1).replace(",0", "") + "k €", fmtX: (a, full) => (full ? `Fin de ${a}` : String(a)),
+      xTick: (a) => (a - xs[0]) % paso(xs.length) === 0, fmtTip: (v) => nf(v, 0) + " €" });
+  }
+  rango(document.getElementById("eu-rng"), euYrs, euR, drawEU);
+
+  // ---------- 3. quintiles
+  let qK = "q_ey";
+  const qS = [{ n: "EE. UU.", k: "us" }, { n: "Europa", k: "eu" }];
+  const qTxt = { q_ey: "Quintil 1 = más barato (mayor Earnings Yield)", q_roc: "Quintil 1 = mayor Return on Capital",
+                 q_mf: "Quintil 1 = mejores del ranking Magic Formula", q_crec: "Quintil 1 = mayor crecimiento esperado por los analistas (desde 2006)" };
+  function drawQ() {
+    const c = C(), cats = [1, 2, 3, 4, 5].map((q) => "Q" + q);
+    qS.forEach((s) => (s.c = s.k === "us" ? c.acc : c.sec));
+    legend(document.getElementById("q-leg"), qS, drawQ, null, "Mercados");
+    const g = vivos(qS);
+    if (!g.length) return vacio(document.getElementById("q-chart"), "Marca al menos un mercado.");
+    bars(document.getElementById("q-chart"), cats, g.map((s) => ({ n: s.n, c: s.c, v: [1, 2, 3, 4, 5].map((q) => D[s.k][qK].cagr[q]) })),
+      { fmt: (v) => pcU(v), labels: true, H: 250, refs: g.map((s) => ({ v: D[s.k].indice.cap_cagr_total, c: s.c })) });
+    document.getElementById("q-cap").textContent = `${qTxt[qK]}. CAGR de cada quintil (equiponderado): EE. UU. 2001–2025, Europa 2006–2025. Líneas discontinuas: índice ponderado por capitalización de cada mercado, en su color.`;
+  }
+  document.querySelectorAll("[data-q]").forEach((b) => b.addEventListener("click", () => { qK = b.dataset.q; document.querySelectorAll("[data-q]").forEach((x) => x.setAttribute("aria-pressed", x === b)); drawQ(); }));
+
+  // ---------- 4. tenencia
+  function drawH() {
+    const c = C(), us = D.us.tenencia.exceso_sp500, eu = D.eu.tenencia.exceso_sp500;
+    bars(document.getElementById("h-chart"), ["Año 1", "Año 2", "Año 3"], [
+      { n: "EE. UU.", v: [1, 2, 3].map((h) => us[h]), c: c.acc }, { n: "Europa", v: [1, 2, 3].map((h) => eu[h]), c: c.sec }],
+      { fmt: (v) => pct(v), labels: true, H: 230 });
+  }
+
+
+  // ---------- 4-5. rolling por tercios y por mitades
+  const RL = D.rolling || {};
+  const RS = { mf_ltm: "Anual<br>30 empresas", rolling10: "Tercios<br>tramos de 10", rolling30: "Tercios<br>tramos de 30",
+               mitades15: "Mitades<br>tramos de 15", mitades30: "Mitades<br>tramos de 30", indice: "Índice" };
+  const RN = { mf_ltm: "Anual (30)", rolling10: "Tercios, tramos de 10 (≈30)", rolling30: "Tercios, tramos de 30 (≈90)",
+               mitades15: "Mitades, tramos de 15 (≈30)", mitades30: "Mitades, tramos de 30 (≈60)", indice: "Índice cap." };
+  const PER = { us: ["2003-2025", "2003-2014", "2015-2025"], eu: ["2008-2025", "2008-2016", "2017-2025"] };
+  function tablaTercios() {
+    const cols = ["mf_ltm", "rolling10", "rolling30", "indice"];
+    const fila = (m, lab) => { const x = RL[m] && RL[m].periodos[PER[m][0]]; if (!x) return "";
+      const best = Math.max(...cols.slice(0, 3).map((c) => x[c] ?? -1));
+      return `<tr><td>${lab} ${PER[m][0].replace("-", "–")}</td>` + cols.map((c) => `<td${x[c] === best ? ' class="hl"' : ""}>${pcU(x[c])}</td>`).join("") + "</tr>"; };
+    document.getElementById("t-tercios").innerHTML = `<table><thead><tr><th>CAGR</th>${cols.map((c) => `<th>${RS[c]}</th>`).join("")}</tr></thead><tbody>${fila("us", "EE. UU.")}${fila("eu", "Europa")}</tbody></table>`;
+  }
+  let rm = "eu", mitS = {}, mitR = {};
+  const mitYrs = (m) => { const [a0, a1] = PER[m][0].split("-").map(Number), y = []; for (let a = a0; a <= a1; a++) y.push(a); return y; };
+  function drawMit() {
+    const c = C(), R0 = RL[rm];
+    if (!R0) return;
+    const keys = ["mf_ltm", "rolling30", "mitades15", "mitades30", "indice"].filter((k) => R0.anual[k]);
+    if (!mitR[rm]) { const y = mitYrs(rm); mitR[rm] = { a0: y[0], a1: y[y.length - 1] }; rango(document.getElementById("mit-rng"), y, mitR[rm], drawMit); }
+    const a0 = mitR[rm].a0, a1 = mitR[rm].a1, yrs = mitYrs(rm).filter((a) => a >= a0 && a <= a1);
+    const col = { mf_ltm: c.acc, rolling30: "#7b5ea7", mitades15: "#3b7dd8", mitades30: c.warn, indice: c.sec };
+    if (!mitS[rm]) mitS[rm] = keys.map((k) => ({ k, n: RN[k].replace(/ \(.*\)/, "").replace("Índice cap.", rm === "us" ? "S&P 500" : "STOXX 600"), dash: k === "rolling30", w: k === "mitades30" ? 2.6 : 2 }));
+    mitS[rm].forEach((s) => { s.c = col[s.k]; let v = 10000; s.v = [10000, ...yrs.map((a) => (v *= 1 + R0.anual[s.k][a]))]; });
+    legend(document.getElementById("mit-leg"), mitS[rm], drawMit, document.getElementById("mit-chart"), "Carteras");
+    lineChart(document.getElementById("mit-chart"), { xs: [a0 - 1, ...yrs], series: mitS[rm], H: 300, log: true,
+      ticks: () => [10000, 15000, 20000, 30000, 40000, 60000, 80000, 100000, 150000],
+      fmtY: (v) => nf(v / 1000, 0) + (rm === "us" ? "k $" : "k €"), fmtX: (a, full) => (full ? `Fin de ${a}` : String(a)),
+      xTick: (a) => (a - a0 + 1) % paso(yrs.length) === 0, fmtTip: (v) => nf(v, 0) + (rm === "us" ? " $" : " €") });
+    document.getElementById("mit-cap").textContent = `Evolución de 10.000 ${rm === "us" ? "$" : "€"} desde el inicio de ${a0} hasta el final de ${a1} con cada forma de construir la cartera, escala logarítmica, frecuencia anual. La tabla resume siempre el periodo completo.`
+      + (R0.anual.mitades30 ? "" : " La versión por mitades de EE. UU. está pendiente de la última ejecución en WRDS.");
+    const cols = keys;
+    const rr = (lab, f) => `<tr><td>${lab}</td>${cols.map((k) => `<td>${f(k)}</td>`).join("")}</tr>`;
+    const x = (per) => R0.periodos[per] || {};
+    const best = (per) => Math.max(...cols.filter((k) => k !== "indice").map((k) => x(per)[k] ?? -1));
+    const cg = (per) => (k) => { const v = x(per)[k]; return v == null ? "—" : `<span class="${v === best(per) ? "num hl" : "num"}">${pcU(v)}</span>`; };
+    document.getElementById("t-mitades").innerHTML = `<table><thead><tr><th>${PER[rm][0].replace("-", "–")}</th>${cols.map((k) => `<th>${RS[k].replace("Índice", rm === "us" ? "S&amp;P 500" : "STOXX 600")}</th>`).join("")}</tr></thead><tbody>`
+      + PER[rm].map((per, i) => rr(i ? `CAGR ${per.replace("-", "–")}` : "<strong>CAGR</strong>", cg(per))).join("")
+      + rr("Volatilidad", (k) => pcU(R0.riesgo[k]?.vol)) + rr("Caída máxima", (k) => pcU(R0.riesgo[k]?.dd))
+      + rr("Años por encima de la anual", (k) => (k === "mf_ltm" || !R0.riesgo[k] ? "—" : `${R0.riesgo[k].anios_sobre_original} de ${R0.riesgo[k].n}`))
+      + rr("Rotación anual aprox.", (k) => (R0.rotacion[k] == null ? "—" : pcU(R0.rotacion[k], 0))) + "</tbody></table>";
+  }
+  document.querySelectorAll("[data-rm]").forEach((b) => b.addEventListener("click", () => { rm = b.dataset.rm; document.querySelectorAll("[data-rm]").forEach((x) => x.setAttribute("aria-pressed", x === b));
+    if (mitR[rm]) rango(document.getElementById("mit-rng"), mitYrs(rm), mitR[rm], drawMit); drawMit(); }));
+
+  // ---------- 5. errores
+  const eYrs = Object.keys(D.us.error.por_anio).map(Number).sort(), eR = { a0: eYrs[0], a1: eYrs[eYrs.length - 1] };
+  const eS = [{ n: "EE. UU.", k: "us" }, { n: "Europa", k: "eu" }];
+  function drawErrA() {
+    const c = C(), yrs = eYrs.filter((a) => a >= eR.a0 && a <= eR.a1);
+    eS.forEach((s) => { s.c = s.k === "us" ? c.acc : c.sec; s.v = yrs.map((a) => D[s.k].error.por_anio[a]); });
+    legend(document.getElementById("erra-leg"), eS, drawErrA, document.getElementById("err-anio"), "Mercados");
+    lineChart(document.getElementById("err-anio"), { xs: yrs, H: 260, series: eS,
+      fmtY: (v) => pcU(v, 0), fmtX: (a, full) => (full ? `Previsión para ${a}` : String(a)), xTick: (a) => (a - yrs[0]) % paso(yrs.length) === 0, fmtTip: (v) => pct(v) });
+  }
+  rango(document.getElementById("erra-rng"), eYrs, eR, drawErrA);
+  const secsE = Object.keys(D.eu.error.por_sector).sort((a, b) => D.eu.error.por_sector[a] - D.eu.error.por_sector[b]);
+  const esS = secsE.map((s) => ({ n: s, k: s })), emS = [{ n: "EE. UU.", k: "us" }, { n: "Europa", k: "eu" }];
+  function drawErrS() {
+    const c = C();
+    emS.forEach((s) => (s.c = s.k === "us" ? c.acc : c.sec));
+    legend(document.getElementById("errs-mk"), emS, drawErrS, null, "Mercados");
+    legend(document.getElementById("errs-leg"), esS, drawErrS, null, "Sectores");
+    const secs = vivos(esS).map((s) => s.k), g = vivos(emS);
+    if (!secs.length || !g.length) return vacio(document.getElementById("err-sec"), "Marca al menos un mercado y un sector.");
+    bars(document.getElementById("err-sec"), secs.map((s) => s.replace("Consumo ", "C. ")), g.map((s) => ({ n: s.n, c: s.c, v: secs.map((x) => D[s.k].error.por_sector[x]) })),
+      { fmt: (v) => pcU(v, 0), H: 260, rot: secs.length > 4, padB: secs.length > 4 ? 62 : 30, labels: secs.length <= 4 });
+  }
+  function drawErr() { drawErrA(); drawErrS(); }
+
+  // ---------- 6. variantes
+  const VN = { original: "Original", forward: "Forward", prudente: "Prudente", hibrida: "Híbrida", sin_expectativas_altas: "Sin expect. altas",
+               max_6_por_sector: "Máx. 6/sector", top_10: "Top 10", top_50: "Top 50" };
+  let ord = "us";
+  const vS = Object.keys(VN).map((k) => ({ n: VN[k], k })), vmS = [{ n: "EE. UU.", k: "us" }, { n: "Europa", k: "eu" }];
+  function drawVar() {
+    const c = C();
+    vmS.forEach((s) => (s.c = s.k === "us" ? c.acc : c.sec));
+    legend(document.getElementById("var-mk"), vmS, drawVar, null, "Mercados");
+    legend(document.getElementById("var-leg"), vS, drawVar, null, "Variantes");
+    const keys = vivos(vS).map((s) => s.k).sort((a, b) => (D[ord].variantes[b].cagr_2006_2025 || 0) - (D[ord].variantes[a].cagr_2006_2025 || 0)), g = vivos(vmS);
+    if (!keys.length || !g.length) return vacio(document.getElementById("var-chart"), "Marca al menos un mercado y una variante.");
+    bars(document.getElementById("var-chart"), keys.map((k) => VN[k]), g.map((s) => ({ n: s.n, c: s.c, v: keys.map((k) => D[s.k].variantes[k].cagr_2006_2025) })),
+      { fmt: (v) => pcU(v), H: 300, rot: keys.length > 4, padB: keys.length > 4 ? 66 : 30, labels: keys.length <= 4,
+        refs: g.map((s) => ({ v: D[s.k].indice.cap_cagr_2006_2025, c: s.c })) });
+  }
+  document.querySelectorAll("[data-ord]").forEach((b) => b.addEventListener("click", () => { ord = b.dataset.ord; document.querySelectorAll("[data-ord]").forEach((x) => x.setAttribute("aria-pressed", x === b)); drawVar(); }));
+
+  // ---------- 7. sesgos
+  function drawSesgo() {
+    const c = C();
+    bars(document.getElementById("sesgo-chart"), ["EE. UU. · supervivencia", "Europa · supervivencia", "Europa · anticipación"], [
+      { n: "Metodología correcta", v: [D.us.supervivencia.honesto, D.eu.supervivencia.honesto, D.eu.anticipacion.honesto], c: c.acc },
+      { n: "Con el sesgo", v: [D.us.supervivencia.sesgado, D.eu.supervivencia.sesgado, D.eu.anticipacion.sesgado], c: c.warn }],
+      { fmt: (v) => pcU(v), labels: true, H: 240 });
+  }
+
+  // ---------- 8. valoración
+  let vista = "us", valS = {}, valR = {};
+  const PAISES = { GB: "Reino Unido", FR: "Francia", DE: "Alemania", CH: "Suiza", SE: "Suecia", NL: "Países Bajos", ES: "España", IT: "Italia", DK: "Dinamarca", NO: "Noruega", FI: "Finlandia", BE: "Bélgica" };
+  function drawVal() {
+    const src = vista === "pais" ? D.eu.pais_ey : D[vista].sector_ey;
+    const keys = Object.keys(src);
+    const todos = [...new Set(keys.flatMap((k) => Object.keys(src[k]).map(Number)))].sort();
+    if (!valR[vista]) { valR[vista] = { a0: todos[0], a1: todos[todos.length - 1] }; rango(document.getElementById("val-rng"), todos, valR[vista], drawVal); }
+    const yrs = todos.filter((a) => a >= valR[vista].a0 && a <= valR[vista].a1);
+    const pal = [...["--accent", "--second", "--warn"].map(css), "#3b7dd8", "#7b5ea7", "#c9a227", "#d4608f", css("--third")];
+    if (!valS[vista]) valS[vista] = keys.map((k, i) => ({ k, n: vista === "pais" ? PAISES[k] || k : k, on: i < 4 || k === "ES" || k === "Tecnología" }));
+    const S = valS[vista];
+    S.forEach((s, i) => { s.c = pal[i % pal.length]; s.dash = i >= pal.length; s.v = yrs.map((a) => src[s.k][a] ?? null); });
+    legend(document.getElementById("val-leg"), S, drawVal, document.getElementById("val-chart"), vista === "pais" ? "Países" : "Sectores");
+    lineChart(document.getElementById("val-chart"), { xs: yrs, series: S, H: 300, fmtY: (v) => pcU(v, 0), fmtX: (a) => String(a),
+      xTick: (a) => (a - yrs[0]) % paso(yrs.length) === 0, fmtTip: (v) => pcU(v) });
+  }
+  document.querySelectorAll("[data-v]").forEach((b) => b.addEventListener("click", () => { vista = b.dataset.v; document.querySelectorAll("[data-v]").forEach((x) => x.setAttribute("aria-pressed", x === b));
+    if (valR[vista]) { const src = vista === "pais" ? D.eu.pais_ey : D[vista].sector_ey; rango(document.getElementById("val-rng"), [...new Set(Object.values(src).flatMap((o) => Object.keys(o).map(Number)))].sort(), valR[vista], drawVal); }
+    drawVal(); }));
+
+  // ---------- 9. explorador
+  const X = D.explorador; // [mercado, id, nombre, sector, anio, puesto, ey, roc, g, ret, mcap, motivo, pais]
+  const porEmp = {};
+  X.forEach((r) => { const k = r[0] + "|" + r[1]; (porEmp[k] = porEmp[k] || []).push(r); });
+  const nombres = {};                                   // "mercado|nombre más reciente" -> clave
+  Object.entries(porEmp).forEach(([k, rs]) => { nombres[rs[0][0] + "|" + rs[rs.length - 1][2]] = k; });
+  // nombres comerciales -> parte del nombre legal en Bloomberg / Compustat
+  const ALIAS = { INDITEX: "INDUSTRIA DE DISENO", ZARA: "INDUSTRIA DE DISENO", BBVA: "BANCO BILBAO", SANTANDER: "BANCO SANTANDER",
+    SABADELL: "BANCO DE SABADELL", "BANCO POPULAR": "BANCO POPULAR", FCC: "FOMENTO DE CONSTRUC", DIA: "DISTRIBUIDORA INTERNACIONAL",
+    CEPSA: "MOEVE", MOEVE: "MOEVE", PRISA: "PROMOTORA DE INFORMACIONES", "RED ELECTRICA": "REDEIA", REE: "REDEIA",
+    "GAS NATURAL": "NATURGY", GAMESA: "SIEMENS GAMESA", ABERTIS: "ABERTIS", BME: "BOLSAS Y MERCADOS", PHARMAMAR: "ZELTIA",
+    ACS: "ACS ACTIVIDADES", TELEFONICA: "TELEFONICA SA", IBERDROLA: "IBERDROLA SA", REPSOL: "REPSOL", FERROVIAL: "FERROVIAL",
+    NESTLE: "NESTLE", "NESTLÉ": "NESTLE", "L'OREAL": "L'OREAL", LOREAL: "L'OREAL", RICHEMONT: "RICHEMO", DIOR: "CHRISTIAN DIOR",
+    HERMES: "HERMES INTERNATIONAL", "HERMÈS": "HERMES INTERNATIONAL", ESSILOR: "ESSILOR", VOLKSWAGEN: "VOLKSWAGEN", VW: "VOLKSWAGEN",
+    DAIMLER: "MERCEDES-BENZ", MERCEDES: "MERCEDES-BENZ", BMW: "BAYERISCHE MOTOREN", BAT: "BRITISH AMERICAN TOBACCO",
+    "AB INBEV": "ANHEUSER", ANHEUSER: "ANHEUSER", "NOVO NORDISK": "NOVO NORDISK", SHELL: "SHELL", "ROYAL DUTCH": "ROYAL DUTCH",
+    TOTAL: "TOTALENERGIES", LVMH: "LVMH", GOOGLE: "ALPHABET", FACEBOOK: "META PLATFORMS", META: "META PLATFORMS", AMAZON: "AMAZON",
+    MICROSOFT: "MICROSOFT", NVIDIA: "NVIDIA", TESLA: "TESLA", "COCA COLA": "COCA-COLA", COCACOLA: "COCA-COLA", PEPSI: "PEPSICO",
+    JPMORGAN: "JPMORGAN", "JP MORGAN": "JPMORGAN", "GOLDMAN": "GOLDMAN SACHS", "BERKSHIRE": "BERKSHIRE HATHAWAY", "P&G": "PROCTER",
+    "PROCTER": "PROCTER", "J&J": "JOHNSON & JOHNSON", "JOHNSON": "JOHNSON & JOHNSON", WALMART: "WALMART", "WAL-MART": "WAL-MART",
+    EXXON: "EXXON", IBM: "INTL BUSINESS MACHINES", "HP": "HEWLETT", HSBC: "HSBC", UBS: "UBS", "CREDIT SUISSE": "CREDIT SUISSE",
+    ENEL: "ENEL SPA", ENI: "ENI SPA", SIEMENS: "SIEMENS AG", ASML: "ASML", SAP: "SAP SE", AIRBUS: "AIRBUS", UNILEVER: "UNILEVER" };
+  const sel = document.getElementById("exp-mkt"), inp = document.getElementById("exp-q"), dl = document.getElementById("exp-list");
+  const inp2 = document.getElementById("exp-q2"), dl2 = document.getElementById("exp-list2");
+  const norm = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().trim();
+  function fillList() {
+    const m = sel.value;
+    dl.innerHTML = Object.keys(nombres).filter((n) => n.startsWith(m + "|")).sort()
+      .map((n) => `<option value="${n.split("|")[1].replace(/"/g, "&quot;")}">`).join("");
+    if (dl2 && !dl2.childElementCount)                 // para comparar: compañías de los dos mercados
+      dl2.innerHTML = Object.keys(nombres).sort().map((n) => `<option value="${n.split("|")[1].replace(/"/g, "&quot;")}">${n.split("|")[0]}</option>`).join("");
+  }
+  function buscar(q) {
+    const crudo = q.trim();
+    q = norm(q); if (!q) return null;
+    const objetivo = ALIAS[q] ? norm(ALIAS[q]) : q;
+    const orden = [sel.value, sel.value === "Europa" ? "EE. UU." : "Europa"];   // primero el mercado elegido, luego el otro
+    for (const m of orden) if (nombres[m + "|" + crudo]) return nombres[m + "|" + crudo];
+    for (const m of orden) {
+      const cand = Object.entries(nombres).filter(([n]) => n.startsWith(m + "|") && norm(n.split("|")[1]).includes(objetivo));
+      if (cand.length) {                                  // a igualdad, la de mayor capitalización
+        cand.sort((a, b) => Math.max(...porEmp[b[1]].map((r) => r[10] || 0)) - Math.max(...porEmp[a[1]].map((r) => r[10] || 0)));
+        return cand[0][1];
+      }
+    }
+    return null;
+  }
+  function drawExp() {
+    const key = buscar(inp.value), cap = document.getElementById("exp-cap");
+    if (!key) { cap.textContent = `No se encuentra «${inp.value}». Prueba con otra parte del nombre.` + (D.cobertura && !D.cobertura.us_completo ? " Las financieras, utilities e inmobiliarias de EE. UU. se añadirán al ejecutar el notebook de WRDS." : ""); return; }
+    const rs = porEmp[key], c = C();
+    if (sel.value !== rs[0][0]) { sel.value = rs[0][0]; fillList(); }
+    const key2 = inp2 && inp2.value.trim() ? buscar(inp2.value) : null, rs2 = key2 && key2 !== key ? porEmp[key2] : null;
+    const y0 = Math.min(rs[0][4], rs2 ? rs2[0][4] : 9999), y1 = Math.max(rs[rs.length - 1][4], rs2 ? rs2[rs2.length - 1][4] : 0), yrs = [];
+    for (let a = y0; a <= y1; a++) yrs.push(a);
+    const by = Object.fromEntries(rs.map((r) => [r[4], r]));
+    const curva = (b) => { let v = null; return [b[y0] ? 100 : null, ...yrs.map((a) => { if (!b[a] || b[a][9] == null) return null; v = (v == null ? 100 : v) * (1 + b[a][9]); return v; })]; };
+    const tr = curva(by);
+    const ia = D[rs[0][0] === "Europa" ? "eu" : "us"].indice.cap; let w = 100;
+    const idx = [100, ...yrs.map((a) => (ia[a] == null ? null : (w *= 1 + ia[a])))];
+    const enTop = [false, ...yrs.map((a) => by[a] && by[a][5] != null && by[a][5] <= 30)];
+    const logT = (lo, hi) => { const o = []; for (let e = Math.floor(Math.log10(lo)); e <= Math.ceil(Math.log10(hi)); e++) [1, 2, 5].forEach((m) => o.push(m * 10 ** e));
+      const d = o.filter((x) => x >= lo && x <= hi); return d.length > 7 ? d.filter((x) => String(x)[0] === "1") : d; };
+    lineChart(document.getElementById("exp-chart"), { xs: [y0 - 1, ...yrs], H: 260, log: true, ticks: logT,
+      series: [{ n: rs[rs.length - 1][2].slice(0, 22), c: c.acc, w: 2.4, v: tr },
+               ...(rs2 ? [{ n: rs2[rs2.length - 1][2].slice(0, 22), c: "#3b7dd8", w: 2.2, v: curva(Object.fromEntries(rs2.map((r) => [r[4], r]))) }] : []),
+               { n: rs[0][0] === "Europa" ? "STOXX 600" : "S&P 500", c: c.sec, dash: true, v: idx }],
+      marks: { i: enTop.map((b, i) => (b ? i : -1)).filter((i) => i >= 0), s: 0, c: c.acc },
+      fmtY: (x) => nf(x, 0), fmtX: (a, full) => (full ? `Fin de ${a}` : String(a)),
+      xTick: (a, i) => (yrs.length > 14 ? i % 2 === 0 : true), fmtTip: (x) => nf(x, 1) });
+    const sit = rs[rs.length - 1][11], nTop = enTop.filter(Boolean).length;
+    cap.textContent = `${rs[rs.length - 1][2]} · ${rs[0][3]} · ${rs[0][0].replace(/\.$/, "")}. Valor de 100 invertidos al inicio de ${rs[0][4]} frente al índice, escala logarítmica. `
+      + (rs2 ? `En azul, ${rs2[rs2.length - 1][2]} (${rs2[0][3]}, ${rs2[0][0].replace(/\.$/, "")}), con 100 invertidos al inicio de ${rs2[0][4]}${rs2[0][0] !== rs[0][0] ? "; cada compañía en su divisa, y el índice es el del mercado de la primera" : ""}. ` : "")
+      + (inp2 && inp2.value.trim() && !rs2 ? `No se encuentra «${inp2.value}» para comparar. ` : "")
+      + (nTop ? `Los puntos marcan los ${nTop} años en que estuvo en el top 30 de la fórmula.` : "Nunca entró en el top 30 de la fórmula.")
+      + (sit !== "Elegible" ? ` Último año: excluida (${sit.toLowerCase()}).` : "");
+    document.getElementById("exp-tabla").innerHTML = `<table><thead><tr><th>Año</th><th>Situación</th><th>Puesto</th><th>EY</th><th>ROC</th><th>Crec. esperado</th><th>Rentab. del año</th><th>Capitaliz. (M)</th></tr></thead><tbody>` +
+      rs.slice().reverse().map((r) => `<tr><td>${r[4]}</td><td class="neu">${r[11] === "Elegible" ? (r[5] <= 30 ? "En cartera" : "Elegible") : r[11]}</td><td${r[5] && r[5] <= 30 ? ' class="hl"' : ""}>${r[5] ?? "—"}</td><td>${pcU(r[6])}</td><td>${pcU(r[7], 0)}</td><td>${r[8] == null ? "—" : pct(r[8])}</td><td class="${r[9] == null ? "" : r[9] >= 0 ? "pos" : "neg"}">${pct(r[9])}</td><td>${r[10] == null ? "—" : nf(r[10], 0)}</td></tr>`).join("") + "</tbody></table>";
+  }
+  if (sel) sel.addEventListener("change", () => { fillList(); inp.value = sel.value === "Europa" ? "Inditex" : "Apple"; drawExp(); });
+  if (inp) inp.addEventListener("change", drawExp);
+  if (inp) inp.addEventListener("keydown", (e) => { if (e.key === "Enter") drawExp(); });
+  if (inp2) { inp2.addEventListener("change", drawExp); inp2.addEventListener("keydown", (e) => { if (e.key === "Enter") drawExp(); }); }
+
+  // ---------- 9b. cartera de un año
+  const cm = document.getElementById("car-mkt"), ca = document.getElementById("car-anio"), cs = document.getElementById("car-sec"), cn = document.getElementById("car-n"), cp = document.getElementById("car-pais");
+  const PAIS_N = { GB: "Reino Unido", FR: "Francia", DE: "Alemania", CH: "Suiza", SE: "Suecia", NL: "Países Bajos", ES: "España", IT: "Italia", DK: "Dinamarca", NO: "Noruega",
+                   FI: "Finlandia", BE: "Bélgica", AT: "Austria", IE: "Irlanda", PT: "Portugal", LU: "Luxemburgo", PL: "Polonia", GR: "Grecia", CZ: "Chequia" };
+  function fillCar() {
+    const rows = X.filter((r) => r[0] === cm.value && r[5] != null);
+    const yrs = [...new Set(rows.map((r) => r[4]))].filter((a) => rows.some((r) => r[4] === a && isFinite(r[9]))).sort((a, b) => b - a);
+    const prev = +ca.value; ca.innerHTML = yrs.map((a) => `<option>${a}</option>`).join(""); if (yrs.includes(prev)) ca.value = prev;
+    const secs = [...new Set(rows.map((r) => r[3]))].sort(); const ps = cs.value;
+    cs.innerHTML = `<option value="">Todos los sectores</option>` + secs.map((s) => `<option>${s}</option>`).join(""); cs.value = secs.includes(ps) ? ps : "";
+    const paises = [...new Set(rows.map((r) => r[12]))].sort((a, b) => (PAIS_N[a] || a).localeCompare(PAIS_N[b] || b)), pp0 = cp.value;
+    cp.innerHTML = `<option value="">Todos los países</option>` + paises.map((x) => `<option value="${x}">${PAIS_N[x] || x}</option>`).join("");
+    cp.value = paises.includes(pp0) ? pp0 : ""; cp.hidden = cm.value !== "Europa";
+  }
+  function drawCar() {
+    const c = C(), a = +ca.value, n = +cn.value, mk = cm.value === "Europa" ? "eu" : "us";
+    const all = X.filter((r) => r[0] === cm.value && r[4] === a && r[5] != null && r[5] <= n).sort((p, q) => p[5] - q[5]);
+    const rs = all.filter((r) => (!cs.value || r[3] === cs.value) && (!cp.value || cm.value !== "Europa" || r[12] === cp.value));
+    const filtro = [cs.value, cm.value === "Europa" && cp.value ? PAIS_N[cp.value] || cp.value : ""].filter(Boolean).join(" · ");
+    const ix = D[mk].indice.cap[a], ok = rs.filter((r) => isFinite(r[9]));
+    const media = ok.length ? ok.reduce((s, r) => s + r[9], 0) / ok.length : null;
+    const allOk = all.filter((r) => isFinite(r[9])), mAll = allOk.reduce((s, r) => s + r[9], 0) / (allOk.length || 1);
+    document.getElementById("car-kpi").innerHTML =
+      `<div><dt>Compañías</dt><dd>${rs.length} de ${all.length}</dd><small>${filtro || "sin filtro"}</small></div>` +
+      `<div><dt>Media ${filtro ? "del filtro" : "cartera"}</dt><dd>${pct(media)}</dd><small>equiponderada</small></div>` +
+      `<div><dt>Índice ${a}</dt><dd>${pct(ix)}</dd><small>${mk === "us" ? "S&P 500" : "STOXX 600"} cap.</small></div>` +
+      `<div><dt>Diferencia</dt><dd>${media == null || ix == null ? "—" : (media - ix > 0 ? "+" : "") + nf((media - ix) * 100) + " pp"}</dd><small>cartera completa: ${pct(mAll)}</small></div>`;
+    const srt = ok.slice().sort((p, q) => q[9] - p[9]);
+    if (srt.length) bars(document.getElementById("car-chart"), srt.map((r) => r[2].length > 16 ? r[2].slice(0, 15) + "…" : r[2]), [{ n: "Rentabilidad", v: srt.map((r) => r[9]) }],
+      { fmt: (v) => pct(v, 0), H: 260, noX: true, padB: 16, colorOf: (v) => (v >= 0 ? c.acc : c.warn), refs: ix == null ? [] : [{ v: ix, c: c.sec }] });
+    else document.getElementById("car-chart").innerHTML = `<p class="caption" style="padding:20px">Ninguna compañía con ese filtro en el top ${n} de ${a}.</p>`;
+    document.getElementById("car-tabla").innerHTML = `<table><thead><tr><th>Puesto</th><th>Compañía</th><th>Sector</th><th>País</th><th>EY</th><th>ROC</th><th>Crec. esperado</th><th>Rentab. ${a}</th></tr></thead><tbody>` +
+      rs.map((r) => `<tr class="cart-row" data-k="${r[0]}|${r[1]}"><td>${r[5]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[0] === "Europa" ? PAIS_N[r[12]] || r[12] : "EE. UU."}</td><td>${pcU(r[6])}</td><td>${pcU(r[7], 0)}</td><td>${r[8] == null ? "—" : pct(r[8])}</td><td class="${r[9] >= 0 ? "pos" : "neg"}">${pct(r[9])}</td></tr>`).join("") + "</tbody></table>";
+    document.querySelectorAll("#car-tabla .cart-row").forEach((tr) => tr.addEventListener("click", () => {
+      const rs2 = porEmp[tr.dataset.k]; sel.value = rs2[0][0]; fillList(); inp.value = rs2[rs2.length - 1][2]; drawExp();
+      document.getElementById("s9").scrollIntoView({ behavior: "smooth" });
+    }));
+  }
+  if (cm) {
+    cm.addEventListener("change", () => { fillCar(); drawCar(); });
+    [ca, cs, cn, cp].forEach((e) => e.addEventListener("change", drawCar));
+    fillCar(); ca.value = cm.value === "EE. UU." ? "2009" : ca.value;
+  }
+
+  const draw = () => { drawUS(); drawEU(); drawQ(); drawH(); tablaTercios(); drawMit(); drawErr(); drawVar(); drawSesgo(); drawVal(); };
+  draw();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+})();
+</script>
+
+</body>
+</html>

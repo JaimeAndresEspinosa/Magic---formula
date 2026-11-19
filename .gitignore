@@ -31,3 +31,6 @@ backtest/para_subir_a_WRDS/*.csv
 backtest/resultados_forward/
 backtest/resultados_rolling30/
 backtest/resultados_analisis/
+
+# Excepción: informes públicos de la web (solo resultados agregados)
+!static/informes/*.pdf

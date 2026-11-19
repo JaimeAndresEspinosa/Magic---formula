@@ -321,7 +321,8 @@ table.breakdown { width: 100%; border-collapse: collapse; font-size: 13px; }
 /* ---------- responsive */
 @media (max-width: 1000px) {
   .topbar-inner { flex-wrap: wrap; height: auto; padding-top: 10px; row-gap: 6px; }
-  .mainnav { order: 3; width: 100%; padding-bottom: 8px; }
+  .mainnav { order: 3; width: 100%; padding-bottom: 8px; overflow-x: auto; scrollbar-width: none; }
+  .mainnav a { white-space: nowrap; }
   .mkt { display: none; }
   .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .portfolio-grid, .formula-cards { grid-template-columns: 1fr; }

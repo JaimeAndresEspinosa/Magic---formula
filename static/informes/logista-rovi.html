@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Logista y Rovi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: nota de análisis de bróker, una columna de lectura con cajas de datos y gráficos a todo el ancho de la columna */
+:root {
+  --paper: #f6f7f5;
+  --sheet: #ffffff;
+  --ink: #16201f;
+  --ink-2: #4a5654;
+  --muted: #7d8886;
+  --rule: #dfe3e1;
+  --accent: #0f5c57;      /* verde petróleo: Logista / marca de la nota */
+  --accent-soft: #e3efed;
+  --second: #b0681a;      /* ámbar: Rovi */
+  --warn: #a8321f;
+  --warn-soft: #f6e6e2;
+  --display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f1514; --sheet: #151d1c; --ink: #e5ecea; --ink-2: #aab6b3; --muted: #7b8885;
+    --rule: #26302e; --accent: #4fb3a9; --accent-soft: #17302d; --second: #e0a25a;
+    --warn: #ec8b78; --warn-soft: #3a211c; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f1514; --sheet: #151d1c; --ink: #e5ecea; --ink-2: #aab6b3; --muted: #7b8885;
+  --rule: #26302e; --accent: #4fb3a9; --accent-soft: #17302d; --second: #e0a25a;
+  --warn: #ec8b78; --warn-soft: #3a211c; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font: 17px/1.62 var(--body); padding-inline: 16px; padding-block: 32px 64px; }
+.page { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
+h1, h2, h3 { font-family: var(--display); font-stretch: 88%; letter-spacing: -0.01em; line-height: 1.12; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(34px, 6vw, 52px); font-weight: 800; }
+h2 { font-size: 28px; font-weight: 750; }
+h3 { font-size: 19px; font-weight: 700; font-stretch: 95%; }
+p { margin: 0; }
+.prose { display: flex; flex-direction: column; gap: 14px; }
+.prose ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+a { color: var(--accent); }
+.mono, .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+
+/* cabecera */
+header { display: flex; flex-direction: column; gap: 14px; border-bottom: 2px solid var(--ink); padding-bottom: 22px; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 18px; font-family: var(--mono); font-size: 13px; color: var(--ink-2); }
+.lede { font-size: 20px; color: var(--ink-2); max-width: 62ch; }
+
+/* resumen */
+.summary { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 22px 24px; display: flex; flex-direction: column; gap: 12px; }
+.summary ol { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 8px; }
+
+/* ficha de empresa */
+.company { display: flex; flex-direction: column; gap: 22px; }
+.company-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; border-top: 1px solid var(--rule); padding-top: 26px; }
+.ticker { font-family: var(--mono); font-size: 13px; padding: 2px 8px; border-radius: 3px; color: var(--sheet); }
+.ticker.log { background: var(--accent); }
+.ticker.rovi { background: var(--second); }
+.facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--rule); border-radius: 6px; background: var(--sheet); }
+.facts div { padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; border-left: 1px solid var(--rule); }
+.facts div:first-child { border-left: 0; }
+.facts dt { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.facts dd { margin: 0; font-family: var(--mono); font-size: 17px; font-variant-numeric: tabular-nums; }
+@media (max-width: 620px) {
+  .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .facts div:nth-child(3) { border-left: 0; }
+  .facts div:nth-child(n+3) { border-top: 1px solid var(--rule); }
+}
+
+/* tablas */
+.table-wrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 6px; background: var(--sheet); }
+table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+th, td { padding: 9px 14px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--rule); }
+th:first-child, td:first-child { text-align: left; }
+thead th { font-family: var(--mono); font-size: 11.5px; font-weight: 500; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+tbody td { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+tbody td:first-child { font-family: var(--body); }
+tbody tr:last-child td { border-bottom: 0; }
+.caption { font-size: 13.5px; color: var(--muted); font-style: italic; }
+
+/* caja del "número raro" */
+.callout { border-left: 3px solid var(--warn); background: var(--warn-soft); padding: 18px 20px; border-radius: 0 6px 6px 0; display: flex; flex-direction: column; gap: 10px; }
+.callout .eyebrow { color: var(--warn); }
+
+/* gráficos */
+figure { margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.chart { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 16px 14px 10px; position: relative; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart text { font-family: var(--mono); font-size: 11px; fill: var(--muted); }
+.chart .lbl { fill: var(--ink); font-size: 12px; }
+.chart .grid { stroke: var(--rule); stroke-width: 1; }
+.chart .zero { stroke: var(--ink-2); stroke-width: 1; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-family: var(--mono); font-size: 12.5px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--paper); font: 12px/1.4 var(--mono); padding: 6px 9px; border-radius: 4px; white-space: nowrap; transform: translate(-50%, calc(-100% - 10px)); }
+.bar { transition: opacity .15s; }
+.bar:hover { opacity: .8; }
+
+/* listas de riesgos / preguntas */
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.two > div { min-width: 0; background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; font-size: 15.5px; }
+.two ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+@media (max-width: 620px) { .two { grid-template-columns: 1fr; } }
+
+.lessons { counter-reset: n; display: flex; flex-direction: column; gap: 14px; margin: 0; padding: 0; list-style: none; }
+.lessons li { display: grid; grid-template-columns: 34px 1fr; gap: 12px; }
+.lessons li::before { counter-increment: n; content: counter(n); font-family: var(--display); font-weight: 800; font-size: 22px; color: var(--accent); line-height: 1.3; }
+.sources { font-size: 14px; color: var(--ink-2); display: flex; flex-direction: column; gap: 6px; }
+.sources ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.watch { display: flex; flex-direction: column; gap: 10px; background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 18px 20px; }
+.watch .when { font-family: var(--mono); font-size: 13px; color: var(--accent); }
+.watch ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 15.5px; }
+.scen { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.scen > div { min-width: 0; border-radius: 6px; padding: 14px 16px; font-size: 15px; display: flex; flex-direction: column; gap: 6px; border: 1px solid var(--rule); background: var(--sheet); }
+.scen .up { border-top: 3px solid var(--accent); }
+.scen .down { border-top: 3px solid var(--warn); }
+.scen ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+@media (max-width: 620px) { .scen { grid-template-columns: 1fr; } }
+td.hl { color: var(--accent); font-weight: 500; }
+footer { font-size: 13.5px; color: var(--muted); border-top: 1px solid var(--rule); padding-top: 16px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div style="font:500 13px/1.4 system-ui,-apple-system,Segoe UI,sans-serif;padding:10px 16px;background:rgba(127,127,127,.12);border-bottom:1px solid rgba(127,127,127,.25)"><a href="/proyecto#informes" style="color:inherit;text-decoration:none">&larr; Volver a El proyecto · Magic Formula</a></div>
+
+
+<main class="page">
+  <header>
+    <span class="eyebrow">Nota de análisis · Magic Formula · IBEX 35</span>
+    <h1>Logista y Rovi</h1>
+    <p class="lede">Por qué la fórmula de Greenblatt las pone arriba del ranking español, qué negocio hay detrás y qué números conviene mirar con lupa antes de fiarse del resultado.</p>
+    <div class="meta">
+      <span>Jaime Andrés Espinosa · ADE con minor en Data Science, CUNEF</span>
+      <span>7 de octubre de 2026</span>
+      <span>Precios: LOG 34,56 € · ROVI 58,70 €</span>
+    </div>
+  </header>
+
+  <section class="summary" aria-labelledby="resumen">
+    <h2 id="resumen" style="font-size:22px">Resumen</h2>
+    <ol>
+      <li><strong>Logista sale primera del IBEX con un Earnings Yield del 19,7 %, pero ese número está inflado.</strong> Combina tres efectos: un EBIT de un ejercicio ya antiguo (sep-2024), un EBIT que incluye intereses financieros, y un EV que resta como «caja libre» dinero que en realidad son impuestos del tabaco pendientes de pagar a Hacienda. Con criterios coherentes, su EY está entre el <strong>8 % y el 11 %</strong>: sigue siendo barata frente al mercado, pero la mitad de lo que dice la fórmula.</li>
+      <li><strong>Rovi tiene el problema contrario: beneficios irregulares.</strong> Su EBIT de los últimos 12 meses incluye un trimestre excepcional (2T-2026). Con el ejercicio 2025 completo su EY baja del 8,0 % al 6,2 %. La pregunta es qué beneficio es «normal» después del boom de la vacuna de Moderna.</li>
+      <li><strong>Dos sensibilidades que conviene vigilar.</strong> Una parte del beneficio de Logista depende de los <strong>tipos de interés</strong>: cada punto de Euribor equivale a unos 22–25 M€ de intereses al año. En Rovi, la clave es si <strong>Okedi y los nuevos contratos de fabricación</strong> compensan la caída de Moderna. Los próximos resultados (Logista el 6 de noviembre; Rovi, habitualmente a primeros de noviembre) darán pistas sobre las dos.</li>
+      <li><strong>La lección para el modelo:</strong> la fórmula aplicada de forma mecánica con datos gratuitos funciona como filtro, pero cada empresa necesita una revisión. Y para que el filtro sea fiable hacen falta mejores datos (EBIT forward, cuentas al día) y un universo más amplio que el IBEX.</li>
+    </ol>
+  </section>
+
+  <!-- ================================================================== LOGISTA -->
+  <section class="company" aria-labelledby="logista">
+    <div class="company-head">
+      <h2 id="logista">Logista</h2>
+      <span><span class="ticker log">LOG.MC</span> <span class="eyebrow">Distribución · ejercicio oct–sep</span></span>
+    </div>
+
+    <dl class="facts">
+      <div><dt>Capitalización</dt><dd>4.567 M€</dd></div>
+      <div><dt>EY en la web</dt><dd style="color:var(--warn)">19,7 %</dd></div>
+      <div><dt>EY coherente</dt><dd>8,4–10,6 %</dd></div>
+      <div><dt>Rentab. dividendo</dt><dd>6,0 %</dd></div>
+    </dl>
+
+    <div class="prose">
+      <h3>Qué hace</h3>
+      <p>Logista es el gran distribuidor de tabaco de España, Italia, Francia y Portugal. Lleva cigarrillos y otros productos desde los fabricantes hasta unos 200.000 puntos de venta (estancos, farmacias, kioscos, gasolineras). Gana una comisión por cada cajetilla que mueve, no por el precio del tabaco.</p>
+      <p>Por eso su cifra de ingresos engaña: en el ejercicio 2025 facturó <span class="num">13.536 M€</span>, pero sus <em>ventas económicas</em> (lo que realmente le queda tras pagar a fabricantes y descontar los impuestos) fueron <span class="num">1.809 M€</span>. Más del 85 % de lo que «factura» es tabaco e impuestos que solo pasan por sus manos.</p>
+      <h3>Historia</h3>
+      <ul>
+        <li>Nace como el brazo de distribución de la antigua <strong>Tabacalera</strong>, el monopolio español del tabaco, que en 1999 se fusionó con la francesa Seita para formar Altadis.</li>
+        <li>En 2008 la británica <strong>Imperial Tobacco</strong> (hoy Imperial Brands) compra Altadis y con ella Logista, que deja la bolsa.</li>
+        <li>En 2014 Imperial la vuelve a sacar a bolsa y se queda con cerca del 70 %. Vende un 10 % en 2017 (hasta el 60 %) y otro 10 % en 2018, hasta el <strong>50,01 %</strong> que mantiene desde entonces.</li>
+        <li>Desde entonces diversifica con compras en transporte y distribución farmacéutica: Speedlink, Carbó Collbatallé, Transportes El Mosca, Gramma Farmaceutici y BPS.</li>
+      </ul>
+    </div>
+
+    <div class="callout" role="note">
+      <span class="eyebrow">El número raro</span>
+      <h3>La caja de Logista no es exactamente suya</h3>
+      <p>Logista cobra a los estancos el tabaco <strong>con los impuestos especiales incluidos</strong> y los ingresa en Hacienda semanas después. Mientras tanto ese dinero está en su balance: en el balance de septiembre de 2024 tenía unos <span class="num">5.179 M€</span> de impuestos pendientes de pago.</p>
+      <p>Esa tesorería no se queda quieta. Logista se la <strong>presta a diario a Imperial Brands</strong>, su accionista de control, a través de una línea de crédito recíproca de hasta <span class="num">3.000 M€</span> remunerada a Euribor 6 meses + 0,75 %. A 30 de junio de 2025 el saldo era de <span class="num">2.170 M€</span>, y sus ingresos financieros fueron de unos <span class="num">100 M€</span> en el ejercicio 2024.</p>
+      <p>La fórmula de la web hace dos cosas a la vez que no encajan. <strong>Resta esos ~2.467 M€ del EV como si fueran caja sobrante</strong>, y al mismo tiempo usa un EBIT que <strong>ya incluye los intereses que esa caja genera</strong>. Es contar el mismo dinero dos veces.</p>
+    </div>
+
+    <figure>
+      <div class="chart" id="ey-chart" role="img" aria-label="Earnings Yield de Logista según el criterio usado: 19,7 % en la web, 17,4 %, 10,6 % y 8,4 % con criterios coherentes"></div>
+      <figcaption class="caption">Earnings Yield de Logista según cómo se trate la tesorería de los impuestos. Capitalización a 34,56 €/acción. EBIT ajustado FY2025 = 378 M€; ingresos financieros ≈ 100 M€ (ejercicio 2024).</figcaption>
+    </figure>
+
+    <div class="prose">
+      <p>Ninguna de las tres versiones coherentes es «la correcta»; depende de cómo se vea ese dinero:</p>
+      <ul>
+        <li><strong>Como parte del negocio</strong> (lo más prudente): mientras Logista opere, siempre tendrá ese dinero de Hacienda en tránsito, pero no es libre. El EY queda en <strong>8,4 %</strong>, o en <strong>10,6 %</strong> si se suman los intereses que genera, ya que son una consecuencia del propio negocio.</li>
+        <li><strong>Como caja libre</strong>: el EY sube al 17,4 %. Este enfoque se parece al <em>float</em> de las aseguradoras de Buffett, pero aquí el dinero no se puede invertir libremente: está prestado a una sola contraparte, que además es el accionista de control.</li>
+      </ul>
+      <p>Hay un cuarto efecto: los datos gratuitos de Yahoo todavía usan el <strong>ejercicio cerrado en septiembre de 2024</strong>. El de 2025 ya está publicado (beneficio neto de 281 M€, un 9 % menos) y el de 2026 cerró hace una semana. Usar beneficios previstos (<em>forward</em>) evitaría ir siempre un año por detrás.</p>
+      <p>Su ROC también sale altísimo por un motivo parecido: con tanto impuesto pendiente, el capital circulante es muy negativo y la fórmula lo cuenta como cero, así que solo quedan las naves y los camiones. Aquí sí hay algo real, porque es un negocio que necesita muy poco capital, pero el número exacto exagera.</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Ejercicio (cierre sep.)</th><th>2022</th><th>2023</th><th>2024</th><th>2025</th></tr></thead>
+        <tbody>
+          <tr><td>Ingresos totales (M€)</td><td>11.464</td><td>12.428</td><td>12.986</td><td>13.536</td></tr>
+          <tr><td>Beneficio neto (M€)</td><td>199</td><td>272</td><td>308</td><td>281</td></tr>
+          <tr><td>Flujo de caja libre (M€)</td><td>—</td><td>—</td><td>225</td><td>483</td></tr>
+          <tr><td>Dividendo pagado en el año (€/acc.)</td><td>1,26</td><td>1,44</td><td>1,92</td><td>2,09</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="caption">Fuente: cuentas anuales vía Yahoo Finance y anuncio de resultados FY2025 de Logista. Flujo de caja libre según la definición de Logista. Dividendo por año natural de pago. El dividendo ha crecido un 10 % anual desde 2017 (de 0,95 € a 2,09 €).</p>
+
+    <div class="prose">
+      <h3>Cuánto cuesta hoy</h3>
+      <p>Con criterios prudentes (sin restar el dinero de los impuestos), Logista cotiza a unas <strong>12 veces su EBIT</strong>. El flujo de caja libre salta mucho de un año a otro por el circulante: 225 M€ en 2024 y 483 M€ en 2025. La media de los dos años equivale a un 7,8 % de su capitalización.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Métrica (precio 34,56 €)</th><th>Valor</th><th>Cómo se calcula</th></tr></thead>
+        <tbody>
+          <tr><td>EV / EBIT ajustado</td><td class="hl">12,0x</td><td>EV 4.523 M€ / EBIT ajustado FY25 378 M€</td></tr>
+          <tr><td>EV / (EBIT + intereses)</td><td>9,5x</td><td>Contando los intereses del préstamo a Imperial</td></tr>
+          <tr><td>PER</td><td>16,3x</td><td>Capitalización / beneficio neto FY25 (281 M€)</td></tr>
+          <tr><td>Rentabilidad por flujo de caja libre</td><td>4,9–10,6 %</td><td>FCF FY24 225 M€ y FY25 483 M€ / capitalización</td></tr>
+          <tr><td>Rentabilidad por dividendo</td><td class="hl">6,0 %</td><td>2,09 € / 34,56 €. Payout del 99 %</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout" role="note" style="border-left-color:var(--accent);background:var(--accent-soft)">
+      <span class="eyebrow" style="color:var(--accent)">Sensibilidad a los tipos de interés</span>
+      <h3>Una parte del beneficio de Logista depende del Euribor</h3>
+      <p>El préstamo a Imperial rinde Euribor 6 meses + 0,75 %. Con un saldo de 2.200–2.500 M€, <strong>cada punto de Euribor equivale a unos 22–25 M€ de intereses al año</strong> antes de impuestos, alrededor de un 6–7 % de su beneficio operativo.</p>
+      <p>Esto ayuda a entender 2025: el EBIT ajustado cayó solo un 2 %, pero el beneficio neto bajó un 9 %, en parte porque los tipos bajaron desde los máximos de 2023–2024. Si siguen bajando, ese viento a favor se convierte en viento en contra; si suben, al revés. Quien analice Logista tiene que separar el negocio de distribución de esta parte financiera.</p>
+    </div>
+
+    <div class="watch">
+      <span class="when">6 de noviembre de 2026 · resultados del ejercicio 2026 (cierre en septiembre)</span>
+      <h3>Qué vigilar en los próximos resultados</h3>
+      <ul>
+        <li><strong>EBIT ajustado frente a su previsión:</strong> la empresa esperaba crecer un dígito medio. En el primer semestre fue de 195 M€ (−3,5 % incluido el efecto de la revalorización de inventarios) y en el tercer trimestre creció un 3 %.</li>
+        <li><strong>Volúmenes de tabaco por país:</strong> si Francia sigue cayendo y si Italia e Iberia lo compensan.</li>
+        <li><strong>Ingresos financieros:</strong> cuánto pesan los intereses del préstamo a Imperial con el Euribor actual.</li>
+        <li><strong>Dividendo:</strong> el a cuenta subió un 3,6 % a 0,58 €. ¿Mantiene un total de al menos 2,09 €?</li>
+        <li><strong>Relación con Imperial:</strong> cualquier cambio en su 50,01 % o en la línea de crédito.</li>
+      </ul>
+    </div>
+
+    <div class="two">
+      <div>
+        <h3>A favor</h3>
+        <ul>
+          <li>Negocio muy estable: el tabaco se vende igual con crisis o sin ella.</li>
+          <li>Necesita poco capital y genera mucha caja: reparte casi todo su beneficio (<em>payout</em> del 99 % en 2025).</li>
+          <li>Posición casi única: es difícil que un competidor monte otra red así.</li>
+          <li>Italia crece (+11 % de EBIT ajustado en 2025) y la empresa prevé crecer un dígito medio en el ejercicio 2026.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Preguntas abiertas</h3>
+        <ul>
+          <li>El tabaco cae en volumen año a año, sobre todo en Francia. ¿Lo compensan la farmacia y el transporte?</li>
+          <li>Depende de Imperial como cliente, como accionista y como deudor de su caja. ¿Qué pasaría si Imperial vendiera su 50 %?</li>
+          <li>Con un payout del 99 %, ¿cuánto margen queda si el beneficio cae?</li>
+          <li>Riesgo regulatorio: impuestos, empaquetado neutro, vapeo.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================== ROVI -->
+  <section class="company" aria-labelledby="rovi">
+    <div class="company-head">
+      <h2 id="rovi">Rovi</h2>
+      <span><span class="ticker rovi">ROVI.MC</span> <span class="eyebrow">Farmacia · ejercicio ene–dic</span></span>
+    </div>
+
+    <dl class="facts">
+      <div><dt>Capitalización</dt><dd>3.002 M€</dd></div>
+      <div><dt>EY en la web (TTM)</dt><dd>8,0 %</dd></div>
+      <div><dt>EY con FY2025</dt><dd>6,2 %</dd></div>
+      <div><dt>ROC en la web</dt><dd>35 %</dd></div>
+    </dl>
+
+    <div class="prose">
+      <h3>Qué hace</h3>
+      <p>Laboratorios Farmacéuticos Rovi es una farmacéutica española de control familiar (la familia López-Belmonte) con dos negocios:</p>
+      <ul>
+        <li><strong>Especialidad farmacéutica:</strong> medicamentos propios. El más importante son las <strong>heparinas</strong> (anticoagulantes): la bemiparina, desarrollada por Rovi, y un biosimilar de la enoxaparina. Su apuesta de futuro es <strong>Okedi</strong>, un antipsicótico inyectable de liberación prolongada con tecnología propia, aprobado en Europa en 2022, que creció un 27 % en el primer semestre de 2026 (34 M€).</li>
+        <li><strong>Fabricación para terceros (CDMO):</strong> produce medicamentos de otras farmacéuticas en sus plantas de Madrid, San Sebastián de los Reyes y Granada. Desde 2020 fabrica la vacuna de <strong>Moderna</strong>, con un acuerdo a 10 años que incluye COVID-19, VRS y futuras vacunas de ARNm. En abril de 2026 compró a <strong>Bristol Myers Squibb</strong> una planta en Phoenix (Arizona) junto con un contrato de fabricación de unos 250 M$.</li>
+      </ul>
+      <h3>Historia</h3>
+      <p>Cotiza en bolsa desde 2007. Durante años fue una farmacéutica mediana centrada en heparinas. La pandemia lo cambió todo: el contrato con Moderna disparó sus ingresos y su cotización se duplicó en 2021, para caer a la mitad en 2022, cuando la demanda de vacunas se desplomó. Desde entonces el mercado intenta averiguar cuánto vale Rovi «sin el efecto COVID».</p>
+    </div>
+
+    <figure>
+      <div class="chart" id="price-chart" role="img" aria-label="Cotización de Logista y Rovi de 2015 a 2026, base 100 en 2015. Logista termina en 352 y Rovi en 467, con un pico de 534 en 2021"></div>
+      <div class="legend"><span><i style="background:var(--accent)"></i>Logista</span><span><i style="background:var(--second)"></i>Rovi</span></div>
+      <figcaption class="caption">Cotización a cierre de cada año, ajustada por dividendos (base 100 = fin de 2015). 2026 a 7 de octubre. Es una aproximación a la rentabilidad total: unos 12 % anuales Logista y 15 % Rovi.</figcaption>
+    </figure>
+
+    <div class="callout" role="note">
+      <span class="eyebrow">El número raro</span>
+      <h3>¿Cuál es el beneficio «normal» de Rovi?</h3>
+      <p>La web usa el EBIT de los últimos cuatro trimestres (<span class="num">239 M€</span>). Pero el segundo trimestre de 2026 fue excepcional (<span class="num">91 M€</span>, frente a <span class="num">13 M€</span> en el primero y <span class="num">28 M€</span> un año antes), porque la fabricación para terceros va por campañas y en ese trimestre coincidieron varios efectos, entre ellos la entrada de la planta de Phoenix. Con el ejercicio 2025 completo, el EBIT es <span class="num">186 M€</span> y el EY baja del 8,0 % al 6,2 %.</p>
+      <p>Es el problema opuesto al de Logista: aquí los beneficios no son estables. Un analista intentaría estimar un beneficio «normalizado» separando lo recurrente (heparinas, Okedi) de lo que depende de contratos y campañas.</p>
+    </div>
+
+    <figure>
+      <div class="chart" id="ebit-chart" role="img" aria-label="EBIT de Rovi: 259 millones en 2022, 221 en 2023, 180 en 2024, 186 en 2025 y 239 en los últimos 12 meses a junio de 2026"></div>
+      <figcaption class="caption">EBIT de Rovi en M€. Tras el pico de la vacuna en 2022 cayó dos años seguidos; el último dato (12 meses a junio de 2026) recoge el trimestre excepcional.</figcaption>
+    </figure>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Ejercicio</th><th>2022</th><th>2023</th><th>2024</th><th>2025</th></tr></thead>
+        <tbody>
+          <tr><td>Ingresos operativos (M€)</td><td>818</td><td>830</td><td>764</td><td>744</td></tr>
+          <tr><td>EBITDA (M€)</td><td>281</td><td>245</td><td>208</td><td>216</td></tr>
+          <tr><td>Beneficio neto (M€)</td><td>200</td><td>170</td><td>137</td><td>140</td></tr>
+          <tr><td>Flujo de caja libre (M€)</td><td>186</td><td>58</td><td>76</td><td>119</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="prose">
+      <h3>De dónde vienen los ingresos (2025)</h3>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Negocio</th><th>Ventas 2025</th><th>Variación</th><th>Peso</th></tr></thead>
+        <tbody>
+          <tr><td>Especialidad farmacéutica</td><td>474 M€</td><td class="hl">+11 %</td><td>64 %</td></tr>
+          <tr><td>· Heparinas (total)</td><td>267 M€</td><td>+7 %</td><td>36 %</td></tr>
+          <tr><td>· de ellas, enoxaparina biosimilar</td><td>158 M€</td><td>+9 %</td><td>21 %</td></tr>
+          <tr><td>· Okedi</td><td>57 M€</td><td class="hl">+97 %</td><td>8 %</td></tr>
+          <tr><td>Fabricación para terceros (CDMO)</td><td>270 M€</td><td style="color:var(--warn)">−20 %</td><td>36 %</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="caption">Fuente: resultados del ejercicio 2025 de Rovi (25 de febrero de 2026). En el primer semestre de 2026 los ingresos operativos crecieron un 9 % (344 M€), Okedi un 27 % (34 M€), las heparinas cayeron un 4 % (130 M€) y la planta de Phoenix aportó 14 M€ desde abril. Para 2026 la empresa espera crecer en ingresos entre un dígito alto y un doble dígito bajo.</p>
+
+    <div class="prose">
+      <h3>Cuánto cuesta hoy</h3>
+      <p>Rovi es bastante más cara que Logista si se mide con el ejercicio 2025 completo, y parece más barata si se mira solo el último año, por el trimestre excepcional. Tiene casi cero deuda neta (22 M€ a diciembre de 2025).</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Métrica (precio 58,70 €)</th><th>Con FY2025</th><th>Últimos 12 meses</th></tr></thead>
+        <tbody>
+          <tr><td>EV / EBIT</td><td>16,3x</td><td>12,6x</td></tr>
+          <tr><td>PER</td><td>21,4x</td><td>16,2x</td></tr>
+          <tr><td>Rentabilidad por flujo de caja libre</td><td>4,0 %</td><td>—</td></tr>
+          <tr><td>Rentabilidad por dividendo</td><td>1,6 %</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="watch">
+      <span class="when">Resultados de los nueve primeros meses · habitualmente a primeros de noviembre</span>
+      <h3>Qué vigilar en los próximos resultados</h3>
+      <ul>
+        <li><strong>Moderna:</strong> el tercer y cuarto trimestre son los de la campaña de vacunas. ¿Cuánto fabrica Rovi este año frente a 2025?</li>
+        <li><strong>Okedi:</strong> si mantiene crecimientos de dos dígitos. Es la pieza con más margen y más futuro.</li>
+        <li><strong>Heparinas:</strong> si la caída del primer semestre (inventarios altos en los socios) es puntual, como dice la empresa.</li>
+        <li><strong>Phoenix y Bristol Myers Squibb:</strong> cuánto aporta la nueva planta y si llegan más clientes a las fábricas.</li>
+        <li><strong>Previsión 2026:</strong> si la confirma, la sube o la baja.</li>
+      </ul>
+    </div>
+
+    <div class="two">
+      <div>
+        <h3>A favor</h3>
+        <ul>
+          <li>Balance muy sano: casi sin deuda neta.</li>
+          <li>Okedi crece rápido y deja márgenes altos.</li>
+          <li>Nuevos clientes en fabricación (Bristol Myers Squibb) que reducen la dependencia de Moderna.</li>
+          <li>Previsión de vuelta al crecimiento en 2026 tras un año de transición.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Preguntas abiertas</h3>
+        <ul>
+          <li>¿Cuánto depende todavía de Moderna, cuya demanda de vacunas sigue cayendo?</li>
+          <li>Las heparinas bajan: más competencia y precios a la baja.</li>
+          <li>Invierte mucho en capacidad (unos 68 M€ en 2025). ¿Llenará esas plantas?</li>
+          <li>Control familiar: alineación de intereses, pero poca influencia del accionista minoritario.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================== CARA A CARA -->
+  <section class="company" aria-labelledby="cara">
+    <div class="company-head">
+      <h2 id="cara">Las dos, cara a cara</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th></th><th>Logista</th><th>Rovi</th></tr></thead>
+        <tbody>
+          <tr><td>Tipo de negocio</td><td>Distribución, estable y maduro</td><td>Farmacia, con crecimiento y altibajos</td></tr>
+          <tr><td>EV / EBIT (criterio prudente)</td><td>12,0x</td><td>16,3x (FY25) · 12,6x (12m)</td></tr>
+          <tr><td>Rentabilidad por dividendo</td><td>6,0 %</td><td>1,6 %</td></tr>
+          <tr><td>Reparto del beneficio</td><td>Casi todo (99 %)</td><td>Una parte; reinvierte en plantas</td></tr>
+          <tr><td>Deuda neta</td><td>Caja neta (con matices)</td><td>Casi nula</td></tr>
+          <tr><td>Principal motor</td><td>Volumen de tabaco, Italia, tipos</td><td>Okedi y nuevos contratos de fabricación</td></tr>
+          <tr><td>Principal riesgo</td><td>Declive del tabaco y dependencia de Imperial</td><td>Caída de Moderna y competencia en heparinas</td></tr>
+          <tr><td>Rentabilidad total aprox. desde 2015</td><td>~12 % anual</td><td>~15 % anual, con mucha más volatilidad</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="prose">Son dos perfiles casi opuestos dentro de una misma cartera. Logista es una «máquina de dividendos» con poco crecimiento: su valor depende de que el declive del tabaco sea lento. Rovi es una apuesta de crecimiento: su valor depende de que lo nuevo (Okedi, fabricación para otros clientes) sustituya a lo que se fue con la pandemia.</p>
+
+    <h3>Qué tendría que pasar</h3>
+    <div class="scen">
+      <div class="up"><strong>Logista, escenario favorable</strong><ul><li>El volumen de tabaco cae despacio y Italia sigue creciendo.</li><li>Farmacia y transporte ganan peso.</li><li>El dividendo se mantiene o sube.</li></ul></div>
+      <div class="down"><strong>Logista, escenario desfavorable</strong><ul><li>El tabaco se acelera a la baja o llegan cambios regulatorios fuertes.</li><li>Bajan los tipos y caen los ingresos financieros.</li><li>Imperial vende su participación o cambia las condiciones del préstamo.</li></ul></div>
+      <div class="up"><strong>Rovi, escenario favorable</strong><ul><li>Okedi sigue creciendo a doble dígito.</li><li>Phoenix y nuevos clientes llenan las plantas.</li><li>Se cumple o se supera la previsión de 2026.</li></ul></div>
+      <div class="down"><strong>Rovi, escenario desfavorable</strong><ul><li>Moderna reduce todavía más los pedidos.</li><li>Más competencia y precios bajos en heparinas.</li><li>Mucha inversión en capacidad que no se llega a usar.</li></ul></div>
+    </div>
+  </section>
+
+  <!-- ================================================================== LECCIONES -->
+  <section class="prose" aria-labelledby="lecciones" style="border-top:1px solid var(--rule);padding-top:26px">
+    <h2 id="lecciones">Qué me enseña esto sobre el modelo</h2>
+    <ol class="lessons">
+      <li><div><strong>Las fechas importan.</strong> Con datos que van un año por detrás, la fórmula compra el pasado. El siguiente paso es usar EBIT <em>forward</em> (consenso de analistas a 12 meses) y comparar los dos rankings.</div></li>
+      <li><div><strong>«Caja» y «EBIT» no significan lo mismo en todas las empresas.</strong> En distribuidoras, aseguradoras o empresas con mucho cobro anticipado, restar toda la caja infla el EY. Greenblatt resta solo el <em>exceso</em> de caja, y eso no se puede automatizar del todo sin entender el negocio.</div></li>
+      <li><div><strong>Los beneficios irregulares engañan.</strong> Un buen trimestre puede subir a una empresa en el ranking. Conviene comparar el EBIT de 12 meses con el de varios años.</div></li>
+      <li><div><strong>El IBEX es demasiado pequeño.</strong> Tras quitar financieras, utilities e inmobiliarias solo quedan 14 empresas. Para que la fórmula elija de verdad hace falta un universo más amplio (Mercado Continuo, Stoxx Europe 600), y eso exige mejores datos.</div></li>
+      <li><div><strong>Siguiente paso: backtest con datos de calidad.</strong> Correr el sistema a 1 de enero de cada año desde 2015 con datos <em>point-in-time</em> (sin sesgo de supervivencia ni de anticipación), comprar el top 30 y compararlo con el índice. Para hacerlo he solicitado acceso a WRDS (Compustat y CRSP), la base de datos que se usa en la investigación académica.</div></li>
+    </ol>
+  </section>
+
+  <section class="sources" aria-labelledby="fuentes">
+    <h3 id="fuentes">Fuentes</h3>
+    <ul>
+      <li><a href="https://www.logista.com/content/dam/documents/logista-corporate/other-relevant-information/es/2025/Anuncio%20de%20Resultados%20FY25%20VF.pdf">Logista, anuncio de resultados del ejercicio 2025</a></li>
+      <li><a href="https://www.logista.com/content/dam/documents/logista-corporate/economic-financial-information/financial-reports/es/4.%20CCAA%20Logista%20Integral%20S.A.%20FY2025.pdf">Logista, cuentas anuales FY2025</a> y <a href="https://www.logista.com/content/dam/documents/logista-corporate/economic-financial-information/financial-reports/es/Logista%20EEFF%20intermedios%20condensados%20HY25.pdf">estados financieros intermedios HY25</a> (línea de crédito con Imperial Brands)</li>
+      <li><a href="https://www.investing.com/news/earnings/logista-maintains-dividend-at-eur209-offers-7-yield-93CH-4337978">Investing.com: Logista mantiene el dividendo en 2,09 €</a></li>
+      <li><a href="https://www.rovi.es/sites/default/files/rovi_presentation_vdef_3_0.pdf">Rovi, resultados del ejercicio 2025</a> y <a href="https://rovi.es/sites/default/files/h1_2026_results_press_release_def.pdf">del primer semestre de 2026</a></li>
+      <li><a href="https://www.logista.com/en/home/media/press-releases/20260724.html">Logista: dividendo a cuenta de 0,58 € (julio de 2026)</a>, <a href="https://www.logista.com/content/dam/documents/logista-corporate/economic-financial-information/results-presentations/en/2026/Results%20Announcement%20Q3-2026%20VF.pdf">resultados del tercer trimestre FY2026</a> y <a href="https://www.logista.com/en/home/investors-shareholders/financial-calendar.html">calendario financiero</a></li>
+      <li><a href="https://www.investegate.co.uk/announcement/rns/imperial-brands--imb/proposed-sell-down-of-minority-stake-in-logista/5141405">Imperial Brands: venta del 10 % de Logista (2017)</a> y <a href="https://www.investegate.co.uk/announcement/rns/imperial-brands--imb/proposed-sell-down-of-minority-stake-in-logista/5443028">del 9,99 % (2018)</a></li>
+      <li><a href="https://www.rovi.es/sites/default/files/rovi_results_press_release_vdef_3.pdf">Rovi, nota de prensa de resultados 2025</a> (segmentos, Okedi, heparinas y deuda neta)</li>
+      <li><a href="https://www.fiercepharma.com/manufacturing/rovi-acquires-bms-phoenix-facility-part-250m-manufacturing-deal">Fierce Pharma: Rovi compra la planta de BMS en Phoenix</a></li>
+      <li>Datos de mercado y balances: Yahoo Finance, a 7 de octubre de 2026.</li>
+    </ul>
+  </section>
+
+  <footer>Análisis con fines educativos. No es una recomendación de compra o venta de ningún valor.</footer>
+</main>
+
+<script>
+(function () {
+  const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  const fmt = (v, d = 1) => v.toLocaleString("es-ES", { minimumFractionDigits: d, maximumFractionDigits: d });
+
+  function tip(box) {
+    let t = box.querySelector(".tip");
+    if (!t) { t = document.createElement("div"); t.className = "tip"; t.hidden = true; box.appendChild(t); }
+    return t;
+  }
+
+  // --- Barras horizontales: EY de Logista
+  function eyChart() {
+    const box = document.getElementById("ey-chart");
+    const data = [
+      { l: "Web (mecánico)", s: "EBIT FY24 con intereses / EV restando toda la caja", v: 19.7, warn: true },
+      { l: "Float = caja libre", s: "EBIT ajustado FY25 / EV restando la caja", v: 17.4 },
+      { l: "Float = negocio + intereses", s: "EBIT FY25 + intereses / EV sin restar el float", v: 10.6 },
+      { l: "Float = negocio", s: "EBIT ajustado FY25 / EV sin restar el float", v: 8.4 },
+    ];
+    const W = 700, rowH = 46, padL = 190, padR = 60, H = data.length * rowH + 24;
+    const max = 22, x = (v) => padL + (v / max) * (W - padL - padR);
+    let s = `<svg viewBox="0 0 ${W} ${H}">`;
+    [0, 5, 10, 15, 20].forEach((g) => {
+      s += `<line class="grid" x1="${x(g)}" x2="${x(g)}" y1="0" y2="${H - 20}"/><text x="${x(g)}" y="${H - 4}" text-anchor="middle">${g} %</text>`;
+    });
+    data.forEach((d, i) => {
+      const y = i * rowH + 8, h = 26;
+      s += `<text class="lbl" x="${padL - 12}" y="${y + h / 2 + 4}" text-anchor="end">${d.l}</text>`;
+      s += `<rect class="bar" data-i="${i}" x="${padL}" y="${y}" width="${x(d.v) - padL}" height="${h}" rx="3" fill="${d.warn ? css("--warn") : css("--accent")}"/>`;
+      s += `<text class="lbl" x="${x(d.v) + 8}" y="${y + h / 2 + 4}">${fmt(d.v)} %</text>`;
+    });
+    box.innerHTML = s + "</svg>";
+    const t = tip(box);
+    box.querySelectorAll("rect.bar").forEach((r) => {
+      r.addEventListener("mouseenter", () => {
+        const d = data[+r.dataset.i], br = r.getBoundingClientRect(), bb = box.getBoundingClientRect();
+        t.textContent = `${d.s}: ${fmt(d.v)} %`;
+        t.style.left = `${Math.min(bb.width - 120, Math.max(120, br.left - bb.left + br.width / 2))}px`;
+        t.style.top = `${br.top - bb.top}px`;
+        t.hidden = false;
+      });
+      r.addEventListener("mouseleave", () => (t.hidden = true));
+    });
+  }
+
+  // --- Líneas: cotización base 100
+  function priceChart() {
+    const box = document.getElementById("price-chart");
+    const years = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026];
+    const L = [9.81, 11.51, 10.48, 12.66, 12.33, 10.6, 12.57, 18.1, 19.91, 25.5, 28.29, 34.56];
+    const R = [12.57, 10.85, 13.92, 15.64, 21.96, 34.26, 67.14, 33.35, 57.42, 60.83, 62.41, 58.7];
+    const li = L.map((v) => (v / L[0]) * 100), ri = R.map((v) => (v / R[0]) * 100);
+    const W = 700, H = 280, padL = 44, padR = 70, padT = 12, padB = 26;
+    const x = (i) => padL + (i / (years.length - 1)) * (W - padL - padR);
+    const y = (v) => padT + (1 - v / 600) * (H - padT - padB);
+    let s = `<svg viewBox="0 0 ${W} ${H}">`;
+    [0, 100, 200, 300, 400, 500, 600].forEach((g) => {
+      s += `<line class="${g === 100 ? "zero" : "grid"}" x1="${padL}" x2="${W - padR}" y1="${y(g)}" y2="${y(g)}"/><text x="${padL - 8}" y="${y(g) + 4}" text-anchor="end">${g}</text>`;
+    });
+    years.forEach((yr, i) => { if (i % 2 === 0 || i === years.length - 1) s += `<text x="${x(i)}" y="${H - 6}" text-anchor="middle">${yr === 2026 ? "oct-26" : yr}</text>`; });
+    const path = (a) => a.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join("");
+    s += `<path d="${path(ri)}" fill="none" stroke="${css("--second")}" stroke-width="2" stroke-linejoin="round"/>`;
+    s += `<path d="${path(li)}" fill="none" stroke="${css("--accent")}" stroke-width="2" stroke-linejoin="round"/>`;
+    const n = years.length - 1;
+    s += `<circle cx="${x(n)}" cy="${y(li[n])}" r="4" fill="${css("--accent")}" stroke="${css("--sheet")}" stroke-width="2"/>`;
+    s += `<circle cx="${x(n)}" cy="${y(ri[n])}" r="4" fill="${css("--second")}" stroke="${css("--sheet")}" stroke-width="2"/>`;
+    s += `<text class="lbl" x="${x(n) + 9}" y="${y(li[n]) + 4}">Logista ${Math.round(li[n])}</text>`;
+    s += `<text class="lbl" x="${x(n) + 9}" y="${y(ri[n]) + 4}">Rovi ${Math.round(ri[n])}</text>`;
+    s += `<text class="lbl" x="${x(6)}" y="${y(ri[6]) - 10}" text-anchor="middle">pico vacuna 2021</text>`;
+    s += `<line id="pc-x" class="zero" y1="${padT}" y2="${H - padB}" stroke-dasharray="3 3" visibility="hidden"/>`;
+    s += `<rect x="${padL}" y="0" width="${W - padL - padR}" height="${H}" fill="transparent" id="pc-hit"/></svg>`;
+    box.innerHTML = s;
+    const t = tip(box), svg = box.querySelector("svg"), cross = box.querySelector("#pc-x");
+    const move = (ev) => {
+      const e = ev.touches ? ev.touches[0] : ev, r = svg.getBoundingClientRect();
+      const vx = ((e.clientX - r.left) / r.width) * W;
+      const i = Math.max(0, Math.min(n, Math.round(((vx - padL) / (W - padL - padR)) * n)));
+      cross.setAttribute("x1", x(i)); cross.setAttribute("x2", x(i)); cross.setAttribute("visibility", "visible");
+      t.innerHTML = `${years[i] === 2026 ? "7 oct 2026" : "Fin " + years[i]} · Logista ${Math.round(li[i])} (${fmt(L[i], 2)} €) · Rovi ${Math.round(ri[i])} (${fmt(R[i], 2)} €)`;
+      const bb = box.getBoundingClientRect();
+      t.style.left = `${Math.min(bb.width - 200, Math.max(200, (x(i) / W) * r.width + (r.left - bb.left)))}px`;
+      t.style.top = `${(y(Math.max(li[i], ri[i])) / H) * r.height + (r.top - bb.top)}px`;
+      t.hidden = false;
+    };
+    const hit = box.querySelector("#pc-hit");
+    hit.addEventListener("mousemove", move);
+    hit.addEventListener("touchmove", move, { passive: true });
+    hit.addEventListener("mouseleave", () => { t.hidden = true; cross.setAttribute("visibility", "hidden"); });
+  }
+
+  // --- Columnas: EBIT de Rovi
+  function ebitChart() {
+    const box = document.getElementById("ebit-chart");
+    const data = [["2022", 258.6], ["2023", 221.1], ["2024", 179.7], ["2025", 185.8], ["12m jun-26", 239.2]];
+    const W = 700, H = 230, padL = 44, padR = 16, padT = 22, padB = 28;
+    const bw = (W - padL - padR) / data.length;
+    const y = (v) => padT + (1 - v / 300) * (H - padT - padB);
+    let s = `<svg viewBox="0 0 ${W} ${H}">`;
+    [0, 100, 200, 300].forEach((g) => { s += `<line class="${g ? "grid" : "zero"}" x1="${padL}" x2="${W - padR}" y1="${y(g)}" y2="${y(g)}"/><text x="${padL - 8}" y="${y(g) + 4}" text-anchor="end">${g}</text>`; });
+    data.forEach(([k, v], i) => {
+      const cx = padL + bw * i + bw / 2, w = Math.min(64, bw * 0.55), last = i === data.length - 1;
+      s += `<rect class="bar" x="${cx - w / 2}" y="${y(v)}" width="${w}" height="${y(0) - y(v)}" rx="3" fill="${css("--second")}" opacity="${last ? 1 : 0.72}"><title>${k}: ${fmt(v)} M€</title></rect>`;
+      s += `<text class="lbl" x="${cx}" y="${y(v) - 7}" text-anchor="middle">${Math.round(v)}</text>`;
+      s += `<text x="${cx}" y="${H - 8}" text-anchor="middle">${k}</text>`;
+    });
+    box.innerHTML = s + "</svg>";
+  }
+
+  const draw = () => { eyChart(); priceChart(); ebitChart(); };
+  draw();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", draw);
+  new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+})();
+</script>
+
+</body>
+</html>

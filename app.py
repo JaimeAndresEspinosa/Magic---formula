@@ -682,6 +682,12 @@ def index():
     return FileResponse(BASE / "static" / "index.html", headers={"Cache-Control": "no-cache"})
 
 
+@app.get("/proyecto")
+def proyecto():
+    """Página «El proyecto»: historia, resultados agregados e informes."""
+    return FileResponse(BASE / "static" / "proyecto.html", headers={"Cache-Control": "no-cache"})
+
+
 @app.middleware("http")
 async def no_cache_static(request, call_next):
     """Obliga al navegador a comprobar si hay una versión nueva de la web en cada visita."""

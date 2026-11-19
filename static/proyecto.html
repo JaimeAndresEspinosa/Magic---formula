@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El proyecto · Magic Formula</title>
+<meta name="description" content="Cómo se construyó y se validó la herramienta de la Magic Formula: historia, problemas resueltos, resultados del backtest con CRSP, Compustat y Bloomberg, e informes.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23101828'/><path d='M7 23V9l9 9 9-9v14' stroke='%2334d399' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<script>
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("mf-theme"); } catch (e) {}
+    if (!t) t = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css?v=5">
+<link rel="stylesheet" href="/static/proyecto.css?v=2">
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="/">
+      <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><rect width="32" height="32" rx="7" fill="var(--brand-bg)"/><path d="M7 23V9l9 9 9-9v14" stroke="var(--up)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span><strong>Magic Formula</strong><small>Screener · Greenblatt</small></span>
+    </a>
+    <nav class="mainnav" aria-label="Secciones">
+      <a href="/#ranking">Ranking</a>
+      <a href="/#cartera">Cartera</a>
+      <a href="/#simulacion">Simulación</a>
+      <a href="/#metodologia">Metodología</a>
+      <a href="/proyecto" class="active" aria-current="page">El proyecto</a>
+    </nav>
+    <div class="status">
+      <button class="icon-btn" id="theme-btn" title="Cambiar tema" aria-label="Cambiar tema">
+        <svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" fill="currentColor"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap pj">
+
+  <!-- ============================== CABECERA -->
+  <section class="pj-hero" aria-labelledby="pj-title">
+    <div>
+      <span class="eyebrow">Proyecto personal · octubre–noviembre 2026</span>
+      <h1 id="pj-title">De una web a un estudio con datos profesionales</h1>
+      <p class="lead">Una herramienta que aplica la Magic Formula de Joel Greenblatt a las bolsas de EE. UU. y Europa, y un backtest <em>point-in-time</em> con CRSP, Compustat y Bloomberg para comprobar si la estrategia funciona de verdad.</p>
+      <div class="pj-author">
+        <span><b>Jaime Andrés Espinosa</b></span>
+        <span>ADE con minor en Data Science · CUNEF Universidad</span>
+        <span>Erasmus en la University of Sussex</span>
+      </div>
+      <div class="pj-cta">
+        <a class="btn primary" href="#informes">Leer los informes</a>
+        <a class="btn" href="/#ranking">Ver el ranking en directo</a>
+      </div>
+    </div>
+    <div class="pj-stats" aria-label="Resultados principales">
+      <div class="pj-stat"><div class="v">12,2 %</div><div class="l">Rentabilidad anual en EE. UU., 2001–2025</div><div class="s">S&amp;P 500: 8,7 %</div></div>
+      <div class="pj-stat"><div class="v">7,7 %</div><div class="l">Rentabilidad anual en Europa, 2006–2025</div><div class="s">STOXX Europe 600: 6,7 %</div></div>
+      <div class="pj-stat"><div class="v">−6 / −13 %</div><div class="l">EBIT real frente al previsto por los analistas</div><div class="s">EE. UU. / Europa</div></div>
+      <div class="pj-stat"><div class="v">+1,9 / +4,1</div><div class="l">Puntos al año que inventaría un backtest con sesgo de supervivencia</div><div class="s">EE. UU. / Europa</div></div>
+    </div>
+  </section>
+
+  <nav class="pj-toc" aria-label="Índice de la página">
+    <div class="wrap">
+      <a href="#resumen">Resumen</a>
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#historia">Historia y problemas</a>
+      <a href="#resultados">Resultados</a>
+      <a href="#informes">Informes</a>
+      <a href="#limitaciones">Limitaciones</a>
+      <a href="#herramientas">Herramientas</a>
+      <a href="#glosario">Glosario</a>
+    </div>
+  </nav>
+
+  <!-- ============================== RESUMEN -->
+  <section id="resumen" aria-labelledby="h-resumen">
+    <h2 id="h-resumen">Resumen</h2>
+    <p class="sec-lead">A largo plazo, la fórmula bate al mercado en EE. UU.; en Europa la ventaja es pequeña y depende de un solo año.</p>
+    <div class="pj-two">
+      <div class="pj-prose">
+        <p>El proyecto empezó como una web que calcula cada día el ranking de la Magic Formula para unas 600 empresas del S&amp;P 500, el Nasdaq-100, el IBEX 35 y el Euro Stoxx 50. Un inversor profesional la revisó y propuso validarla con rigor: usar beneficios previstos, ampliar el universo a Europa, hacer un backtest y analizar compañías concretas.</p>
+        <p>Para responder hacía falta otro tipo de datos. El backtest usa <strong>CRSP y Compustat</strong> a través de WRDS y el consenso histórico de analistas de <strong>Bloomberg</strong>, con datos tal y como se conocían en cada fecha y con las empresas que quebraron o dejaron de cotizar.</p>
+      </div>
+      <div class="pj-prose">
+        <p>En EE. UU., entre 2001 y 2025, la estrategia rinde un <strong>12,2 % anual frente al 8,7 % del S&amp;P 500</strong>, aunque en 2016–2025 quedó por detrás del índice. En Europa la ventaja es menor y se concentra en 2009.</p>
+        <p>Dos hallazgos más: usar el beneficio previsto por los analistas no mejora la estrategia, porque el consenso es sistemáticamente optimista, y un backtest mal construido puede inflar la rentabilidad hasta cuatro puntos al año.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== CÓMO FUNCIONA -->
+  <section id="como-funciona" aria-labelledby="h-como">
+    <h2 id="h-como">Cómo funciona</h2>
+    <p class="sec-lead">La fórmula ordena las empresas por precio y por calidad, suma los dos puestos y compra las que mejor posición combinada obtienen. Se excluyen bancos, aseguradoras, eléctricas e inmobiliarias, cuyas cuentas no se miden bien con estas ratios.</p>
+    <div class="pj-formula">
+      <div class="card">
+        <span class="eyebrow">Precio</span>
+        <h3>Earnings Yield</h3>
+        <div class="pj-eq">EY = EBIT ÷ Enterprise Value</div>
+        <p>Cuánto beneficio operativo genera la empresa por cada euro que costaría comprarla entera, incluida su deuda neta. Cuanto más alto, más barata.</p>
+      </div>
+      <div class="card">
+        <span class="eyebrow">Calidad</span>
+        <h3>Return on Capital</h3>
+        <div class="pj-eq">ROC = EBIT ÷ (circulante neto + inmovilizado neto)</div>
+        <p>Cuánto beneficio operativo obtiene por cada euro de capital que necesita para funcionar. Cuanto más alto, mejor negocio.</p>
+      </div>
+    </div>
+    <div class="pj-cards">
+      <article class="pj-card">
+        <span class="n">01 · La web</span>
+        <h3>El ranking, hoy</h3>
+        <p>Aplica la fórmula con precios casi en directo y permite explorar cada empresa.</p>
+        <ul>
+          <li>Ranking de unas 600 empresas con filtros por tamaño y sector</li>
+          <li>Ficha de cada empresa con el cálculo paso a paso</li>
+          <li>EBIT de 12 meses o previsto por los analistas</li>
+          <li>Simulación de carteras sin dinero real frente al índice</li>
+        </ul>
+        <div class="src">Datos: Yahoo Finance</div>
+      </article>
+      <article class="pj-card">
+        <span class="n">02 · El backtest</span>
+        <h3>¿Habría funcionado?</h3>
+        <p>Simula comprar cada enero las 30 primeras del ranking y mantenerlas un año, sin mirar al futuro.</p>
+        <ul>
+          <li>EE. UU. 2001–2026: las 500 mayores empresas en cada fecha</li>
+          <li>Europa 2006–2025: STOXX Europe 600</li>
+          <li>Solo cuentas ya publicadas en cada fecha</li>
+          <li>Incluye las empresas quebradas o deslistadas</li>
+        </ul>
+        <div class="src">Datos: CRSP y Compustat (WRDS) · Bloomberg</div>
+      </article>
+      <article class="pj-card">
+        <span class="n">03 · Los informes</span>
+        <h3>Qué significa</h3>
+        <p>Documentan los resultados y analizan compañías donde la fórmula aplicada de forma mecánica da cifras engañosas.</p>
+        <ul>
+          <li>Resultados del backtest en EE. UU. y Europa</li>
+          <li>Beneficio previsto frente a histórico</li>
+          <li>Casos de Logista, Rovi y Endesa</li>
+        </ul>
+        <div class="src">Cinco informes, en HTML y PDF</div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============================== HISTORIA -->
+  <section id="historia" aria-labelledby="h-historia">
+    <h2 id="h-historia">Historia y problemas</h2>
+    <p class="sec-lead">Cada fase nació de un problema de la anterior. Lo más difícil no fue programar, sino conseguir datos fiables y no engañarse con los resultados.</p>
+    <ol class="pj-timeline">
+      <li>
+        <span class="d">5–6 oct 2026</span>
+        <div>
+          <h3>Primera versión de la web</h3>
+          <p>Servidor en Python que descarga cuentas y precios de Yahoo Finance, calcula el ranking y lo publica.</p>
+          <dl class="pj-pd">
+            <dt class="p">Problema</dt><dd>Los datos gratuitos tenían errores: a BMW le faltaba la deuda, Puig tenía una clase de acciones sin contar y Yahoo bloqueaba las descargas masivas.</dd>
+            <dt class="s">Solución</dt><dd>Revisión de las cifras contra las cuentas oficiales, controles automáticos y descargas espaciadas con una copia de los datos para no depender de Yahoo al arrancar.</dd>
+          </dl>
+        </div>
+      </li>
+      <li>
+        <span class="d">7 oct 2026</span>
+        <div>
+          <h3>Revisión de un inversor profesional</h3>
+          <p>Propuso cuatro mejoras: usar el beneficio previsto, ampliar el universo a Europa, hacer un backtest desde 2015 y analizar compañías concretas.</p>
+          <dl class="pj-pd">
+            <dt class="s">Decisión</dt><dd>Convertir la web en un estudio, con un plan de trabajo para cada punto.</dd>
+          </dl>
+        </div>
+      </li>
+      <li>
+        <span class="d">8 oct 2026</span>
+        <div>
+          <h3>El caso Logista</h3>
+          <p>La fórmula le daba un Earnings Yield del 19,7 %, el más alto del IBEX.</p>
+          <dl class="pj-pd">
+            <dt class="p">Problema</dt><dd>Restaba como caja propia los impuestos del tabaco que Logista debe a Hacienda y presta a su matriz, y además sumaba al EBIT los intereses de ese dinero.</dd>
+            <dt class="s">Solución</dt><dd>Recalcularlo con criterios coherentes: entre un 8 % y un 11 %. Lección: el ranking es un filtro; cada empresa necesita análisis.</dd>
+          </dl>
+        </div>
+      </li>
+      <li>
+        <span class="d">octubre 2026</span>
+        <div>
+          <h3>Acceso a datos profesionales</h3>
+          <p>El backtest serio necesita datos que Yahoo no tiene: empresas que ya no existen y cuentas con su fecha real de publicación.</p>
+          <dl class="pj-pd">
+            <dt class="p">Problema</dt><dd>El terminal de Bloomberg de CUNEF solo se puede usar en el campus, y el proyecto se hacía desde Brighton.</dd>
+            <dt class="s">Solución</dt><dd>Acceso a WRDS (CRSP y Compustat) a través de CUNEF y uso del laboratorio de Bloomberg de la University of Sussex.</dd>
+            <dt class="s">Decisión</dt><dd>Las licencias académicas no permiten publicar los datos: el análisis se hace dentro de WRDS y aquí solo se muestran resultados agregados.</dd>
+          </dl>
+        </div>
+      </li>
+      <li>
+        <span class="d">11 oct 2026</span>
+        <div>
+          <h3>Por qué se excluyen las eléctricas</h3>
+          <p>Análisis de Endesa para entender por qué la fórmula no mide bien a las <em>utilities</em> y por qué Greenblatt las deja fuera.</p>
+        </div>
+      </li>
+      <li>
+        <span class="d">22–24 oct 2026</span>
+        <div>
+          <h3>Segunda revisión de la web</h3>
+          <dl class="pj-pd">
+            <dt class="p">Problema</dt><dd>La simulación comparaba la cartera, comprada por tramos, con un índice comprado de golpe, y la comparación no era justa.</dd>
+            <dt class="s">Solución</dt><dd>El índice se compra en las mismas fechas e importes que la cartera, y se avisa cuando el periodo es demasiado corto para sacar conclusiones.</dd>
+          </dl>
+        </div>
+      </li>
+      <li>
+        <span class="d">25 oct 2026</span>
+        <div>
+          <h3>Backtest de EE. UU. 2015–2025</h3>
+          <dl class="pj-pd">
+            <dt class="p">Resultado incómodo</dt><dd>La estrategia no batía al S&amp;P 500 (12,2 % frente a 13,4 % anual), aunque sí al equiponderado y con caídas menores.</dd>
+            <dt class="s">Explicación</dt><dd>En esa década el índice lo empujaron unas pocas grandes tecnológicas caras, que la fórmula no compra. Se presentó el resultado tal cual.</dd>
+          </dl>
+        </div>
+      </li>
+      <li>
+        <span class="d">26 oct 2026</span>
+        <div>
+          <h3>Bloomberg: Europa, beneficio previsto y 25 años de EE. UU.</h3>
+          <p>Descarga de la composición histórica del S&amp;P 500 y del STOXX Europe 600 y del consenso de analistas desde 2004. Ampliación del backtest de EE. UU. a 2001–2026.</p>
+          <dl class="pj-pd">
+            <dt class="p">Hipótesis fallida</dt><dd>Se esperaba que el beneficio previsto mejorara la estrategia. No lo hace, y en Europa la empeora.</dd>
+            <dt class="s">Hallazgo</dt><dd>Los analistas son optimistas: el EBIT real queda un 6,3 % por debajo del previsto en EE. UU. y un 12,7 % en Europa.</dd>
+          </dl>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ============================== RESULTADOS -->
+  <section id="resultados" aria-labelledby="h-res">
+    <h2 id="h-res">Resultados</h2>
+    <p class="sec-lead">En EE. UU. la ventaja se construyó entre 2001 y 2015; en la última década la estrategia quedó por detrás del índice ponderado, pero por delante del equiponderado.</p>
+    <figure class="pj-chart" style="margin:0 0 16px">
+      <h3>La Magic Formula batió al S&amp;P 500 hasta 2015 y quedó por detrás en 2016–2025</h3>
+      <div class="sub">Rentabilidad anual compuesta (CAGR) por periodo, EE. UU., con dividendos y sin costes</div>
+      <div class="pj-legend" id="chart-legend"></div>
+      <div class="pj-chart-scroll" id="chart-cagr"></div>
+      <figcaption class="src">Fuente: backtest con CRSP y Compustat (WRDS). Top 30 de las 500 mayores empresas, recompuesto cada enero.</figcaption>
+    </figure>
+    <div class="table-card">
+      <div class="table-scroll">
+        <table class="pj-table">
+          <thead><tr><th>Pregunta</th><th>Resultado</th><th>Dato clave</th></tr></thead>
+          <tbody>
+            <tr><td>¿Funciona en EE. UU.?</td><td>Sí a largo plazo; no en 2016–2025</td><td>10.000 $ en 2001 se convierten en 177.606 $, frente a 79.655 $ con el S&amp;P 500</td></tr>
+            <tr><td>¿Funciona en Europa?</td><td>Poco, y por un solo año</td><td>7,7 % frente a 6,7 %; sin 2009, 4,4 % frente a 5,5 %</td></tr>
+            <tr><td>¿Qué parte funciona?</td><td>En EE. UU. el precio; en Europa la calidad</td><td>EE. UU.: el quintil más barato rinde un 11,9 % anual y el más caro un 7,0 %</td></tr>
+            <tr><td>¿Ayuda el beneficio previsto?</td><td>No en EE. UU.; resta en Europa</td><td>12,1 % frente a 11,9 % (EE. UU.); 6,2 % frente a 7,7 % (Europa)</td></tr>
+            <tr><td>¿Cuánto tiempo mantener?</td><td>Más de un año, pero no tres</td><td>Una tenencia de dos años rinde un 8,5 % en Europa frente al 7,8 % anual, con menos rotación</td></tr>
+            <tr><td>¿Importa hacerlo bien?</td><td>Mucho</td><td>Ignorar las empresas quebradas infla 1,9 puntos al año en EE. UU. y 4,1 en Europa</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="pj-note"><strong>Riesgo:</strong> la estrategia no es defensiva. Su mayor caída fue del −54,2 % (2007–2009), frente al −50,6 % del S&amp;P 500, con una volatilidad del 16,7 % frente al 15,2 %. Su ventaja procede de las recuperaciones y de la normalización de valoraciones, no de proteger en las caídas. Todas las cifras son rentabilidad total con dividendos, sin costes ni impuestos.</p>
+  </section>
+
+  <!-- ============================== INFORMES -->
+  <section id="informes" aria-labelledby="h-inf">
+    <h2 id="h-inf">Informes</h2>
+    <p class="sec-lead">Cinco informes, del más reciente al primero. Cada uno se puede leer en la web o descargar en PDF.</p>
+    <div class="pj-reports">
+      <article class="pj-report main">
+        <div class="meta"><span class="tag">Informe principal</span><span>26 oct 2026</span><span>17 páginas</span></div>
+        <h3>Magic Formula: EE. UU. y Europa</h3>
+        <p>El estudio completo: 25 años en EE. UU. y 20 en Europa, qué parte de la fórmula funciona en cada mercado, beneficio histórico frente al previsto, error de los analistas, plazo de tenencia, concentración y efecto de los sesgos del backtest. Gráficos interactivos.</p>
+        <div class="act"><a class="btn primary" href="/static/informes/eeuu-europa.html">Leer</a><a class="btn" href="/static/informes/eeuu-europa.pdf" download>PDF</a></div>
+      </article>
+      <article class="pj-report">
+        <div class="meta"><span>26 oct 2026</span><span>9 páginas</span></div>
+        <h3>Magic Formula en Europa y beneficio previsto</h3>
+        <p>Backtest sobre el STOXX Europe 600 entre 2006 y 2025 y comparación del EBIT histórico con el previsto por los analistas.</p>
+        <div class="act"><a class="btn" href="/static/informes/europa-forward.html">Leer</a><a class="btn" href="/static/informes/europa-forward.pdf" download>PDF</a></div>
+      </article>
+      <article class="pj-report">
+        <div class="meta"><span>25 oct 2026</span><span>7 páginas</span></div>
+        <h3>Backtest en EE. UU., 2015–2025</h3>
+        <p>Primer backtest <em>point-in-time</em> con CRSP y Compustat: rentabilidad, caídas, comparación con el S&amp;P 500 ponderado y equiponderado y composición de la cartera.</p>
+        <div class="act"><a class="btn" href="/static/informes/backtest-eeuu.html">Leer</a><a class="btn" href="/static/informes/backtest-eeuu.pdf" download>PDF</a></div>
+      </article>
+      <article class="pj-report">
+        <div class="meta"><span>11 oct 2026</span><span>9 páginas</span></div>
+        <h3>Endesa</h3>
+        <p>Por qué la fórmula no mide bien a las compañías eléctricas y por qué se excluyen del ranking.</p>
+        <div class="act"><a class="btn" href="/static/informes/endesa.html">Leer</a><a class="btn" href="/static/informes/endesa.pdf" download>PDF</a></div>
+      </article>
+      <article class="pj-report">
+        <div class="meta"><span>8 oct 2026</span><span>12 páginas</span></div>
+        <h3>Logista y Rovi</h3>
+        <p>Negocio, historia y valoración de dos compañías del IBEX que la fórmula sitúa arriba, y por qué el Earnings Yield de Logista sale inflado.</p>
+        <div class="act"><a class="btn" href="/static/informes/logista-rovi.html">Leer</a><a class="btn" href="/static/informes/logista-rovi.pdf" download>PDF</a></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============================== LIMITACIONES -->
+  <section id="limitaciones" aria-labelledby="h-lim">
+    <h2 id="h-lim">Limitaciones y próximos pasos</h2>
+    <p class="sec-lead">Los resultados son sólidos en método, pero tienen límites que conviene conocer antes de sacar conclusiones.</p>
+    <div class="pj-two">
+      <ul class="pj-list">
+        <li><strong>Sin costes ni impuestos.</strong> Las rentabilidades son brutas; con comisiones y fiscalidad serían algo menores.</li>
+        <li><strong>Periodo limitado.</strong> Una estrategia de valor puede pasar años por detrás del mercado; 20–25 años no cubren todos los regímenes.</li>
+        <li><strong>Europa depende de un año.</strong> Sin 2009, la estrategia queda por detrás del índice.</li>
+        <li><strong>La web usa datos gratuitos.</strong> Yahoo Finance puede tener errores o datos atrasados; el backtest no los usa.</li>
+      </ul>
+      <ul class="pj-list">
+        <li><strong>Incorporar costes de transacción</strong> e impuestos al backtest.</li>
+        <li><strong>Probar la tenencia de dos años</strong> propuesta en el informe principal en más periodos.</li>
+        <li><strong>Ampliar el análisis de España</strong> más allá de las 65 empresas españolas del STOXX Europe 600.</li>
+        <li><strong>Llevar a la web</strong> las conclusiones del estudio, como avisos en las empresas con perfil de trampa de valor.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================== HERRAMIENTAS -->
+  <section id="herramientas" aria-labelledby="h-her">
+    <h2 id="h-her">Herramientas</h2>
+    <p class="sec-lead">El proyecto combina datos financieros profesionales con un desarrollo web completo.</p>
+    <div class="pj-chips" aria-label="Herramientas utilizadas">
+      <span>Python · pandas</span><span>SQL</span><span>WRDS · CRSP · Compustat</span><span>Bloomberg Terminal</span><span>Jupyter</span><span>Excel</span><span>FastAPI</span><span>Supabase</span><span>GitHub</span><span>Render</span>
+    </div>
+    <p class="pj-note">Para programar y redactar me he apoyado en un asistente de inteligencia artificial. Las decisiones, la obtención de los datos, la ejecución de los análisis y la validación de cada resultado son propias.</p>
+  </section>
+
+  <!-- ============================== GLOSARIO -->
+  <section id="glosario" aria-labelledby="h-glo">
+    <h2 id="h-glo">Glosario</h2>
+    <p class="sec-lead">Los términos técnicos que aparecen en la web y en los informes.</p>
+    <dl class="pj-gloss">
+      <div><dt>EBIT</dt><dd>Beneficio operativo, antes de intereses e impuestos.</dd></div>
+      <div><dt>Enterprise Value (EV)</dt><dd>Capitalización más deuda menos caja: lo que costaría comprar la empresa entera.</dd></div>
+      <div><dt>Earnings Yield (EY)</dt><dd>EBIT ÷ EV. Beneficio operativo por cada euro pagado; mide lo barata que está.</dd></div>
+      <div><dt>Return on Capital (ROC)</dt><dd>EBIT ÷ capital invertido. Mide la calidad del negocio.</dd></div>
+      <div><dt>LTM / TTM</dt><dd>De los últimos doce meses.</dd></div>
+      <div><dt>Forward y consenso</dt><dd>Previsión para los próximos doce meses; el consenso es la media de los analistas.</dd></div>
+      <div><dt>Backtest</dt><dd>Simulación de cómo habría funcionado una estrategia en el pasado.</dd></div>
+      <div><dt>Point-in-time</dt><dd>Datos tal y como se conocían en cada fecha, no como se conocen hoy.</dd></div>
+      <div><dt>Sesgo de supervivencia</dt><dd>Error de usar solo las empresas que existen hoy, olvidando las que quebraron.</dd></div>
+      <div><dt>Sesgo de anticipación</dt><dd>Error de usar información que en esa fecha aún no se había publicado.</dd></div>
+      <div><dt>CAGR</dt><dd>Rentabilidad anual compuesta media.</dd></div>
+      <div><dt>Máximo drawdown</dt><dd>La mayor caída desde un máximo hasta el mínimo siguiente.</dd></div>
+      <div><dt>Índice equiponderado</dt><dd>Las mismas empresas del índice con el mismo peso cada una; la comparación justa para una cartera repartida a partes iguales.</dd></div>
+      <div><dt>Trampa de valor</dt><dd>Empresa que parece barata porque su beneficio va a caer.</dd></div>
+    </dl>
+  </section>
+
+  <p class="pj-disc"><strong>Aviso.</strong> Proyecto académico y educativo. No constituye asesoramiento financiero ni una recomendación de compra o venta de valores. Los datos de CRSP, Compustat y Bloomberg se usan bajo licencia académica: aquí solo se publican resultados agregados.</p>
+</main>
+
+<footer class="wrap footer">
+  <span>Jaime Andrés Espinosa · CUNEF Universidad</span>
+  <span>Datos: Yahoo Finance (web) · CRSP, Compustat y Bloomberg (backtest)</span>
+</footer>
+
+<script>
+(function () {
+  // Cambio de tema, compartido con el resto de la web
+  document.getElementById("theme-btn").onclick = function () {
+    var t = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = t;
+    try { localStorage.setItem("mf-theme", t); } catch (e) {}
+  };
+
+  // En móvil el menú se desplaza en horizontal: deja visible la sección actual
+  var nav = document.querySelector(".mainnav");
+  if (nav && nav.scrollWidth > nav.clientWidth) nav.scrollLeft = nav.scrollWidth;
+
+  // Gráfico: CAGR por periodo (resultados agregados del backtest)
+  var rows = [
+    { p: "2001–2007", mf: 14.4, sp: 3.5, eq: 6.9 },
+    { p: "2008–2015", mf: 9.0, sp: 5.9, eq: 6.6 },
+    { p: "2016–2025", mf: 13.3, sp: 14.8, eq: 12.4 },
+    { p: "2001–2025 (total)", mf: 12.2, sp: 8.7, eq: 9.0 }
+  ];
+  var series = [
+    { k: "mf", name: "Magic Formula", fill: "var(--accent)", op: 1 },
+    { k: "sp", name: "S&P 500", fill: "var(--muted)", op: 0.85 },
+    { k: "eq", name: "S&P 500 equiponderado", fill: "var(--muted)", op: 0.4 }
+  ];
+  var esc = function (s) { return s.replace(/&/g, "&amp;"); };
+  var fmt = function (v) { return v.toLocaleString("es-ES", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " %"; };
+  document.getElementById("chart-legend").innerHTML = series.map(function (s) {
+    return '<span><i style="background:' + s.fill + ';opacity:' + s.op + '"></i>' + esc(s.name) + "</span>";
+  }).join("");
+  var W = 760, H = 270, base = 228, x0 = 16, band = (W - 2 * x0) / rows.length, bw = 40, gap = 8, grp = 3 * bw + 2 * gap;
+  var y = function (v) { return base - v / 16 * 190; };
+  var svg = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Rentabilidad anual por periodo: Magic Formula frente al S&amp;P 500 y al equiponderado">';
+  svg += '<line x1="' + x0 + '" x2="' + (W - x0) + '" y1="' + base + '" y2="' + base + '" stroke="var(--border)"/>';
+  rows.forEach(function (r, i) {
+    var gx = x0 + i * band + (band - grp) / 2;
+    series.forEach(function (s, j) {
+      var v = r[s.k], bx = gx + j * (bw + gap);
+      svg += '<rect x="' + bx + '" y="' + y(v) + '" width="' + bw + '" height="' + (base - y(v)) + '" rx="4" fill="' + s.fill + '" fill-opacity="' + s.op + '"><title>' + esc(s.name) + ", " + r.p + ": " + fmt(v) + "</title></rect>";
+      svg += '<text x="' + (bx + bw / 2) + '" y="' + (y(v) - 7) + '" text-anchor="middle" font-size="12" font-weight="' + (s.k === "mf" ? 700 : 500) + '" fill="var(--text)">' + fmt(v) + "</text>";
+    });
+    svg += '<text x="' + (gx + grp / 2) + '" y="' + (base + 24) + '" text-anchor="middle" font-size="12.5" fill="var(--text-2)">' + r.p + "</text>";
+  });
+  document.getElementById("chart-cagr").innerHTML = svg + "</svg>";
+})();
+</script>
+</body>
+</html>
